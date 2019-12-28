@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 class Program03Test {
     @InjectMocks
     private Program03 program03 = new Program03();
-    @Mock
+      @Mock
     private Calc calc;
 
     @Test
