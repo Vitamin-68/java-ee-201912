@@ -7,5 +7,5 @@ public interface MutableRepository<EntityType extends BaseEntity<IdType>, IdType
 
     EntityType update(EntityType entity);
 
-    EntityType delete(EntityType entity);
+    EntityType delete(IdType id);
 }
