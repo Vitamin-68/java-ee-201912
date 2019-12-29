@@ -15,9 +15,9 @@ class CityMyCrudRepoTest {
 
     @Test
     void findAll() {
-        for (City city : crudRepository.findAll().get()) {
-            crudRepository2.create(city);
-        }
+//        for (City city : crudRepository.findAll().get()) {
+//            crudRepository2.create(city);
+//        }
 
 
         Optional<List<City>> cities = crudRepository.findAll();

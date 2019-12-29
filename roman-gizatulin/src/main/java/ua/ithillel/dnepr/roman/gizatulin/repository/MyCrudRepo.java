@@ -24,7 +24,7 @@ public class MyCrudRepo<EntityType extends BaseEntity<IdType>, IdType> implement
     }
 
     @Override
-    public Optional<EntityType> findByField(String fieldName, Object value) {
+    public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         return Optional.empty();
     }
 
@@ -39,7 +39,7 @@ public class MyCrudRepo<EntityType extends BaseEntity<IdType>, IdType> implement
     }
 
     @Override
-    public EntityType delete(EntityType entity) {
+    public EntityType delete(IdType id) {
         return null;
     }
 }

@@ -10,7 +10,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class CountryMyCrudRepoTest {
-    private CrudRepository<Country, Integer> crudRepository = new MyCrudRepo<>();
+    private CrudRepository<Country, Integer> crudRepository = new MyCrudRepo<>("");
 
     @Test
     void findAll() {
