@@ -10,5 +10,5 @@ public interface ImmutableRepository<EntityType extends BaseEntity<IdType>, IdTy
 
     Optional<EntityType> findById(IdType id);
 
-    Optional<EntityType> findByField(String fieldName, Object value);
+    Optional<List<EntityType>> findByField(String fieldName, Object value);
 }
