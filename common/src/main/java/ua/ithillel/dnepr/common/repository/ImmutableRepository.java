@@ -1,5 +1,7 @@
 package ua.ithillel.dnepr.common.repository;
 
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
+
 import java.util.List;
 import java.util.Optional;
 

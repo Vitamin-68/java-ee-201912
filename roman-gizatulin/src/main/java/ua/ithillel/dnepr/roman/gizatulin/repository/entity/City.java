@@ -2,7 +2,7 @@ package ua.ithillel.dnepr.roman.gizatulin.repository.entity;
 
 import lombok.Getter;
 import lombok.Setter;
-import ua.ithillel.dnepr.common.repository.BaseEntity;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 @Getter
 @Setter
