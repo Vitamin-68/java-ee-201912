@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.common.repository;
+package ua.ithillel.dnepr.common.repository.entity;
 
 import java.io.Serializable;
 
