@@ -1,7 +1,7 @@
 package ua.ithillel.dnepr.roman.gizatulin.repository;
 
-import ua.ithillel.dnepr.common.repository.BaseEntity;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class MyCrudRepo<EntityType extends BaseEntity<IdType>, IdType> implement
     }
 
     @Override
-    public Optional<EntityType> findByField(String fieldName, Object value) {
+    public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         return Optional.empty();
     }
 

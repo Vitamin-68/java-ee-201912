@@ -45,7 +45,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     }
 
     @Override
-    public Optional<Country> findByField(String fieldName, Object value) {
+    public Optional<List<Country>> findByField(String fieldName, Object value) {
         return Optional.empty();
     }
 
