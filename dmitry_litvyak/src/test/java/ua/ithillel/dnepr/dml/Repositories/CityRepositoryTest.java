@@ -9,6 +9,7 @@ import ua.ithillel.dnepr.dml.domain.City;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,17 +39,17 @@ class CityRepositoryTest {
 
     @Test
     void findByField() {
-        Optional<City> test = cityRepository.findByField("name","Апрелевка");
+        Optional<List<City>> test = cityRepository.findByField("name","Апрелевка");
         Assertions.assertNotNull(test);
-        Optional<City> test2 = cityRepository.findByField("name","some string name");
-        Assertions.assertTrue(test2.isEmpty());
-        Optional<City> test3 = cityRepository.findByField("1name1",99999);
+        Optional<List<City>> test2 = cityRepository.findByField("name","some string name");
+        Assertions.assertTrue(test2.get().isEmpty());
+        Optional<List<City>> test3 = cityRepository.findByField("1name1",99999);
         Assertions.assertTrue(test3.isEmpty());
     }
 
     @Test
     void create() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_CITY_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "city.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_CITY_CSV),Paths.get(newFile));
         CityRepository updateRepo = new CityRepository(newFile);
         City test = new City();
@@ -63,7 +64,7 @@ class CityRepositoryTest {
 
     @Test
     void update() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_CITY_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "city1.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_CITY_CSV),Paths.get(newFile));
         CityRepository updateRepo = new CityRepository(newFile);
         City test = updateRepo.findById(4400).get();
@@ -76,7 +77,7 @@ class CityRepositoryTest {
 
     @Test
     void delete() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_CITY_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "city2.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_CITY_CSV),Paths.get(newFile));
         CityRepository updateRepo = new CityRepository(newFile);
         City test = updateRepo.findById(4400).get();

@@ -68,7 +68,7 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
             for (CSVRecord csvLine: csvSourse.getRecords()
             ) {
                 if(Integer.parseInt(csvLine.get("region_id")) == id) {
-                    result = getRegion(result, csvLine);
+                    result = Optional.of(getRegion( csvLine));
                 }
             }
 
@@ -80,8 +80,8 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
     }
 
     @Override
-    public Optional<Region> findByField(String fieldName, Object value) {
-        Optional<Region> result = Optional.empty();
+    public Optional<List<Region>> findByField(String fieldName, Object value) {
+        Optional<List<Region>> result = Optional.empty();
         try{
             CSVParser csvSourse = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -90,16 +90,17 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
 
             Map<String,Integer> header = csvSourse.getHeaderMap();
             if(header.get(fieldName) != null && Region.class.getDeclaredField(fieldName) != null){
-
+            List<Region> resultRegion = new ArrayList<>();
 
             for (CSVRecord csvLine: csvSourse.getRecords()
             ) {
                     if(csvLine.get(fieldName).equals(value.toString())) {
-                        result = getRegion(result, csvLine);
+                        resultRegion.add(getRegion(csvLine));
 
                         break;
                     }
                 }
+            result = Optional.of(resultRegion);
             }
         }catch(Exception e){
 
@@ -108,15 +109,14 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
         return result;
     }
 
-    private Optional<Region> getRegion(Optional<Region> result, CSVRecord csvLine) {
+    private Region getRegion(CSVRecord csvLine) {
         Region region = new Region();
 
         region.setCity_id(Integer.parseInt(csvLine.get("city_id")));
         region.setId(Integer.parseInt(csvLine.get("region_id")));
         region.setCountry_id(Integer.parseInt(csvLine.get("country_id")));
         region.setName(csvLine.get("name"));
-        result = Optional.of(region);
-        return result;
+        return region;
 
     }
 
@@ -128,6 +128,7 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath),CSVFormat.DEFAULT.withHeader("region_id","country_id","city_id","name").withDelimiter(';'));
             csvPrinter.printRecord(entity.getId(),entity.getCountry_id(),entity.getCity_id(),entity.getName());
             csvPrinter.flush();
+            csvPrinter.close();
         } catch (IOException e) {
             log.error(e.toString());
         }
@@ -150,6 +151,7 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
                         csvPrinter.printRecord(_region.getId(),_region.getCountry_id(),_region.getCity_id(),_region.getName());
                     }
                     csvPrinter.flush();
+                    csvPrinter.close();
                 } catch (IOException e) {
                     log.error(e.toString());
                 }
@@ -173,6 +175,7 @@ public class RegionRepository implements CrudRepository<Region,Integer> {
                         csvPrinter.printRecord(_region.getId(),_region.getCountry_id(),_region.getCity_id(),_region.getName());
                     }
                     csvPrinter.flush();
+                    csvPrinter.close();
                 } catch (IOException e) {
                     log.error(e.toString());
                 }

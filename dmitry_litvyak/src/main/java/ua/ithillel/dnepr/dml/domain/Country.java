@@ -2,7 +2,7 @@ package ua.ithillel.dnepr.dml.domain;
 
 import lombok.Getter;
 import lombok.Setter;
-import ua.ithillel.dnepr.common.repository.BaseEntity;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 //"country_id";"city_id";"name"
 @Getter

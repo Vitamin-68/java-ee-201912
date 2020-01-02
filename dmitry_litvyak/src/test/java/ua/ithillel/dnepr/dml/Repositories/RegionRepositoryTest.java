@@ -10,6 +10,7 @@ import ua.ithillel.dnepr.dml.domain.Region;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -39,18 +40,18 @@ class RegionRepositoryTest {
 
     @Test
     void findByField() {
-        Optional<Region> test = regionRepository.findByField("name","Еврейская обл.");
+        Optional<List<Region>> test = regionRepository.findByField("name","Еврейская обл.");
         Assertions.assertNotNull(test);
-        Optional<Region> test2 = regionRepository.findByField("name","some string name");
-        Assertions.assertTrue(test2.isEmpty());
-        Optional<Region> test3 = regionRepository.findByField("1name1",99999);
+        Optional<List<Region>> test2 = regionRepository.findByField("name","some string name");
+        Assertions.assertTrue(test2.get().isEmpty());
+        Optional<List<Region>> test3 = regionRepository.findByField("1name1",99999);
         Assertions.assertTrue(test3.isEmpty());
 
     }
 
     @Test
     void create() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_REGION_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "region.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_REGION_CSV),Paths.get(newFile));
         RegionRepository updateRepo = new RegionRepository(newFile);
         Region test = new Region();
@@ -66,7 +67,7 @@ class RegionRepositoryTest {
 
     @Test
     void update() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_REGION_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "region1.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_REGION_CSV),Paths.get(newFile));
         RegionRepository updateRepo = new RegionRepository(newFile);
         Region test = updateRepo.findById(3468).get();
@@ -79,7 +80,7 @@ class RegionRepositoryTest {
 
     @Test
     void delete() throws IOException {
-        String newFile = SRC_MAIN_RESOURCES_REGION_CSV + ".out.csv";
+        String newFile = System.getProperty("java.io.tmpdir") + "region2.out.csv";
         Files.copy(Paths.get(SRC_MAIN_RESOURCES_REGION_CSV),Paths.get(newFile));
         RegionRepository updateRepo = new RegionRepository(newFile);
         Region test = updateRepo.findById(3468).get();
