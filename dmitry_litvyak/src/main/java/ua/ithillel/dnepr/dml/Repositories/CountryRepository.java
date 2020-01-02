@@ -67,7 +67,7 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
             for (CSVRecord csvLine: csvSourse.getRecords()
             ) {
                 if(Integer.parseInt(csvLine.get("country_id")) == id) {
-                    result = getCountry(result, csvLine);
+                    result = Optional.of(getCountry( csvLine));
                 }
             }
 
@@ -78,19 +78,18 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
         return result;
     }
 
-    private Optional<Country> getCountry(Optional<Country> result, CSVRecord csvLine) {
+    private Country getCountry( CSVRecord csvLine) {
         Country country = new Country();
 
         country.setCity_id(Integer.parseInt(csvLine.get("city_id")));
         country.setId(Integer.parseInt(csvLine.get("country_id")));
         country.setName(csvLine.get("name"));
-        result = Optional.of(country);
-        return result;
+        return country;
 
     }
     @Override
-    public Optional<Country> findByField(String fieldName, Object value) {
-        Optional<Country> result = Optional.empty();
+    public Optional<List<Country>> findByField(String fieldName, Object value) {
+        Optional<List<Country>> result = Optional.empty();
         try{
             CSVParser csvSourse = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -98,16 +97,16 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
 
             Map<String,Integer> header = csvSourse.getHeaderMap();
+            List<Country> resultCountry = new ArrayList<>();
             if(header.get(fieldName) != null && Country.class.getDeclaredField(fieldName) != null){
 
                 for (CSVRecord csvLine: csvSourse.getRecords()
                 ) {
                     if(csvLine.get(fieldName).equals(value.toString())) {
-                        result = getCountry(result, csvLine);
-
-                        break;
+                        resultCountry.add(getCountry(csvLine));
                     }
                 }
+                result = Optional.of(resultCountry);
             }
         }catch(Exception e){
 
@@ -124,6 +123,7 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath),CSVFormat.DEFAULT.withHeader("country_id","city_id","name").withDelimiter(';'));
             csvPrinter.printRecord(entity.getId(),entity.getCity_id(),entity.getName());
             csvPrinter.flush();
+            csvPrinter.close();
         } catch (IOException e) {
             log.error(e.toString());
         }
@@ -145,6 +145,7 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
                         csvPrinter.printRecord(_region.getId(),_region.getCity_id(),_region.getName());
                     }
                     csvPrinter.flush();
+                    csvPrinter.close();
                 } catch (IOException e) {
                     log.error(e.toString());
                 }
@@ -168,6 +169,7 @@ public class CountryRepository implements CrudRepository<Country,Integer> {
                         csvPrinter.printRecord(_region.getId(),_region.getCity_id(),_region.getName());
                     }
                     csvPrinter.flush();
+                    csvPrinter.close();
                 } catch (IOException e) {
                     log.error(e.toString());
                 }
