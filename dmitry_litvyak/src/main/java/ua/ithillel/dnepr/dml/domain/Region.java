@@ -15,8 +15,4 @@ public class Region extends AbstractEntity<Integer> implements BaseEntity<Intege
     private Integer city_id;
     private String name;
 
-    @Override
-    public Integer getId() {
-        return Id;
-    }
 }
