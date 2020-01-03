@@ -1,10 +1,7 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import ua.ithillel.dnepr.dml.domain.City;
 
 import java.util.ArrayList;
@@ -51,22 +48,27 @@ class IndexedCrudRepositoryImplTest {
     void tearDown() {
     }
 
+    @Disabled
     @Test
     void findAll() {
     }
 
+    @Disabled
     @Test
     void findById() {
     }
 
+    @Disabled
     @Test
     void findByField() {
     }
 
+    @Disabled
     @Test
     void addIndex() {
     }
 
+    @Disabled
     @Test
     void addIndexes() {
     }
@@ -78,8 +80,10 @@ class IndexedCrudRepositoryImplTest {
 
     @Test
     void update() {
+        indexedCrudRepository.create(testCity);
     }
 
+    @Disabled
     @Test
     void delete() {
     }

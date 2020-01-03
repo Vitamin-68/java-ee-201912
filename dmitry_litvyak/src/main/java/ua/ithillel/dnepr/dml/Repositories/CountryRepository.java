@@ -37,18 +37,14 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
     @Override
     public Optional<List<Country>> findAll() {
         Optional<List<Country>> result = Optional.empty();
-
         final List<Country> countries = new ArrayList<>();
         try {
             CSVParser csvSourse = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
-            for (CSVRecord csvLine : csvSourse.getRecords()
-            ) {
-
+            for (CSVRecord csvLine : csvSourse.getRecords()) {
                 Country country = new Country();
-
                 country.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
                 country.setId(Integer.parseInt(csvLine.get(COUNTRY_ID)));
                 country.setName(csvLine.get(NAME));
@@ -70,8 +66,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                     .withFirstRecordAsHeader()
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
-            for (CSVRecord csvLine : csvSourse.getRecords()
-            ) {
+            for (CSVRecord csvLine : csvSourse.getRecords()) {
                 if (Integer.parseInt(csvLine.get(COUNTRY_ID)) == id) {
                     result = Optional.of(getCountry(csvLine));
                 }
@@ -102,8 +97,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
             List<Country> resultCountry = new ArrayList<>();
             if (header.get(fieldName) != null) {
                 if (Country.class.getDeclaredField(fieldName) != null) {
-                    for (CSVRecord csvLine : csvSourse.getRecords()
-                    ) {
+                    for (CSVRecord csvLine : csvSourse.getRecords()) {
                         if (Objects.equals(csvLine.get(fieldName), value.toString())) {
                             resultCountry.add(getCountry(csvLine));
                         }
@@ -135,15 +129,13 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
     @Override
     public Country update(Country entity) {
         Optional<List<Country>> allRecords = findAll();
-        for (Country currentCountry : allRecords.get()
-        ) {
+        for (Country currentCountry : allRecords.get()) {
             if (currentCountry.getId().equals(entity.getId())) {
                 currentCountry.setCity_id(entity.getCity_id());
                 currentCountry.setName(entity.getName());
                 try {
                     CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
-                    for (Country locCountry : allRecords.get()
-                    ) {
+                    for (Country locCountry : allRecords.get()) {
                         csvPrinter.printRecord(locCountry.getId(), locCountry.getCity_id(), locCountry.getName());
                     }
                     csvPrinter.flush();
@@ -160,14 +152,12 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
     @Override
     public Country delete(Integer id) {
         Optional<List<Country>> allRecords = findAll();
-        for (Country currentRegion : allRecords.get()
-        ) {
+        for (Country currentRegion : allRecords.get()) {
             if (currentRegion.getId().equals(id)) {
                 allRecords.get().remove(currentRegion);
                 try {
                     CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
-                    for (Country _region : allRecords.get()
-                    ) {
+                    for (Country _region : allRecords.get()) {
                         csvPrinter.printRecord(_region.getId(), _region.getCity_id(), _region.getName());
                     }
                     csvPrinter.flush();

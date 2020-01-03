@@ -88,11 +88,19 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity create(BaseEntity entity) {
-        //serialize entity & save
         final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
         };
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
+        if (Files.exists(Paths.get(rootDir + fileName))) {
+            SerialazyEntity(entity, fileName);
+        }
+        return entity;
+    }
+
+    private void SerialazyEntity(BaseEntity entity, String fileName) {
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
+        };
         fileEntitySerializer.serialize(entity, rootDir + fileName);
         //create or update data in index file
         indexedField.forEach((indexName, v) -> {
@@ -113,7 +121,6 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
                 log.error("Index create(invok target):", e);
             }
         });
-        return entity;
     }
 
     private void saveIndex(String idxFile, BaseEntity entity, String fieldName, String uuid) throws IOException {
@@ -139,7 +146,12 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity update(BaseEntity entity) {
-        return null;
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
+        };
+        tmpEntity.setId((IdType) entity.getId());
+        String fileName = tmpEntity.getUuid();
+        SerialazyEntity(entity, fileName);
+        return entity;
     }
 
     @Override
