@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class CountryRepository implements CrudRepository<Country, Integer> {
@@ -107,7 +104,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                 if (Country.class.getDeclaredField(fieldName) != null) {
                     for (CSVRecord csvLine : csvSourse.getRecords()
                     ) {
-                        if (csvLine.get(fieldName).equals(value.toString())) {
+                        if (Objects.equals(csvLine.get(fieldName), value.toString())) {
                             resultCountry.add(getCountry(csvLine));
                         }
                     }

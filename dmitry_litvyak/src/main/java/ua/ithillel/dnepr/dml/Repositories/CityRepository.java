@@ -13,10 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 //"city_id","country_id","region_id","name"
 @Slf4j
@@ -102,7 +99,7 @@ public class CityRepository implements CrudRepository<City, Integer> {
                 if (City.class.getDeclaredField(fieldName) != null) {
                     for (CSVRecord csvLine : csvSourse.getRecords()
                     ) {
-                        if (csvLine.get(fieldName).equals(value.toString())) {
+                        if (Objects.equals(csvLine.get(fieldName), value.toString())) {
                             City resultCity = getCity(csvLine);
                             cityList.add(resultCity);
                         }
