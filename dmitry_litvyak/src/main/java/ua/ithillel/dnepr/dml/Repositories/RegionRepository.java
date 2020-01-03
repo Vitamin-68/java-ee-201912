@@ -44,8 +44,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                     .withFirstRecordAsHeader()
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
-            for (CSVRecord csvLine : csvSourse.getRecords()
-            ) {
+            for (CSVRecord csvLine : csvSourse.getRecords()) {
                 Region region = new Region();
                 region.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
                 region.setId(Integer.parseInt(csvLine.get(REGION_ID)));
@@ -69,8 +68,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                     .withFirstRecordAsHeader()
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
-            for (CSVRecord csvLine : csvSourse.getRecords()
-            ) {
+            for (CSVRecord csvLine : csvSourse.getRecords()) {
                 if (Integer.parseInt(csvLine.get(REGION_ID)) == id) {
                     result = Optional.of(getRegion(csvLine));
                 }
@@ -93,8 +91,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
             if (header.get(fieldName) != null) {
                 if (Region.class.getDeclaredField(fieldName) != null) {
                     List<Region> resultRegion = new ArrayList<>();
-                    for (CSVRecord csvLine : csvSourse.getRecords()
-                    ) {
+                    for (CSVRecord csvLine : csvSourse.getRecords()) {
                         if (Objects.equals(csvLine.get(fieldName), value.toString())) {
                             resultRegion.add(getRegion(csvLine));
                         }
@@ -110,13 +107,11 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
 
     private Region getRegion(CSVRecord csvLine) {
         Region region = new Region();
-
         region.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
         region.setId(Integer.parseInt(csvLine.get(REGION_ID)));
         region.setCountry_id(Integer.parseInt(csvLine.get(COUNTRY_ID)));
         region.setName(csvLine.get(NAME));
         return region;
-
     }
 
     @Override
@@ -137,16 +132,14 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
     @Override
     public Region update(Region entity) {
         Optional<List<Region>> allRecords = findAll();
-        for (Region currentRegion : allRecords.get()
-        ) {
+        for (Region currentRegion : allRecords.get()) {
             if (currentRegion.getId().equals(entity.getId())) {
                 currentRegion.setCity_id(entity.getCity_id());
                 currentRegion.setCountry_id(entity.getCountry_id());
                 currentRegion.setName(entity.getName());
                 try {
                     CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
-                    for (Region locRegion : allRecords.get()
-                    ) {
+                    for (Region locRegion : allRecords.get()) {
                         csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getCity_id(), locRegion.getName());
                     }
                     csvPrinter.flush();
@@ -163,14 +156,12 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
     @Override
     public Region delete(Integer id) {
         Optional<List<Region>> allRecords = findAll();
-        for (Region currentRegion : allRecords.get()
-        ) {
+        for (Region currentRegion : allRecords.get()) {
             if (currentRegion.getId().equals(id)) {
                 allRecords.get().remove(currentRegion);
                 try {
                     CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
-                    for (Region _region : allRecords.get()
-                    ) {
+                    for (Region _region : allRecords.get()) {
                         csvPrinter.printRecord(_region.getId(), _region.getCountry_id(), _region.getCity_id(), _region.getName());
                     }
                     csvPrinter.flush();
