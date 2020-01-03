@@ -128,8 +128,7 @@ public class CityRepository implements CrudRepository<City, Integer> {
     @Override
     public City update(City entity) {
         Optional<List<City>> allRecords = findAll();
-        for (City currentRegion : allRecords.get()
-        ) {
+        for (City currentRegion : allRecords.get()) {
             if (currentRegion.getId().equals(entity.getId())) {
                 currentRegion.setRegion_id(entity.getRegion_id());
                 currentRegion.setCountry_id(entity.getCountry_id());
@@ -153,8 +152,7 @@ public class CityRepository implements CrudRepository<City, Integer> {
     @Override
     public City delete(Integer id) {
         Optional<List<City>> allRecords = findAll();
-        for (City currentRegion : allRecords.get()
-        ) {
+        for (City currentRegion : allRecords.get()) {
             if (currentRegion.getId().equals(id)) {
                 allRecords.get().remove(currentRegion);
                 try {
