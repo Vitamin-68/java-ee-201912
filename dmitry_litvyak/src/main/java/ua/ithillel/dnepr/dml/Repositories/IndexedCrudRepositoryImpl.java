@@ -93,12 +93,12 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
         if (Files.exists(Paths.get(rootDir + fileName))) {
-            SerialazyEntity(entity, fileName);
+            SerialazeEntity(entity, fileName);
         }
         return entity;
     }
 
-    private void SerialazyEntity(BaseEntity entity, String fileName) {
+    private void SerialazeEntity(BaseEntity entity, String fileName) {
         final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
         };
         fileEntitySerializer.serialize(entity, rootDir + fileName);
