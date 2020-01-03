@@ -15,7 +15,10 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType> implements IndexedCrudRepository {
@@ -93,12 +96,12 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
         if (Files.exists(Paths.get(rootDir + fileName))) {
-            SerialazeEntity(entity, fileName);
+            serializeEntity(entity, fileName);
         }
         return entity;
     }
 
-    private void SerialazeEntity(BaseEntity entity, String fileName) {
+    private void serializeEntity(BaseEntity entity, String fileName) {
         final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
         };
         fileEntitySerializer.serialize(entity, rootDir + fileName);
@@ -150,7 +153,7 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         };
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
-        SerialazyEntity(entity, fileName);
+        serializeEntity(entity, fileName);
         return entity;
     }
 
