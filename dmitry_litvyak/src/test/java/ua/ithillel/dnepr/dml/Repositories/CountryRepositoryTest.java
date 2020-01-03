@@ -1,6 +1,7 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,12 +18,20 @@ class CountryRepositoryTest {
 
     public static final String SRC_MAIN_RESOURCES_COUNTRY_CSV = "./src/main/resources/country.csv";
 
-    private CountryRepository countryRepository;
+    private CountryRepository countryRepository, updateRepo;
+    private String newFile;
+
     @BeforeEach
-    void setUp() {
-
+    void setUp() throws IOException {
         countryRepository = new CountryRepository(SRC_MAIN_RESOURCES_COUNTRY_CSV);
+        newFile = System.getProperty("java.io.tmpdir") + Math.random() + "country.out.csv";
+        Files.copy(Paths.get(SRC_MAIN_RESOURCES_COUNTRY_CSV), Paths.get(newFile));
+        updateRepo = new CountryRepository(newFile);
+    }
 
+    @AfterEach
+    void cleanup() throws IOException {
+        Files.delete(Paths.get(newFile));
     }
 
     @Test
@@ -34,24 +43,21 @@ class CountryRepositoryTest {
     void findById() {
         Country test = countryRepository.findById(7716093).get();
         log.debug(test.getName());
-        Assertions.assertEquals(7716093,test.getId());
+        Assertions.assertEquals(7716093, test.getId());
     }
 
     @Test
     void findByField() {
-        Optional<List<Country>> test = countryRepository.findByField("name","Белиз");
+        Optional<List<Country>> test = countryRepository.findByField("name", "Белиз");
         Assertions.assertNotNull(test);
-        Optional<List<Country>> test2 = countryRepository.findByField("name","some string name");
+        Optional<List<Country>> test2 = countryRepository.findByField("name", "some string name");
         Assertions.assertTrue(test2.get().isEmpty());
-        Optional<List<Country>> test3 = countryRepository.findByField("1name1",99999);
+        Optional<List<Country>> test3 = countryRepository.findByField("1name1", 99999);
         Assertions.assertTrue(test3.isEmpty());
     }
 
     @Test
     void create() throws IOException {
-        String newFile = System.getProperty("java.io.tmpdir") + "country.out.csv";
-        Files.copy(Paths.get(SRC_MAIN_RESOURCES_COUNTRY_CSV),Paths.get(newFile));
-        CountryRepository updateRepo = new CountryRepository(newFile);
         Country test = new Country();
         test.setName("Unknown");
         test.setId(999999);
@@ -59,29 +65,20 @@ class CountryRepositoryTest {
         updateRepo.update(test);
         Optional<Country> testUpd = updateRepo.findById(12349999);
         Assertions.assertNotNull(testUpd);
-        Files.delete(Paths.get(newFile));
     }
 
     @Test
     void update() throws IOException {
-        String newFile = System.getProperty("java.io.tmpdir") + "country1.out.csv";
-        Files.copy(Paths.get(SRC_MAIN_RESOURCES_COUNTRY_CSV),Paths.get(newFile));
-        CountryRepository updateRepo = new CountryRepository(newFile);
         Country test = updateRepo.findById(1258).get();
         String testName = "+++NaN+++";
         test.setName(testName);
         updateRepo.update(test);
-        Assertions.assertEquals(testName,updateRepo.findById(1258).get().getName());
-        Files.delete(Paths.get(newFile));
+        Assertions.assertEquals(testName, updateRepo.findById(1258).get().getName());
     }
 
     @Test
     void delete() throws IOException {
-        String newFile = System.getProperty("java.io.tmpdir") + "country2.out.csv";
-        Files.copy(Paths.get(SRC_MAIN_RESOURCES_COUNTRY_CSV),Paths.get(newFile));
-        CountryRepository updateRepo = new CountryRepository(newFile);
         updateRepo.delete(1258);
         Assertions.assertTrue(updateRepo.findById(1258).isEmpty());
-        Files.delete(Paths.get(newFile));
     }
 }
