@@ -1,5 +1,7 @@
 package ua.ithillel.dnepr.common.repository;
 
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -8,5 +10,5 @@ public interface ImmutableRepository<EntityType extends BaseEntity<IdType>, IdTy
 
     Optional<EntityType> findById(IdType id);
 
-    Optional<EntityType> findByField(String fieldName, Object value);
+    Optional<List<EntityType>> findByField(String fieldName, Object value);
 }
