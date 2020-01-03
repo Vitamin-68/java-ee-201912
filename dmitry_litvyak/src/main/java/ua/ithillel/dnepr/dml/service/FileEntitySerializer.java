@@ -12,6 +12,9 @@ public class FileEntitySerializer<EntityType extends Serializable> implements En
             path = path;
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(
                     new FileOutputStream(path));
+            objectOutputStream.writeObject(entity);
+            objectOutputStream.flush();
+            objectOutputStream.close();
         } catch (Exception e) {
             log.error("Serialization:", e);
         }
@@ -24,6 +27,7 @@ public class FileEntitySerializer<EntityType extends Serializable> implements En
         try {
             ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(path));
             result = (EntityType) objectInputStream.readObject();
+            objectInputStream.close();
         } catch (Exception e) {
             log.error("Deserialization:", e);
             throw new IllegalArgumentException("Failed to read entity", e);
