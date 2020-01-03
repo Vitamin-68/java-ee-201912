@@ -14,8 +14,4 @@ public class Country extends AbstractEntity<Integer> implements BaseEntity<Integ
     private Integer city_id;
     private String name;
 
-    @Override
-    public Integer getId() {
-        return Id;
-    }
 }
