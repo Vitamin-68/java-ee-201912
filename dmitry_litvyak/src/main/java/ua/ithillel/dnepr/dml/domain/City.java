@@ -15,8 +15,5 @@ public class City extends AbstractEntity<Integer> implements BaseEntity<Integer>
     private Integer country_id;
     private Integer region_id;
     private String name;
-    @Override
-    public Integer getId() {
-        return Id;
-    }
+
 }
