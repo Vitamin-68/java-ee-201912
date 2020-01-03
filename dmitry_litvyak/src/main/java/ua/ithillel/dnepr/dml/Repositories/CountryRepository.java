@@ -21,6 +21,9 @@ import java.util.Optional;
 @Slf4j
 public class CountryRepository implements CrudRepository<Country, Integer> {
 
+    public static final String COUNTRY_ID = "country_id";
+    public static final String CITY_ID = "city_id";
+    public static final String NAME = "name";
     private final String filePath;
     private final char delimiter;
 
@@ -49,9 +52,9 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
 
                 Country country = new Country();
 
-                country.setCity_id(Integer.parseInt(csvLine.get("city_id")));
-                country.setId(Integer.parseInt(csvLine.get("country_id")));
-                country.setName(csvLine.get("name"));
+                country.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
+                country.setId(Integer.parseInt(csvLine.get(COUNTRY_ID)));
+                country.setName(csvLine.get(NAME));
                 countries.add(country);
             }
             result = Optional.of(countries);
@@ -72,7 +75,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvLine : csvSourse.getRecords()
             ) {
-                if (Integer.parseInt(csvLine.get("country_id")) == id) {
+                if (Integer.parseInt(csvLine.get(COUNTRY_ID)) == id) {
                     result = Optional.of(getCountry(csvLine));
                 }
             }
@@ -84,9 +87,9 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
 
     private Country getCountry(CSVRecord csvLine) {
         Country country = new Country();
-        country.setCity_id(Integer.parseInt(csvLine.get("city_id")));
-        country.setId(Integer.parseInt(csvLine.get("country_id")));
-        country.setName(csvLine.get("name"));
+        country.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
+        country.setId(Integer.parseInt(csvLine.get(COUNTRY_ID)));
+        country.setName(csvLine.get(NAME));
         return country;
     }
 
@@ -122,7 +125,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
         Optional<Country> test = findById(entity.getId());
         if (!test.isEmpty()) return test.get();
         try {
-            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("country_id", "city_id", "name").withDelimiter(delimiter));
+            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
             csvPrinter.printRecord(entity.getId(), entity.getCity_id(), entity.getName());
             csvPrinter.flush();
             csvPrinter.close();
@@ -141,7 +144,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                 currentCountry.setCity_id(entity.getCity_id());
                 currentCountry.setName(entity.getName());
                 try {
-                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("country_id", "city_id", "name").withDelimiter(delimiter));
+                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
                     for (Country locCountry : allRecords.get()
                     ) {
                         csvPrinter.printRecord(locCountry.getId(), locCountry.getCity_id(), locCountry.getName());
@@ -165,7 +168,7 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
             if (currentRegion.getId().equals(id)) {
                 allRecords.get().remove(currentRegion);
                 try {
-                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("country_id", "city_id", "name").withDelimiter(delimiter));
+                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
                     for (Country _region : allRecords.get()
                     ) {
                         csvPrinter.printRecord(_region.getId(), _region.getCity_id(), _region.getName());

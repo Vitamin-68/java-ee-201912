@@ -21,6 +21,10 @@ import java.util.Optional;
 @Slf4j
 public class RegionRepository implements CrudRepository<Region, Integer> {
 
+    public static final String REGION_ID = "region_id";
+    public static final String COUNTRY_ID = "country_id";
+    public static final String CITY_ID = "city_id";
+    public static final String NAME = "name";
     private final String filePath;
     private final char delimiter;
 
@@ -46,10 +50,10 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
             for (CSVRecord csvLine : csvSourse.getRecords()
             ) {
                 Region region = new Region();
-                region.setCity_id(Integer.parseInt(csvLine.get("city_id")));
-                region.setId(Integer.parseInt(csvLine.get("region_id")));
-                region.setCountry_id(Integer.parseInt(csvLine.get("country_id")));
-                region.setName(csvLine.get("name"));
+                region.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
+                region.setId(Integer.parseInt(csvLine.get(REGION_ID)));
+                region.setCountry_id(Integer.parseInt(csvLine.get(COUNTRY_ID)));
+                region.setName(csvLine.get(NAME));
                 regions.add(region);
             }
             result = Optional.of(regions);
@@ -70,7 +74,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvLine : csvSourse.getRecords()
             ) {
-                if (Integer.parseInt(csvLine.get("region_id")) == id) {
+                if (Integer.parseInt(csvLine.get(REGION_ID)) == id) {
                     result = Optional.of(getRegion(csvLine));
                 }
             }
@@ -110,10 +114,10 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
     private Region getRegion(CSVRecord csvLine) {
         Region region = new Region();
 
-        region.setCity_id(Integer.parseInt(csvLine.get("city_id")));
-        region.setId(Integer.parseInt(csvLine.get("region_id")));
-        region.setCountry_id(Integer.parseInt(csvLine.get("country_id")));
-        region.setName(csvLine.get("name"));
+        region.setCity_id(Integer.parseInt(csvLine.get(CITY_ID)));
+        region.setId(Integer.parseInt(csvLine.get(REGION_ID)));
+        region.setCountry_id(Integer.parseInt(csvLine.get(COUNTRY_ID)));
+        region.setName(csvLine.get(NAME));
         return region;
 
     }
@@ -123,7 +127,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
         Optional<Region> test = findById(entity.getId());
         if (!test.isEmpty()) return test.get();
         try {
-            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("region_id", "country_id", "city_id", "name").withDelimiter(delimiter));
+            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
             csvPrinter.printRecord(entity.getId(), entity.getCountry_id(), entity.getCity_id(), entity.getName());
             csvPrinter.flush();
             csvPrinter.close();
@@ -143,7 +147,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                 currentRegion.setCountry_id(entity.getCountry_id());
                 currentRegion.setName(entity.getName());
                 try {
-                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("region_id", "country_id", "city_id", "name").withDelimiter(delimiter));
+                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
                     for (Region locRegion : allRecords.get()
                     ) {
                         csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getCity_id(), locRegion.getName());
@@ -167,7 +171,7 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
             if (currentRegion.getId().equals(id)) {
                 allRecords.get().remove(currentRegion);
                 try {
-                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader("region_id", "country_id", "city_id", "name").withDelimiter(delimiter));
+                    CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
                     for (Region _region : allRecords.get()
                     ) {
                         csvPrinter.printRecord(_region.getId(), _region.getCountry_id(), _region.getCity_id(), _region.getName());
