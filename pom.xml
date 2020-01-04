@@ -26,6 +26,7 @@
         <module>common</module>
         <module>roman-gizatulin</module>
         <module>alex-tsiba</module>
+        <module>dmitry_litvyak</module>
     </modules>
 
     <dependencyManagement>
@@ -154,6 +155,12 @@
                 </exclusions>
             </dependency>
             <!-- logger -->
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.7</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
