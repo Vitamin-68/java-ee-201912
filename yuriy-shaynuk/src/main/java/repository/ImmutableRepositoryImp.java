@@ -6,7 +6,6 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import repository.entity.CsvEntity;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
-import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,16 +16,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class ImmutableRepositoryImp<EntityType extends BaseEntity<IdType>, IdType>
+public class ImmutableRepositoryImp
         extends BaseFileRepository
-        implements ImmutableRepository<EntityType, IdType> {
+        implements ImmutableRepository<CsvEntity, Integer> {
 
     public ImmutableRepositoryImp(String repoRootPath) {
         super(repoRootPath);
     }
 
     @Override
-    public Optional<List<EntityType>> findAll() {
+    public Optional<List<CsvEntity>> findAll() {
         Optional<List<CsvEntity>> result = Optional.empty();
 
         final List<CsvEntity> entities = new ArrayList<>();
@@ -50,12 +49,12 @@ public class ImmutableRepositoryImp<EntityType extends BaseEntity<IdType>, IdTyp
     }
 
     @Override
-    public Optional<EntityType> findById(IdType id) {
+    public Optional<CsvEntity> findById(Integer id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<List<EntityType>> findByField(String fieldName, Object value) {
+    public Optional<List<CsvEntity>> findByField(String fieldName, Object value) {
         return Optional.empty();
     }
 
@@ -67,7 +66,7 @@ public class ImmutableRepositoryImp<EntityType extends BaseEntity<IdType>, IdTyp
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(repoRootPath))));
         } catch (IOException e) {
-            log.error("getParcer exception",e);
+            log.error("getParser exception",e);
         }
         return csvParser;
     }

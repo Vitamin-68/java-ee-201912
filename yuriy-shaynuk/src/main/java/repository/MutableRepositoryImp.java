@@ -1,31 +1,30 @@
 package repository;
 
 import lombok.extern.slf4j.Slf4j;
+import repository.entity.CsvEntity;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
-import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 @Slf4j
-public class MutableRepositoryImp<EntityType extends BaseEntity<IdType>, IdType>
+public class MutableRepositoryImp
         extends BaseFileRepository
-        implements MutableRepository<EntityType, IdType> {
+        implements MutableRepository<CsvEntity, Integer> {
 
     public MutableRepositoryImp(String repoRootPath) {
         super(repoRootPath);
     }
 
     @Override
-    public EntityType create(EntityType entity) {
+    public CsvEntity create(CsvEntity entity) {
         return null;
     }
 
     @Override
-    public EntityType update(EntityType entity) {
+    public CsvEntity update(CsvEntity entity) {
         return null;
     }
 
     @Override
-    public EntityType delete(IdType id) {
+    public CsvEntity delete(Integer id) {
         return null;
     }
 }

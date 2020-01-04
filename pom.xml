@@ -25,6 +25,7 @@
     <modules>
         <module>common</module>
         <module>roman-gizatulin</module>
+        <module>yuriy-shaynuk</module>
     </modules>
 
     <dependencyManagement>
