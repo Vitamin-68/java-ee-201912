@@ -1,5 +1,6 @@
 package ua.ithillel.dnepr.common.test.repository;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
@@ -14,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Slf4j
 class CrudRepositoryIntegrationTest {
     private final List<CrudRepository<TestEntity, Integer>> crudRepositories = new ArrayList<>();
 
@@ -27,6 +29,7 @@ class CrudRepositoryIntegrationTest {
     void shouldCreateOneNewEntity() {
         for (final CrudRepository<TestEntity, Integer> crudRepository : crudRepositories) {
             final String className = crudRepository.getClass().getName();
+            log.info("Test repository: {}", className);
 
             assertTrue(crudRepository.findAll().isPresent(), className);
             assertTrue(crudRepository.findAll().get().isEmpty(), className);
@@ -44,8 +47,10 @@ class CrudRepositoryIntegrationTest {
     @Test
     void shouldCreateManyNewEntities() {
         for (final CrudRepository<TestEntity, Integer> crudRepository : crudRepositories) {
-            final int testEntityCount = 50;
             final String className = crudRepository.getClass().getName();
+            log.info("Test repository: {}", className);
+
+            final int testEntityCount = 50;
 
             assertTrue(crudRepository.findAll().isPresent(), className);
             assertTrue(crudRepository.findAll().get().isEmpty(), className);
