@@ -157,8 +157,8 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                 allRecords.get().remove(currentRegion);
                 try {
                     CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT.withHeader(COUNTRY_ID, CITY_ID, NAME).withDelimiter(delimiter));
-                    for (Country _region : allRecords.get()) {
-                        csvPrinter.printRecord(_region.getId(), _region.getCity_id(), _region.getName());
+                    for (Country localCountry : allRecords.get()) {
+                        csvPrinter.printRecord(localCountry.getId(), localCountry.getCity_id(), localCountry.getName());
                     }
                     csvPrinter.flush();
                     csvPrinter.close();

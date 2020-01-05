@@ -52,11 +52,15 @@ class IndexedCrudRepositoryImplTest {
     @Disabled
     @Test
     void findAll() {
+        Assertions.assertNotNull(((ArrayList)indexedCrudRepository.findAll().get()).size()>0);
     }
 
     @Disabled
     @Test
     void findById() {
+        AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
+        test.setId(4317);
+        Assertions.assertNotNull(indexedCrudRepository.findById(test).get());
     }
 
     @Disabled

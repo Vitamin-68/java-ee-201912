@@ -6,19 +6,14 @@ import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 import ua.ithillel.dnepr.dml.service.FileEntitySerializer;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType> implements IndexedCrudRepository {
@@ -31,17 +26,6 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         rootDir = System.getProperty("java.io.tmpdir") + "crudRoot/";
         indexedField = new HashMap<>();
         FileSystemSetup();
-    }
-
-    private void FileSystemSetup() {
-        fileEntitySerializer = new FileEntitySerializer();
-        if (!Files.exists(Paths.get(rootDir))) {
-            try {
-                Files.createDirectory(Paths.get(rootDir));
-            } catch (Exception e) {
-                log.error("Create root dir:", e);
-            }
-        }
     }
 
     public IndexedCrudRepositoryImpl(Map<String, Integer> idx) {
@@ -62,21 +46,59 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         FileSystemSetup();
     }
 
+    private void FileSystemSetup() {
+        fileEntitySerializer = new FileEntitySerializer();
+        if (!Files.exists(Paths.get(rootDir))) {
+            try {
+                Files.createDirectory(Paths.get(rootDir));
+            } catch (Exception e) {
+                log.error("Create root dir:", e);
+            }
+        }
+    }
+
     @Override
     public Optional<List<EntityType>> findAll() {
         Optional<List<EntityType>> result = Optional.empty();
-
+        try {
+            Stream<Path> serializedObjects = Files.find(Paths.get(rootDir), 1, (path, attrs) -> {
+                return !attrs.isDirectory();
+            });
+            List<EntityType> entityList = new ArrayList<EntityType>();
+            serializedObjects.forEach(fileObject->{
+                EntityType enity = (EntityType) fileEntitySerializer.deserialize(fileObject.toAbsolutePath().toString());
+                entityList.add(enity);
+            });
+            result = Optional.of(entityList);
+        }catch (Exception e){
+            log.error("No files found",e);
+        }
         return result;
     }
 
     @Override
     public Optional findById(Object id) {
-        return Optional.empty();
+        Optional<EntityType> result = Optional.empty();
+        AbstractEntity<EntityType> tmpEntity = new AbstractEntity<EntityType>() {};
+        tmpEntity.setId((EntityType) id);
+        String fileName = tmpEntity.getUuid();
+        try {
+            Stream<Path> serializedObjects = Files.find(Paths.get(rootDir), 1, (path, attrs) -> {
+                return path.compareTo(Paths.get(rootDir + fileName)) > 0;
+            });
+            EntityType enity = (EntityType) fileEntitySerializer.deserialize(serializedObjects.findFirst().get().toAbsolutePath().toString());
+            result = Optional.of(enity);
+        }catch (Exception e){
+            log.error("No enity found",e);
+        }
+        return  result;
     }
 
     @Override
     public Optional<List> findByField(String fieldName, Object value) {
-        return Optional.empty();
+        Optional<List> result = Optional.empty();
+
+        return result;
     }
 
     @Override
@@ -95,7 +117,7 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         };
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
-        if (Files.exists(Paths.get(rootDir + fileName))) {
+        if (!Files.exists(Paths.get(rootDir + fileName))) {
             serializeEntity(entity, fileName);
         }
         return entity;
@@ -112,8 +134,8 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
                 String idxFileValue = getter.invoke(entity).toString();
                 tmpEntity.setId((IdType) idxFileValue);
                 String idxUuid = tmpEntity.getUuid();
-                String idxPartPath = idxUuid.substring(0, 2) + '/' + idxUuid.substring(2, 4) + '/' + idxUuid;
-                saveIndex(rootDir + indexName + '/' + idxPartPath, entity, indexName, fileName);
+                String idxPartPath = idxUuid.substring(0, 2) + File.separator + idxUuid.substring(2, 4) + File.separator + idxUuid;
+                saveIndex(rootDir + indexName + File.separator + idxPartPath, entity, indexName, fileName);
             } catch (IOException e) {
                 log.error("Index create:", e);
             } catch (NoSuchMethodException e) {
@@ -159,6 +181,9 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity delete(Object id) {
+        //find file name
+
+        //find all index files & delete records
         return null;
     }
 }
