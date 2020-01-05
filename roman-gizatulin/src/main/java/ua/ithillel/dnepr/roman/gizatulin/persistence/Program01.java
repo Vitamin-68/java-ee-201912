@@ -14,9 +14,9 @@ public class Program01 {
         CriteriaQuery<Integer, City> cityCriteriaQuery = criteriaBuilder.createQuery(City.class);
 
         Root<Integer, City> cityRoot = cityCriteriaQuery.from(City.class);
-        cityCriteriaQuery.select(cityRoot);
+//        cityCriteriaQuery.select(cityRoot);
 
-        CriteriaQuery<StudentEntity> select1 = ((CriteriaQuery<StudentEntity>) cq1).select(stud1);
+//        CriteriaQuery<StudentEntity> select1 = ((CriteriaQuery<StudentEntity>) cq1).select(stud1);
         //cityAbstractQuery
         //.where(cb.greaterThan(stud1.get("s_age"), 22));
     }
