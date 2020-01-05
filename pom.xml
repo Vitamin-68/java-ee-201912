@@ -25,6 +25,8 @@
     <modules>
         <module>common</module>
         <module>roman-gizatulin</module>
+        <module>dmitry_litvyak</module>
+        <module>common-integration-test</module>
         <module>yuriy-shaynuk</module>
     </modules>
 

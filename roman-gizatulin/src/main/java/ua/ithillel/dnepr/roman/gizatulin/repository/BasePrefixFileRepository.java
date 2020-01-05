@@ -56,7 +56,9 @@ public abstract class BasePrefixFileRepository<EntityType extends AbstractEntity
             }
         };
         try {
-            Files.walkFileTree(Path.of(repoRootPath, OBJECTS_SUB_PATH), entityVisitor);
+            if (Files.exists(Path.of(repoRootPath, OBJECTS_SUB_PATH))) {
+                Files.walkFileTree(Path.of(repoRootPath, OBJECTS_SUB_PATH), entityVisitor);
+            }
         } catch (IOException e) {
             log.error("Failed to walk entities", e);
         }
