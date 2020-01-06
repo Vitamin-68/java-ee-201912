@@ -34,9 +34,9 @@ public class IndexedCrudFileRepository<EntityType extends AbstractEntity<IdType>
     private final Set<IdType> ids = Collections.synchronizedSet(new HashSet<>());
     private final Set<String> indexes = Collections.synchronizedSet(new HashSet<>());
 
-    public IndexedCrudFileRepository(EntitySerializer<EntityType> entitySerializer1, String repoRootPath, EntitySerializer<EntityType> entitySerializer) {
+    public IndexedCrudFileRepository(String repoRootPath, EntitySerializer<EntityType> entitySerializer) {
         super(repoRootPath);
-        this.entitySerializer = entitySerializer1;
+        this.entitySerializer = entitySerializer;
         immutableRepository = new ImmutableRepositoryImp<>(repoRootPath, entitySerializer);
         mutableRepository = new MutableRepositoryImp<>(repoRootPath, entitySerializer);
     }
