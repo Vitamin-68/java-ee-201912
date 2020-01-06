@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.roman.gizatulin.repository.entity;
+package ua.ithillel.dnepr.yevhen.lepet.entity;
 
 import lombok.Getter;
 import lombok.Setter;

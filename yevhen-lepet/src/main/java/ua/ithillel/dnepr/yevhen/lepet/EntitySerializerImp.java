@@ -1,13 +1,8 @@
-package ua.ithillel.dnepr.roman.gizatulin.repository;
+package ua.ithillel.dnepr.yevhen.lepet;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 
 @Slf4j
 public class EntitySerializerImp<EntityType extends Serializable> implements EntitySerializer<EntityType> {

@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.roman.gizatulin.repository;
+package ua.ithillel.dnepr.yevhen.lepet;
 
 import java.io.Serializable;
 

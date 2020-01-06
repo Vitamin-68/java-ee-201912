@@ -27,6 +27,7 @@
         <module>roman-gizatulin</module>
         <module>dmitry_litvyak</module>
         <module>common-integration-test</module>
+        <module>yevhen-lepet</module>
     </modules>
 
     <dependencyManagement>
