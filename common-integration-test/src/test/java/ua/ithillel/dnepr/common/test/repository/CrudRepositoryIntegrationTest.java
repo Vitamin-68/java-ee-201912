@@ -1,70 +1,103 @@
 package ua.ithillel.dnepr.common.test.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.ithillel.dnepr.dml.Repositories.IndexedCrudRepositoryImpl;
+import ua.ithillel.dnepr.roman.gizatulin.repository.EntitySerializer;
+import ua.ithillel.dnepr.roman.gizatulin.repository.EntitySerializerImp;
+import ua.ithillel.dnepr.roman.gizatulin.repository.IndexedCrudFileRepository;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
 class CrudRepositoryIntegrationTest {
-    private final List<CrudRepository<TestEntity, Integer>> crudRepositories = new ArrayList<>();
-
-    @BeforeEach
-    void setupTest() throws Exception {
-        crudRepositories.clear();
-        crudRepositories.addAll(RomanGizatulinTestRepositoriesBuilder.buildRepositories());
+    @Test
+    void romanGizatulinCreateOneNewEntity() throws IOException {
+        String repoRootPath = Files.createTempDirectory("romanGizatulin").toString();
+        EntitySerializer<TestEntity> entitySerializer = new EntitySerializerImp<>();
+        IndexedCrudFileRepository<TestEntity, Integer> crudFileRepository = new IndexedCrudFileRepository<>(repoRootPath, entitySerializer);
+        testCreateOneNewEntity(crudFileRepository);
     }
 
     @Test
-    void shouldCreateOneNewEntity() {
-        for (final CrudRepository<TestEntity, Integer> crudRepository : crudRepositories) {
-            final String className = crudRepository.getClass().getName();
-            log.info("Test repository: {}", className);
+    void romanGizatulinCreateManyNewEntities() throws IOException {
+        String repoRootPath = Files.createTempDirectory("romanGizatulin").toString();
+        EntitySerializer<TestEntity> entitySerializer = new EntitySerializerImp<>();
+        IndexedCrudFileRepository<TestEntity, Integer> crudFileRepository = new IndexedCrudFileRepository<>(repoRootPath, entitySerializer);
+        testCreateManyNewEntities(crudFileRepository);
+    }
 
-            assertTrue(crudRepository.findAll().isPresent(), className);
-            assertTrue(crudRepository.findAll().get().isEmpty(), className);
+    @Test
+    void dmitryLitvyakCreateManyNewEntities() throws IOException {
+        testCreateManyNewEntities(new IndexedCrudRepositoryImpl<TestEntity, Integer>());
+    }
 
-            TestEntity testEntity = createEntities(1).get(0);
+    @Test
+    void dmitryLitvyakCreateOneNewEntity() throws IOException {
+        testCreateOneNewEntity(new IndexedCrudRepositoryImpl<TestEntity, Integer>());
+    }
+
+    private static void testCreateOneNewEntity(CrudRepository<TestEntity, Integer> crudRepository) {
+        final String className = crudRepository.getClass().getName();
+        log.info("Test repository: {}", className);
+
+        assertFalse(crudRepository.findAll().isPresent(), className);
+
+        TestEntity testEntity = createEntities(1).get(0);
+        TestEntity createdEntity = crudRepository.create(testEntity);
+
+        assertSame(testEntity, createdEntity, className);
+        checkEntities(testEntity, createdEntity, className);
+
+        assertEquals(1, crudRepository.findAll().get().size(), className);
+        Optional<TestEntity> entityOptional = crudRepository.findById(testEntity.getId());
+        assertTrue(entityOptional.isPresent());
+        checkEntities(testEntity, entityOptional.get(), className);
+    }
+
+    private static void testCreateManyNewEntities(CrudRepository<TestEntity, Integer> crudRepository) {
+        final String className = crudRepository.getClass().getName();
+        log.info("Test repository: {}", className);
+
+        final int testEntityCount = 50;
+
+        assertFalse(crudRepository.findAll().isPresent(), className);
+
+        final Map<Integer, TestEntity> testEntities = createEntities(testEntityCount)
+                .stream()
+                .collect(Collectors.toMap(TestEntity::getId, Function.identity()));
+        testEntities.forEach((integer, testEntity) -> {
             TestEntity createdEntity = crudRepository.create(testEntity);
-
-            assertNotSame(testEntity, createdEntity, className);
+            assertSame(testEntity, createdEntity, className);
             checkEntities(testEntity, createdEntity, className);
-
-            assertEquals(1, crudRepository.findAll().get().size(), className);
-        }
-    }
-
-    @Test
-    void shouldCreateManyNewEntities() {
-        for (final CrudRepository<TestEntity, Integer> crudRepository : crudRepositories) {
-            final String className = crudRepository.getClass().getName();
-            log.info("Test repository: {}", className);
-
-            final int testEntityCount = 50;
-
-            assertTrue(crudRepository.findAll().isPresent(), className);
-            assertTrue(crudRepository.findAll().get().isEmpty(), className);
-
-            final Map<Integer, TestEntity> testEntities = createEntities(testEntityCount)
-                    .stream()
-                    .collect(Collectors.toMap(TestEntity::getId, Function.identity()));
-            testEntities.forEach((integer, testEntity) -> {
-                TestEntity createdEntity = crudRepository.create(testEntity);
-                assertNotSame(testEntity, createdEntity, className);
-                checkEntities(testEntity, createdEntity, className);
-            });
-            assertEquals(testEntityCount, crudRepository.findAll().get().size(), className);
-        }
+        });
+        Optional<List<TestEntity>> optionalEntityList = crudRepository.findAll();
+        assertTrue(optionalEntityList.isPresent());
+        assertEquals(testEntityCount, optionalEntityList.get().size(), className);
+        optionalEntityList.get().forEach(testEntity -> {
+            TestEntity newEntity = testEntities.get(testEntity.getId());
+            checkEntities(testEntity, newEntity, className);
+        });
+        testEntities.forEach((entityId, testEntity) -> {
+            Optional<TestEntity> optionalCreatedEntity = crudRepository.findById(entityId);
+            assertTrue(optionalCreatedEntity.isPresent());
+            assertNotSame(testEntity, optionalCreatedEntity.get(), className);
+            checkEntities(testEntity, optionalCreatedEntity.get(), className);
+        });
     }
 
     private static List<TestEntity> createEntities(int count) {
