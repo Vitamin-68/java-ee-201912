@@ -8,13 +8,12 @@ import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
 
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class CountryCrudRepo implements CrudRepository<Country, Integer> {
@@ -79,7 +78,29 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
 
     @Override
     public Optional<List<Country>> findByField(String fieldName, Object value) {
-        return Optional.empty();
+        Optional<List<Country>> result = Optional.empty();
+        try {
+            CSVParser csvParser = CSVFormat.DEFAULT
+                    .withFirstRecordAsHeader()
+                    .withDelimiter(delimiter)
+                    .parse(new FileReader(filePath));
+            Map<String, Integer> header = csvParser.getHeaderMap();
+            List<Country> searchCountry = new ArrayList<>();
+            if (header.get(fieldName) != null) {
+                if (Country.class.getDeclaredField(fieldName) != null) {
+                    for (CSVRecord csvRecord : csvParser.getRecords()) {
+                        if (Objects.equals(csvRecord.get(fieldName), value.toString())) {
+                            searchCountry.add(getCountry(csvRecord));
+                        }
+                    }
+                    result = Optional.of(searchCountry);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Exception " + e);
+
+        }
+        return result;
     }
 
     @Override
