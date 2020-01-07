@@ -116,8 +116,8 @@ public class CityRepository implements CrudRepository<City, Integer> {
                     .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            for (City locCity : findAll().get()) {
-                csvPrinter.printRecord(locCity.getId(), locCity.getCountry_id(), locCity.getRegion_id(), locCity.getName());
+            for (City locRegion : findAll().get()) {
+                csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getRegion_id(), locRegion.getName());
             }
             csvPrinter.printRecord(entity.getId(), entity.getCountry_id(), entity.getRegion_id(), entity.getName());
             csvPrinter.flush();

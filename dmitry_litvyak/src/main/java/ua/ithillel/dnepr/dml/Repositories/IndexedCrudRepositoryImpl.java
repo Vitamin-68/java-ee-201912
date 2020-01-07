@@ -69,7 +69,9 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
                 EntityType enity = (EntityType) fileEntitySerializer.deserialize(fileObject.toAbsolutePath().toString());
                 entityList.add(enity);
             });
-            result = Optional.of(entityList);
+            if(!entityList.isEmpty()) {
+                result = Optional.of(entityList);
+            }
         }catch (Exception e){
             log.error("No files found",e);
         }
@@ -79,15 +81,14 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
     @Override
     public Optional findById(Object id) {
         Optional<EntityType> result = Optional.empty();
-        AbstractEntity<EntityType> tmpEntity = new AbstractEntity<EntityType>() {};
-        tmpEntity.setId((EntityType) id);
+        AbstractEntity<IdType> tmpEntity = new AbstractEntity<>() {};
+        tmpEntity.setId((IdType) id);
         String fileName = tmpEntity.getUuid();
         try {
-            Stream<Path> serializedObjects = Files.find(Paths.get(rootDir), 1, (path, attrs) -> {
-                return path.compareTo(Paths.get(rootDir + fileName)) > 0;
-            });
-            EntityType enity = (EntityType) fileEntitySerializer.deserialize(serializedObjects.findFirst().get().toAbsolutePath().toString());
-            result = Optional.of(enity);
+            if(Files.exists(Paths.get(rootDir+fileName))){
+                EntityType entity = (EntityType) fileEntitySerializer.deserialize(rootDir+fileName);
+                result = Optional.of(entity);
+            }
         }catch (Exception e){
             log.error("No enity found",e);
         }
