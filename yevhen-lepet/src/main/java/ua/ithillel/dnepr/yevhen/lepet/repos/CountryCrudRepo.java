@@ -98,14 +98,13 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
             }
         } catch (Exception e) {
             log.error("Exception " + e);
-
         }
         return result;
     }
 
     @Override
     public Country create(Country entity) {
-        return null;
+            return null;
     }
 
     @Override
