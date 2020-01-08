@@ -2,7 +2,7 @@ package ua.ithillel.dnepr.common.test.repository;
 
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
-class TestEntity extends AbstractEntity<Integer> {
+public class TestEntity extends AbstractEntity<Integer> {
     private String filed1;
     private String filed2;
     private int field3;
