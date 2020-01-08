@@ -47,7 +47,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>ua.ithillel.dnepr.roman.gizatulin.example.Program00</mainClass>
+                                    <mainClass>ua.ithillel.dnepr.roman.gizatulin.ua.ithillel.dnepr.yuriy.shaynuk.example.Program00</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

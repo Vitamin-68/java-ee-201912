@@ -21,7 +21,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
-            <version>1.7</version>
         </dependency>
     </dependencies>
 
@@ -39,7 +38,7 @@
                         <configuration>
                             <archive>
                                 <manifest>
-                                    <mainClass>example.Program00</mainClass>
+                                    <mainClass>ua.ithillel.dnepr.yuriy.shaynuk.example.Program00</mainClass>
                                 </manifest>
                             </archive>
                             <descriptorRefs>

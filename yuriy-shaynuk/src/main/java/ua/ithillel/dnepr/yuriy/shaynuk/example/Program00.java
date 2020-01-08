@@ -1,4 +1,4 @@
-package example;
+package ua.ithillel.dnepr.yuriy.shaynuk.example;
 
 import lombok.extern.slf4j.Slf4j;
 

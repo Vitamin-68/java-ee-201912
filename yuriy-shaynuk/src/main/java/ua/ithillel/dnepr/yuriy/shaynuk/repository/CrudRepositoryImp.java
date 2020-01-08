@@ -1,4 +1,4 @@
-package repository;
+package ua.ithillel.dnepr.yuriy.shaynuk.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
@@ -18,7 +18,7 @@ public class CrudRepositoryImp<EntityType extends BaseEntity<IdType>, IdType> im
     public CrudRepositoryImp(String filePath,Class<EntityType> typeArgumentClass) {
         this.filePath = filePath;
         immutableRepository = new ImmutableRepositoryImp(filePath, typeArgumentClass);
-        mutableRepository = new MutableRepositoryImp(filePath);
+        mutableRepository = new MutableRepositoryImp(filePath, typeArgumentClass);
     }
 
     @Override
