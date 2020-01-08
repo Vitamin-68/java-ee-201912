@@ -166,7 +166,9 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public void addIndexes(List<String> fields) {
-
+        for (String newField:fields ) {
+            addIndex(newField);
+        }
     }
 
     @Override
@@ -254,10 +256,8 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
                     String idxPartPath = idxUuid.substring(0, 2) + File.separator + idxUuid.substring(2, 4) + File.separator + idxUuid;
                     String fullPath = rootDir + indexName + File.separator + idxPartPath;
                     if(Files.exists(Paths.get(fullPath))){
-
                         Path tmpFile = Files.createTempFile(Paths.get(rootDir), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss")),null);
                         Files.copy(Paths.get(fullPath),tmpFile, StandardCopyOption.REPLACE_EXISTING);
-
                         BufferedReader txtReader = new BufferedReader(new FileReader(tmpFile.toFile()));
                         FileWriter fileWriter = new FileWriter(fullPath, false);
                         String fileLine;
