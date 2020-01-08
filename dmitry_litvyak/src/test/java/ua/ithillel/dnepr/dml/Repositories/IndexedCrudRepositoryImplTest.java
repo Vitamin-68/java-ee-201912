@@ -63,9 +63,11 @@ class IndexedCrudRepositoryImplTest {
         Assertions.assertNotNull(indexedCrudRepository.findById(test).get());
     }
 
-    @Disabled
     @Test
     void findByField() {
+        AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
+        test.setId(4925);
+        Assertions.assertNotNull(indexedCrudRepository.findByField("Region_id",4925));
     }
 
     @Disabled
@@ -88,8 +90,8 @@ class IndexedCrudRepositoryImplTest {
         indexedCrudRepository.create(testCity);
     }
 
-    @Disabled
     @Test
     void delete() {
+        Assertions.assertNotNull(indexedCrudRepository.delete(4400));
     }
 }

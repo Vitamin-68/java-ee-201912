@@ -9,9 +9,9 @@ import ua.ithillel.dnepr.dml.service.FileEntitySerializer;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -106,7 +106,56 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
     @Override
     public Optional<List> findByField(String fieldName, Object value) {
         Optional<List> result = Optional.empty();
-
+        //1. Id field
+        if(fieldName.equals("Id")){
+            result = findById(value);
+        }
+        //2. indexed field
+        else if(indexedField.containsKey(fieldName)){
+            List<EntityType> tmpList = new ArrayList<>();
+            final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() { };
+            tmpEntity.setId((IdType) value);
+            String idxFileName = rootDir + File.separator
+                    + fieldName + File.separator
+                    + tmpEntity.getUuid().substring(0,2) + File.separator
+                    + tmpEntity.getUuid().substring(2,4) + File.separator
+                    + tmpEntity.getUuid();
+            if(Files.exists(Paths.get(idxFileName))){
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new FileReader(idxFileName));
+                    String line;
+                    while ((line = bufferedReader.readLine())!=null){
+                        EntityType object = (EntityType) fileEntitySerializer.deserialize(rootDir+line);
+                            tmpList.add(object);
+                    }
+                    if(!tmpList.isEmpty()){
+                        result = Optional.of(tmpList);
+                    }
+                }catch(Exception e){
+                    log.error("Index read error",e);
+                }
+            }
+        }
+        else {
+        //3. not indexed field
+            List<EntityType> tmpList = new ArrayList<EntityType>();
+            Optional allItems = findAll();
+            if(allItems.isPresent()){
+                for (EntityType obj:(ArrayList<EntityType>)allItems.get()) {
+                    try {
+                        Method method = obj.getClass().getDeclaredMethod("get"+fieldName);
+                        if(Objects.equals(method.invoke(obj),value)){
+                            tmpList.add(obj);
+                        }
+                    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+                        log.error("Field name exception",e);
+                    }
+                }
+                if(!tmpList.isEmpty()){
+                    result = Optional.of(tmpList);
+                }
+            }
+        }
         return result;
     }
 
@@ -122,8 +171,7 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity create(BaseEntity entity) {
-        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
-        };
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() { };
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
         if (!Files.exists(Paths.get(rootDir + fileName))) {
@@ -133,8 +181,7 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
     }
 
     private void serializeEntity(BaseEntity entity, String fileName) {
-        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
-        };
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {};
         fileEntitySerializer.serialize(entity, rootDir + fileName);
         //create or update data in index file
         indexedField.forEach((indexName, v) -> {
@@ -189,9 +236,52 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity delete(Object id) {
+        BaseEntity result = null;
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
+        };
         //find file name
+        Optional<EntityType> entity = findById(id);
+        if (entity.isPresent()) {
+            //find all index files & delete records
+            tmpEntity.setId((IdType) id);
+            String mainFile = tmpEntity.getUuid();
+            indexedField.forEach((indexName, v) -> {
+                try {
+                    Method getter = entity.get().getClass().getDeclaredMethod("get" + indexName);
+                    String idxFileValue = getter.invoke(entity.get()).toString();
+                    tmpEntity.setId((IdType) idxFileValue);
+                    String idxUuid = tmpEntity.getUuid();
+                    String idxPartPath = idxUuid.substring(0, 2) + File.separator + idxUuid.substring(2, 4) + File.separator + idxUuid;
+                    String fullPath = rootDir + indexName + File.separator + idxPartPath;
+                    if(Files.exists(Paths.get(fullPath))){
 
-        //find all index files & delete records
-        return null;
+                        Path tmpFile = Files.createTempFile(Paths.get(rootDir), LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd_hh_mm_ss")),null);
+                        Files.copy(Paths.get(fullPath),tmpFile, StandardCopyOption.REPLACE_EXISTING);
+
+                        BufferedReader txtReader = new BufferedReader(new FileReader(tmpFile.toFile()));
+                        FileWriter fileWriter = new FileWriter(fullPath, false);
+                        String fileLine;
+                        while ((fileLine = txtReader.readLine()) != null) {
+                            if (!fileLine.contains(mainFile)) {
+                                fileWriter.write(fileLine + '\n');
+                            }
+                        }
+                        txtReader.close();
+                        fileWriter.flush();
+                        fileWriter.close();
+                        Files.deleteIfExists(tmpFile);
+                    }
+                } catch (Exception e) {
+                    log.error("delete index", e);
+                }
+            });
+            result = tmpEntity;
+            try {
+                Files.deleteIfExists(Paths.get(rootDir + mainFile));
+            } catch (IOException e) {
+                log.error("delete main entity",e);
+            }
+        }
+        return result;
     }
 }
