@@ -3,12 +3,14 @@ package ua.ithillel.dnepr.yevhen.lepet.repos;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
 
 
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
@@ -63,7 +65,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                 }
             }
         } catch (IOException e) {
-            log.error("Exception " + e);
+            log.error("Exception CSV " + e);
         }
         return result;
     }
@@ -97,23 +99,65 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                 }
             }
         } catch (Exception e) {
-            log.error("Exception " + e);
+            log.error("Exception CSV " + e);
         }
         return result;
     }
 
     @Override
     public Country create(Country entity) {
-            return null;
+        if (findById(entity.getId()).isEmpty()) {
+            final List<Country> countries = findAll().get();
+            countries.add(entity);
+            try {
+                CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
+                        .withHeader(COUNTRY_ID, NAME)
+                        .withDelimiter(delimiter));
+                for (Country country : countries) {
+                    csvPrinter.printRecord(country.getId(), country.getName());
+                }
+            } catch (IOException e) {
+                log.error("Exception CSV " + e);
+            }
+        }
+        return entity;
     }
 
     @Override
     public Country update(Country entity) {
-        return null;
+        Optional<List<Country>> countries = findAll();
+        for (Country country : countries.get()) {
+            if (country.getId().equals(entity.getId())) {
+                country.setName(entity.getName());
+                addCSVPrinter(countries);
+                return country;
+            }
+        }
+        return new Country();
     }
 
     @Override
     public Country delete(Integer id) {
-        return null;
+        Optional<List<Country>> countries = findAll();
+        for (Country country : countries.get()) {
+            if (country.getId().equals(id)) {
+                countries.get().remove(country);
+                addCSVPrinter(countries);
+            }
+        }
+        return new Country();
+    }
+
+    private void addCSVPrinter(Optional<List<Country>> countries) {
+        try {
+            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
+                    .withHeader(COUNTRY_ID, NAME)
+                    .withDelimiter(delimiter));
+            for (Country removedCountry : countries.get()) {
+                csvPrinter.printRecord(removedCountry.getId(), removedCountry.getName());
+            }
+        } catch (IOException e) {
+            log.error("Exception CSV " + e);
+        }
     }
 }
