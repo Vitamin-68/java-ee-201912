@@ -43,12 +43,14 @@ class CrudRepositoryIntegrationTest {
 
     @Test
     void dmitryLitvyakCreateManyNewEntities() throws IOException {
-        testCreateManyNewEntities(new IndexedCrudRepositoryImpl<TestEntity, Integer>());
+        String repoRootPath = Files.createTempDirectory("dmitryLitvyak").toString();
+        testCreateManyNewEntities(new IndexedCrudRepositoryImpl<TestEntity, Integer>(repoRootPath));
     }
 
     @Test
     void dmitryLitvyakCreateOneNewEntity() throws IOException {
-        testCreateOneNewEntity(new IndexedCrudRepositoryImpl<TestEntity, Integer>());
+        String repoRootPath = Files.createTempDirectory("dmitryLitvyak").toString();
+        testCreateOneNewEntity(new IndexedCrudRepositoryImpl<TestEntity, Integer>(repoRootPath));
     }
 
     private static void testCreateOneNewEntity(CrudRepository<TestEntity, Integer> crudRepository) {

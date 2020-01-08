@@ -19,30 +19,35 @@ import java.util.stream.Stream;
 public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType> implements IndexedCrudRepository {
 
     private final String rootDir;
-    private final Map<String, Integer> indexedField;
+    private Map<String, Integer> indexedField;
     private FileEntitySerializer fileEntitySerializer;
+    private final boolean temporaryRepository;
 
     public IndexedCrudRepositoryImpl() {
         rootDir = System.getProperty("java.io.tmpdir") + "crudRoot/";
         indexedField = new HashMap<>();
+        temporaryRepository = true;
         FileSystemSetup();
     }
 
     public IndexedCrudRepositoryImpl(Map<String, Integer> idx) {
         rootDir = System.getProperty("java.io.tmpdir") + "crudRoot/";
         indexedField = idx;
+        temporaryRepository = true;
         FileSystemSetup();
     }
 
     public IndexedCrudRepositoryImpl(String path) {
-        rootDir = path;
+        rootDir = path + File.separator;
         indexedField = new HashMap<>();
+        temporaryRepository = false;
         FileSystemSetup();
     }
 
     public IndexedCrudRepositoryImpl(String path, Map<String, Integer> idx) {
-        rootDir = path;
+        rootDir = path + File.separator;
         indexedField = idx;
+        temporaryRepository = false;
         FileSystemSetup();
     }
 
@@ -50,7 +55,10 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
         fileEntitySerializer = new FileEntitySerializer();
         if (!Files.exists(Paths.get(rootDir))) {
             try {
-                Files.createDirectory(Paths.get(rootDir));
+                Path dirPath = Files.createDirectory(Paths.get(rootDir));
+                if(temporaryRepository){
+                    dirPath.toFile().deleteOnExit();
+                }
             } catch (Exception e) {
                 log.error("Create root dir:", e);
             }
@@ -172,8 +180,7 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public BaseEntity update(BaseEntity entity) {
-        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {
-        };
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {        };
         tmpEntity.setId((IdType) entity.getId());
         String fileName = tmpEntity.getUuid();
         serializeEntity(entity, fileName);

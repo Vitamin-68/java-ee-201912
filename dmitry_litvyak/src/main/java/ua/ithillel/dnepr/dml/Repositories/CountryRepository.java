@@ -47,7 +47,9 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                 country.setName(csvLine.get(NAME));
                 countries.add(country);
             }
-            result = Optional.of(countries);
+            if(!countries.isEmpty()) {
+                result = Optional.of(countries);
+            }
         } catch (Exception e) {
 
             log.error("CSV reader:", e);

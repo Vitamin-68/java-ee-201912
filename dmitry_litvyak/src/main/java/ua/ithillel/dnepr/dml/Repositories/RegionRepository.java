@@ -49,7 +49,9 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                 region.setName(csvLine.get(NAME));
                 regions.add(region);
             }
-            result = Optional.of(regions);
+            if(!regions.isEmpty()) {
+                result = Optional.of(regions);
+            }
         } catch (Exception e) {
 
             log.error("CSV reader:", e);

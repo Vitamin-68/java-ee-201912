@@ -35,7 +35,7 @@ public class CityRepository implements CrudRepository<City, Integer> {
 
     @Override
     public Optional<List<City>> findAll() {
-        Optional<List<City>> result = Optional.empty();
+        Optional<List<City>> cities = Optional.empty();
 
         final List<City> regions = new ArrayList<>();
         try {
@@ -44,19 +44,21 @@ public class CityRepository implements CrudRepository<City, Integer> {
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvLine : csvSourse.getRecords()) {
-                City region = new City();
-                region.setRegion_id(Integer.parseInt(csvLine.get(REGION_ID)));
-                region.setId(Integer.parseInt(csvLine.get(CITY_ID)));
-                region.setCountry_id(Integer.parseInt(csvLine.get(COUNTRY_ID)));
-                region.setName(csvLine.get(NAME));
-                regions.add(region);
+                City city = new City();
+                city.setRegion_id(Integer.parseInt(csvLine.get(REGION_ID)));
+                city.setId(Integer.parseInt(csvLine.get(CITY_ID)));
+                city.setCountry_id(Integer.parseInt(csvLine.get(COUNTRY_ID)));
+                city.setName(csvLine.get(NAME));
+                regions.add(city);
             }
-            result = Optional.of(regions);
+            if(!regions.isEmpty()){
+                cities = Optional.of(regions);
+            }
         } catch (Exception e) {
 
             log.error("CSV reader:", e);
         }
-        return result;
+        return cities;
     }
 
     @Override
