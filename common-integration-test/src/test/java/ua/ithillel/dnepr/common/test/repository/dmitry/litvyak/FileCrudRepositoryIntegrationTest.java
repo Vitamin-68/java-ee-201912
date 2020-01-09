@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.test.repository.TestEntity;
 import ua.ithillel.dnepr.dml.Repositories.IndexedCrudRepositoryImpl;
 
+import java.io.IOException;
+import java.nio.file.Files;
+
 import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegrationTestHelper.testCreateManyNewEntities;
 import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegrationTestHelper.testCreateOneNewEntity;
 
@@ -14,8 +17,9 @@ class FileCrudRepositoryIntegrationTest {
     private IndexedCrudRepositoryImpl<TestEntity, Integer> crudRepository;
 
     @BeforeEach
-    void setup() {
-        crudRepository = new IndexedCrudRepositoryImpl<>();
+    void setup() throws IOException {
+        String repoRootPath = Files.createTempDirectory("dmitryLitvyak").toString();
+        crudRepository = new IndexedCrudRepositoryImpl<>(repoRootPath);
     }
 
     @Test
