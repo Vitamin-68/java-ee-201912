@@ -37,7 +37,7 @@ public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, I
                 log.error("Failed to read entity", e);
             }
         }
-        return Optional.of(result);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     @Override
@@ -77,6 +77,6 @@ public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, I
                 log.error("Entity doesn't have field: {}", fieldName);
             }
         }
-        return Optional.of(result);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 }

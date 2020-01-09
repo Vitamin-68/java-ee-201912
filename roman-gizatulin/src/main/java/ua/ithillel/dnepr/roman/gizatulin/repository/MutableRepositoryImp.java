@@ -7,6 +7,7 @@ import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 @Slf4j
@@ -63,15 +64,18 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
         Objects.requireNonNull(entity, "Entity is undefined");
         Objects.requireNonNull(entity.getId(), "Entity id is undefined");
 
-        EntityType result;
         final Path entityPath = getPathEntity(entity.getUuid());
         try {
-            Files.write(entityPath, entitySerializer.serialize(entity));
-            result = entitySerializer.deserialize(Files.readAllBytes(entityPath));
+            if (!Files.exists(entityPath)) {
+                Files.createDirectories(entityPath.getParent());
+                Files.createFile(entityPath);
+            }
+            Files.write(entityPath, entitySerializer.serialize(entity), StandardOpenOption.TRUNCATE_EXISTING);
+            //result = entitySerializer.deserialize(Files.readAllBytes(entityPath));
         } catch (IOException e) {
             log.error("Failed to read|write entity", e);
             throw new IllegalArgumentException(e);
         }
-        return result;
+        return entity;
     }
 }
