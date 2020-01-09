@@ -31,7 +31,7 @@ public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>
         try (final Statement stmt = connection.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("select * from " + entityName);
             while (resultSet.next()) {
-                System.out.println(resultSet.getRow() + ". " + resultSet.getString("firstname") + "\t" + resultSet.getString("lastname"));
+                System.out.println(resultSet.getRow() + ". " + resultSet.getString("firstName") + "\t" + resultSet.getString("lastName"));
                 //result.add(...)
             }
         } catch (SQLException e) {

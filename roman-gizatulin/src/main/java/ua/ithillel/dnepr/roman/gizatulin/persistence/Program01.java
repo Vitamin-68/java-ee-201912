@@ -1,6 +1,5 @@
 package ua.ithillel.dnepr.roman.gizatulin.persistence;
 
-import ua.ithillel.dnepr.common.persistence.AbstractQuery;
 import ua.ithillel.dnepr.common.persistence.CriteriaBuilder;
 import ua.ithillel.dnepr.common.persistence.CriteriaQuery;
 import ua.ithillel.dnepr.common.persistence.EntityManager;

@@ -52,21 +52,28 @@ class IndexedCrudRepositoryImplTest {
     @Disabled
     @Test
     void findAll() {
+        Assertions.assertNotNull(((ArrayList)indexedCrudRepository.findAll().get()).size()>0);
     }
 
     @Disabled
     @Test
     void findById() {
+        AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
+        test.setId(4317);
+        Assertions.assertNotNull(indexedCrudRepository.findById(test).get());
     }
 
-    @Disabled
     @Test
     void findByField() {
+        AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
+        test.setId(4925);
+        Assertions.assertNotNull(indexedCrudRepository.findByField("Region_id",4925));
     }
 
-    @Disabled
     @Test
     void addIndex() {
+        indexes.remove("Name");
+        indexedCrudRepository.addIndex("Name");
     }
 
     @Disabled
@@ -84,8 +91,8 @@ class IndexedCrudRepositoryImplTest {
         indexedCrudRepository.create(testCity);
     }
 
-    @Disabled
     @Test
     void delete() {
+        Assertions.assertNotNull(indexedCrudRepository.delete(4400));
     }
 }

@@ -64,7 +64,6 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
         Objects.requireNonNull(entity, "Entity is undefined");
         Objects.requireNonNull(entity.getId(), "Entity id is undefined");
 
-        EntityType result;
         final Path entityPath = getPathEntity(entity.getUuid());
         try {
             if (!Files.exists(entityPath)) {
@@ -72,11 +71,11 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
                 Files.createFile(entityPath);
             }
             Files.write(entityPath, entitySerializer.serialize(entity), StandardOpenOption.TRUNCATE_EXISTING);
-            result = entitySerializer.deserialize(Files.readAllBytes(entityPath));
+            //result = entitySerializer.deserialize(Files.readAllBytes(entityPath));
         } catch (IOException e) {
             log.error("Failed to read|write entity", e);
             throw new IllegalArgumentException(e);
         }
-        return result;
+        return entity;
     }
 }
