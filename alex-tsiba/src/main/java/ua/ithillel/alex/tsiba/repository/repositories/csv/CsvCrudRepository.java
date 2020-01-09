@@ -1,37 +1,20 @@
-package ua.ithillel.alex.tsiba.repository;
+package ua.ithillel.alex.tsiba.repository.repositories.csv;
 
 import lombok.extern.slf4j.Slf4j;
+import ua.ithillel.alex.tsiba.repository.entity.AbstractEntity;
 import ua.ithillel.alex.tsiba.repository.exception.DataStoreException;
 import ua.ithillel.alex.tsiba.repository.stores.DataStore;
-import ua.ithillel.alex.tsiba.repository.entity.AbstractEntity;
 
 import java.lang.reflect.Field;
 import java.util.*;
 
 @Slf4j
-public class CsvCrudRepository<EntityType extends AbstractEntity> implements ua.ithillel.dnepr.common.repository.CrudRepository<EntityType, Integer> {
-    private Map<java.lang.Integer, EntityType> data = new HashMap<>();
-    private DataStore dataStore;
-    private Integer currentID = 1;
+public class CsvCrudRepository<EntityType extends AbstractEntity> extends AbstractRepository<EntityType>
+        implements ua.ithillel.dnepr.common.repository.CrudRepository<EntityType, Integer> {
+
 
     public CsvCrudRepository(DataStore dataStore) {
-        this.dataStore = dataStore;
-
-        EntityType item = null;
-        try {
-            item = (EntityType) dataStore.load();
-            while (item != null) {
-                Integer id = item.getId();
-                if (id > currentID) {
-                    currentID = id;
-                }
-                data.put(id, item);
-
-                item = (EntityType) dataStore.load();
-            }
-        } catch (DataStoreException e) {
-            log.error("Failed load information from DataStore", e);
-        }
+        super(dataStore);
     }
 
     @Override
