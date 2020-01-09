@@ -1,4 +1,4 @@
-package ua.ithillel.alex.tsiba.repository;
+package ua.ithillel.alex.tsiba.repository.repositories.csv;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class CsvCrudRepositoryTest {
@@ -27,7 +28,7 @@ class CsvCrudRepositoryTest {
         city.setRegionId(1);
 
         DataStore dataStore = spy(new CSVDataStore(City.class));
-        doNothing().when(dataStore).save(any(List.class));
+        doNothing().when(dataStore).save(any());
         when(dataStore.load()).thenReturn(null);
 
         crudRepository = new CsvCrudRepository(dataStore);
