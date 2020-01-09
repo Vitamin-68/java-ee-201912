@@ -24,14 +24,14 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
     private final boolean temporaryRepository;
 
     public IndexedCrudRepositoryImpl() {
-        rootDir = System.getProperty("java.io.tmpdir") + "crudRoot/";
+        rootDir = System.getProperty("java.io.tmpdir") + "crudRoot"+File.separator;
         indexedField = new HashMap<>();
         temporaryRepository = true;
         FileSystemSetup();
     }
 
     public IndexedCrudRepositoryImpl(Map<String, Integer> idx) {
-        rootDir = System.getProperty("java.io.tmpdir") + "crudRoot/";
+        rootDir = System.getProperty("java.io.tmpdir") + "crudRoot"+File.separator;
         indexedField = idx;
         temporaryRepository = true;
         FileSystemSetup();
@@ -161,13 +161,36 @@ public class IndexedCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>
 
     @Override
     public void addIndex(String field) {
-
+        List<String> indexArray = new ArrayList<>();
+        indexArray.add(field);
+        addIndexes(indexArray);
     }
 
     @Override
     public void addIndexes(List<String> fields) {
-        for (String newField:fields ) {
-            addIndex(newField);
+        Optional<List<EntityType>> allEntities = findAll();
+        final AbstractEntity<IdType> tmpEntity = new AbstractEntity<IdType>() {};
+        Method getter;
+        for (String newField : fields) {
+            try {
+                if (allEntities.isPresent()) {
+                    for (EntityType entity : allEntities.get()) {
+                        getter = entity.getClass().getDeclaredMethod("get" + newField);
+                        if (!indexedField.containsKey(newField)) {
+                            indexedField.put(newField, indexedField.size() + 1);
+                        }
+                        String idxFileValue = getter.invoke(entity).toString();
+                        tmpEntity.setId((IdType) idxFileValue);
+                        String idxUuid = tmpEntity.getUuid();
+                        String idxPartPath = idxUuid.substring(0, 2) + File.separator + idxUuid.substring(2, 4) + File.separator + idxUuid;
+                        saveIndex(rootDir + newField + File.separator + idxPartPath, entity, newField, entity.getUuid());
+                    }
+                }else{
+                    log.warn("No one entities, can't add new index");
+                }
+            } catch (Exception e) {
+                log.error("No field to index", e);
+            }
         }
     }
 

@@ -70,9 +70,10 @@ class IndexedCrudRepositoryImplTest {
         Assertions.assertNotNull(indexedCrudRepository.findByField("Region_id",4925));
     }
 
-    @Disabled
     @Test
     void addIndex() {
+        indexes.remove("Name");
+        indexedCrudRepository.addIndex("Name");
     }
 
     @Disabled
