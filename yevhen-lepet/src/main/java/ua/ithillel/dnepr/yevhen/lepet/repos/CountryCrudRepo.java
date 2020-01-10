@@ -1,10 +1,7 @@
 package ua.ithillel.dnepr.yevhen.lepet.repos;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
 
@@ -39,9 +36,8 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
+                getCountry(csvRecord);
                 Country country = new Country();
-                country.setId(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
-                country.setName(csvRecord.get(NAME));
                 countries.add(country);
             }
             result = Optional.of(countries);
@@ -75,7 +71,6 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
         country.setName(csvRecord.get(NAME));
         country.setId(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
         return country;
-
     }
 
     @Override
@@ -115,6 +110,8 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                         .withDelimiter(delimiter));
                 for (Country country : countries) {
                     csvPrinter.printRecord(country.getId(), country.getName());
+                    csvPrinter.flush();
+                    csvPrinter.close();
                 }
             } catch (IOException e) {
                 log.error("Exception CSV " + e);
@@ -143,6 +140,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
             if (country.getId().equals(id)) {
                 countries.get().remove(country);
                 addCSVPrinter(countries);
+                return country;
             }
         }
         return new Country();
@@ -153,8 +151,10 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(COUNTRY_ID, NAME)
                     .withDelimiter(delimiter));
-            for (Country removedCountry : countries.get()) {
-                csvPrinter.printRecord(removedCountry.getId(), removedCountry.getName());
+            for (Country someCountry : countries.get()) {
+                csvPrinter.printRecord(someCountry.getId(), someCountry.getName());
+                csvPrinter.flush();
+                csvPrinter.close();
             }
         } catch (IOException e) {
             log.error("Exception CSV " + e);

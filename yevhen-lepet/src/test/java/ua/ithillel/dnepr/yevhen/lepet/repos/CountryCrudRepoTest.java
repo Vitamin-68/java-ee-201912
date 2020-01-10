@@ -55,7 +55,7 @@ public class CountryCrudRepoTest {
 
     @Test
     void delete(){
-        countryCrudRepo.delete(111212121);
-        Assertions.assertTrue(countryCrudRepo.findById(111212121).isEmpty());
+        countryCrudRepo.delete(3159);
+        Assertions.assertTrue(countryCrudRepo.findById(3159).isEmpty());
     }
 }
