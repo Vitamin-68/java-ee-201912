@@ -7,46 +7,56 @@ import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
-        extends BaseFileRepository<EntityType>
+        extends BaseCrudRepository<EntityType>
         implements ImmutableRepository<EntityType, IdType> {
 
     public ImmutableRepositoryImp(String repoRootPath, Class<EntityType> typeArgumentClass) {
         super(repoRootPath, typeArgumentClass);
-       // EntityType myNewT = typeArgumentClass.getDeclaredConstructor().newInstance();
     }
 
     @Override
     public Optional<List<EntityType>> findAll() {
-        Optional<List<EntityType>> result = Optional.empty();
-        final List<EntityType> entities = new ArrayList<>();
+        return getAllRecords();
+    }
+
+    @Override
+    public Optional<EntityType> findById(IdType id) {
+        Optional<EntityType> result = Optional.empty();
         CSVParser parser = getParser();
-        if (parser !=null) {
-            try {
-                for (CSVRecord csvRecord : parser.getRecords()) {
-                    createEntity(csvRecord,typeArgumentClass).ifPresent(entities::add);
+        try {
+            for (CSVRecord csvLine : parser.getRecords()) {
+                if (Integer.parseInt(csvLine.get(getFieldId())) == (Integer)id) {
+                    result = createEntity(csvLine);
                 }
-            } catch (IOException e) {
-                log.error("parser.getRecords exception",e);
             }
-            result = Optional.of(entities);
+        } catch (IOException e) {
+            log.error("parser.findById exception",e);
         }
         return result;
     }
 
     @Override
-    public Optional<EntityType> findById(IdType id) {
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        return Optional.empty();
+        CSVParser parser = getParser();
+        Optional<List<EntityType>> result;
+        Map<String, Integer> header = parser.getHeaderMap();
+        List<EntityType> entities = new ArrayList<>();
+        if (header.get(fieldName) != null) {
+            try {
+                for (CSVRecord csvRecord : parser.getRecords()) {
+                    if (Objects.equals(csvRecord.get(fieldName), value.toString())) {
+                        createEntity(csvRecord).ifPresent(entities::add);
+                    }
+                }
+            } catch (IOException e) {
+                log.error("parser.findByField exception", e);
+            }
+        }
+        result = Optional.of(entities);
+        return result;
     }
-
 }

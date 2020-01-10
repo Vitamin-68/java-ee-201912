@@ -11,12 +11,10 @@ import java.util.Optional;
 
 @Slf4j
 public class CrudRepositoryImp<EntityType extends BaseEntity<IdType>, IdType> implements CrudRepository<EntityType, IdType> {
-    private String filePath;
     private final ImmutableRepository<EntityType, IdType> immutableRepository;
     private final MutableRepository<EntityType, IdType> mutableRepository;
 
     public CrudRepositoryImp(String filePath,Class<EntityType> typeArgumentClass) {
-        this.filePath = filePath;
         immutableRepository = new ImmutableRepositoryImp(filePath, typeArgumentClass);
         mutableRepository = new MutableRepositoryImp(filePath, typeArgumentClass);
     }
@@ -38,7 +36,8 @@ public class CrudRepositoryImp<EntityType extends BaseEntity<IdType>, IdType> im
 
     @Override
     public EntityType create(EntityType entity) {
-        return mutableRepository.create(entity);
+        Optional<EntityType> existedEntity = findById(entity.getId());
+        return existedEntity.orElseGet(() -> mutableRepository.create(entity));
     }
 
     @Override

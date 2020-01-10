@@ -6,8 +6,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Country;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Region;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -19,50 +17,68 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
-class CrudRepositoryTest {
-    static File countryFile;
+class CityCrudRepositoryTest {
     static File cityFile;
-    static File regionFile;
-
-    static private CrudRepository<Country, Integer> countryRepository;
-    static private CrudRepository<Region, Integer> regionRepository;
     static private CrudRepository<City, Integer> cityRepository;
 
     @BeforeAll
     static void setUp() {
-        countryFile = createTempFile("country.csv");
-        regionFile = createTempFile("region.csv");
         cityFile = createTempFile("city.csv");
-
-        countryRepository = new CrudRepositoryImp<Country, Integer>(countryFile.getPath(),Country.class);
-        regionRepository = new CrudRepositoryImp<Region, Integer>(regionFile.getPath(),Region.class);
-        cityRepository = new CrudRepositoryImp<City, Integer>(cityFile.getPath(),City.class);
+        if (cityFile != null) {
+            cityRepository = new CrudRepositoryImp<City, Integer>(cityFile.getPath(),City.class);
+        }
     }
 
     @Test
     void findAll() {
         Optional<List<City>> cities = cityRepository.findAll();
-        assertFalse(cities.isPresent());
+        assertFalse(cities.get().isEmpty());
     }
 
     @Test
     void findById() {
+        Optional<City> test = cityRepository.findById(4400);
+        Assertions.assertFalse(test.isEmpty());
     }
 
     @Test
     void findByField() {
+        Optional<List<City>> test = cityRepository.findByField("name", "Апрелевка");
+        Assertions.assertFalse(test.get().isEmpty());
+        Optional<List<City>> test2 = cityRepository.findByField("name", "some string name");
+        Assertions.assertTrue(test2.get().isEmpty());
+        Optional<List<City>> test3 = cityRepository.findByField("1name1", 99999);
+        Assertions.assertTrue(test3.get().isEmpty());
     }
 
     @Test
     void create() {
+        City testCity = new City();
+        testCity.setName("testName");
+        testCity.setCountry_id(111);
+        testCity.setRegion_id(222);
+        testCity.setId(999);
+        cityRepository.create(testCity);
+        Optional<List<City>> test3 = cityRepository.findByField("name", "testName");
+        Assertions.assertFalse(test3.get().isEmpty());
     }
 
     @Test
     void update() {
+        City testCity = new City();
+        testCity.setName("Москва");
+        testCity.setCountry_id(31599);
+        testCity.setRegion_id(4312);
+        testCity.setId(4400);
+
+        City test = cityRepository.update(testCity);
+        Assertions.assertNotNull(test);
     }
 
     @Test
     void delete() {
+        City test = cityRepository.delete(4313);
+        Assertions.assertNotNull(test);
     }
 
     private static File createTempFile(String resourcePath) {
@@ -73,7 +89,7 @@ class CrudRepositoryTest {
             }
 
             File tempFile = File.createTempFile("tmp", resourcePath);
-            tempFile.deleteOnExit();
+            //tempFile.deleteOnExit();
 
             try (FileOutputStream out = new FileOutputStream(tempFile)) {
                 //copy stream
@@ -83,7 +99,7 @@ class CrudRepositoryTest {
                     out.write(buffer, 0, bytesRead);
                 }
             }
-            log.debug(tempFile.getAbsolutePath());
+            log.debug("tmp file path: "+tempFile.getAbsolutePath());
             return tempFile;
         } catch (IOException e) {
             log.error("getResourceAsFile exception",e);
