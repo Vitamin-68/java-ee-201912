@@ -8,9 +8,18 @@ import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>> extends AbstractRepository<EntityType>
@@ -26,7 +35,7 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
     @Override
     public Optional<List<EntityType>> findAll() {
         Optional result = Optional.empty();
-        if(data.size() > 0){
+        if (data.size() > 0) {
             List items = new ArrayList();
 
             for (EntityType item : data.values()) {
@@ -55,19 +64,19 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
             throw new IllegalArgumentException("Field doesn't exist in object");
         }
         List result = new ArrayList();
-        if(indexes.containsKey(fieldName)){
+        if (indexes.containsKey(fieldName)) {
             Map index = indexes.get(fieldName);
             String uuid = UUID.nameUUIDFromBytes(String.valueOf(value).getBytes()).toString();
-            if(index.containsKey(uuid)){
+            if (index.containsKey(uuid)) {
                 List<Integer> itemsIds = (List) index.get(uuid);
-                for (Integer id: itemsIds) {
+                for (Integer id : itemsIds) {
                     EntityType item = data.get(id);
-                    if(item != null){
+                    if (item != null) {
                         result.add(item);
                     }
                 }
             }
-        }else{
+        } else {
             for (EntityType item : data.values()) {
                 try {
                     Field field = item.getClass().getDeclaredField(fieldName);
@@ -90,10 +99,10 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
         if (id != -1 && data.containsKey(id)) {
             throw new IllegalArgumentException("Entity already exists");
         } else {
-            if(id != -1){
+            if (id != -1) {
                 entity.setId(currentID++);
-            }else{
-                if(id > currentID){
+            } else {
+                if (id > currentID) {
                     currentID = id;
                 }
             }
@@ -131,7 +140,7 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
             Field field = getFieldByName(dataStore.getObjClass(), key);
             field.setAccessible(true);
             try {
-                if(oldEntity != null){
+                if (oldEntity != null) {
                     Object oldValue = field.get(oldEntity);
                     removeFromIndex(key, String.valueOf(oldValue), oldEntity.getId());
                 }
@@ -212,7 +221,7 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
             result = new HashMap<String, List<Integer>>();
             Field declaredField = null;
             for (BaseEntity item : data.values()) {
-                if(declaredField == null){
+                if (declaredField == null) {
                     declaredField = getFieldByName(item.getClass(), field);
                 }
                 declaredField.setAccessible(true);
@@ -230,7 +239,7 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
         return result;
     }
 
-    private void addToIndex(String field, String value, Integer id){
+    private void addToIndex(String field, String value, Integer id) {
         if (indexes.containsKey(field)) {
             String uuid = UUID.nameUUIDFromBytes(value.getBytes()).toString();
             List items = (List) indexes.get(field).getOrDefault(uuid, new ArrayList<>());
@@ -239,36 +248,36 @@ public class CsvIndexedCrudRepository<EntityType extends AbstractEntity<Integer>
         }
     }
 
-    private void removeFromIndex(String field, String value, Integer id){
+    private void removeFromIndex(String field, String value, Integer id) {
         if (indexes.containsKey(field)) {
             String uuid = UUID.nameUUIDFromBytes(value.getBytes()).toString();
             List items = (List) indexes.get(field).getOrDefault(uuid, new ArrayList<>());
-            if(items.size() < 2){
+            if (items.size() < 2) {
                 indexes.get(field).remove(uuid);
-            }else{
+            } else {
                 items.remove(id);
                 indexes.get(field).put(uuid, items);
             }
         }
     }
 
-    private Field getFieldByName (Class clazz, String fieldName){
+    private Field getFieldByName(Class clazz, String fieldName) {
         Field result = null;
 
-        for (Field tmpFiled: clazz.getDeclaredFields()) {
+        for (Field tmpFiled : clazz.getDeclaredFields()) {
             Column column = tmpFiled.getAnnotation(Column.class);
-            if(column != null && column.name().equals(fieldName)){
+            if (column != null && column.name().equals(fieldName)) {
                 result = tmpFiled;
             }
         }
-        if(result == null){
+        if (result == null) {
             throw new IllegalArgumentException("Field doesn't exist in object");
         }
 
         return result;
     }
 
-    private EntityType cloneItem(EntityType item){
+    private EntityType cloneItem(EntityType item) {
         EntityType result = null;
 
         ObjectOutputStream objectOutputStream = null;

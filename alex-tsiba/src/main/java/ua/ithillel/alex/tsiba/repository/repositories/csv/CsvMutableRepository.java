@@ -18,10 +18,16 @@ public class CsvMutableRepository<EntityType extends AbstractEntity> extends Abs
     public EntityType create(EntityType entity) {
         EntityType result = null;
         Integer id = entity.getId();
-        if (id != 0) {
-            throw new IllegalArgumentException("Object isn't new");
+        if (id != -1 && data.containsKey(id)) {
+            throw new IllegalArgumentException("Entity already exists");
         } else {
-            entity.setId(currentID++);
+            if (id != -1) {
+                entity.setId(currentID++);
+            } else {
+                if (id > currentID) {
+                    currentID = id;
+                }
+            }
             data.put(entity.getId(), entity);
             try {
                 dataStore.save(data.values());
@@ -38,7 +44,7 @@ public class CsvMutableRepository<EntityType extends AbstractEntity> extends Abs
     public EntityType update(EntityType entity) {
         EntityType result = null;
         Integer id = entity.getId();
-        if (id == 0) {
+        if (id == -1) {
             throw new IllegalArgumentException("Object is new");
         }
         data.put(entity.getId(), entity);

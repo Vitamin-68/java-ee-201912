@@ -6,7 +6,9 @@ import ua.ithillel.alex.tsiba.repository.exception.DataStoreException;
 import ua.ithillel.alex.tsiba.repository.stores.DataStore;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 public class CsvCrudRepository<EntityType extends AbstractEntity> extends AbstractRepository<EntityType>
@@ -61,7 +63,7 @@ public class CsvCrudRepository<EntityType extends AbstractEntity> extends Abstra
     public EntityType create(EntityType entity) {
         EntityType result = null;
         Integer id = entity.getId();
-        if (id != 0) {
+        if (id != -1) {
             throw new IllegalArgumentException("Object isn't new");
         } else {
             entity.setId(currentID++);
@@ -81,7 +83,7 @@ public class CsvCrudRepository<EntityType extends AbstractEntity> extends Abstra
     public EntityType update(EntityType entity) {
         EntityType result = null;
         Integer id = entity.getId();
-        if (id == 0) {
+        if (id == -1) {
             throw new IllegalArgumentException("Object is new");
         }
         data.put(entity.getId(), entity);
