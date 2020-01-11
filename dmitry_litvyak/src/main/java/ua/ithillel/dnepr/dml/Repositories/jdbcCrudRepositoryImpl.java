@@ -1,6 +1,5 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
@@ -46,6 +45,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             if(!entityList.isEmpty()){
                 result = Optional.of(entityList);
             }
+            resultSet.close();
         } catch (SQLException e) {
             log.error("Failed to find all elements", e);
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
@@ -85,6 +85,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             if(resultSet.next()) {
                 result = Optional.of(getEntityFromDBResulSet(resultSet));
             }
+            resultSet.close();
         }catch (Exception e){
             log.error("Failed to find element by Id",e);
         }
@@ -109,7 +110,8 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     public void addIndexes(List<String> fields) {
         StringBuilder query = new StringBuilder();
         for (String field:fields) {
-            query.append(" CREATE INDEX idx_").append(field).append(" ON ")
+            query.append("DROP INDEX IF EXISTS idx_").append(field).append(" ON ").append(clazz.getSimpleName()).append(';')
+                    .append(" CREATE INDEX idx_").append(field).append(" ON ")
                     .append(clazz.getSimpleName())
                     .append('(').append(field).append(')')
                     .append(';');

@@ -89,6 +89,7 @@ class jdbcCrudRepositoryTest {
     void update() {
         tmpCity.setName("Lviv1715");
         assertNotEquals( ((City)testRepository.update(tmpCity)).getName(),"Bandershtadt");
+        testRepository.delete(tmpCity.getId());
     }
 
     @Test
