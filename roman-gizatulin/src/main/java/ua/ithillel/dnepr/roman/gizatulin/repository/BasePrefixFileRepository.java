@@ -18,6 +18,7 @@ public abstract class BasePrefixFileRepository<EntityType extends AbstractEntity
     protected final String repoRootPath;
 
     protected BasePrefixFileRepository(String repoRootPath) {
+
         this.repoRootPath = repoRootPath;
     }
 
