@@ -1,13 +1,18 @@
 package ua.ithillel.alex.tsiba.repository.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 import ua.ithillel.alex.tsiba.repository.annotations.Column;
-import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-public abstract class AbstractEntity implements BaseEntity<Integer> {
+import java.util.UUID;
+
+public abstract class AbstractEntity extends ua.ithillel.dnepr.common.repository.entity.AbstractEntity<Integer> {
     @Getter
-    @Setter
     @Column(name = "id", isId = true, property = Column.ColumnProperty.AUTO_INCREMENT)
-    private Integer id = 0;
+    private Integer id = -1;
+    private String uuid;
+
+    public void setId(Integer id) {
+        this.id = id;
+        uuid = UUID.nameUUIDFromBytes(String.valueOf(this.id).getBytes()).toString();
+    }
 }

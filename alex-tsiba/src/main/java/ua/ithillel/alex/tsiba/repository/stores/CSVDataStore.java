@@ -1,5 +1,6 @@
 package ua.ithillel.alex.tsiba.repository.stores;
 
+import lombok.Getter;
 import ua.ithillel.alex.tsiba.repository.annotations.Column;
 import ua.ithillel.alex.tsiba.repository.annotations.Table;
 import ua.ithillel.alex.tsiba.repository.exception.DataStoreException;
@@ -11,9 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<EntityType> {
+    @Getter
+    private Class objClass;
     private String encoding = "UTF-8";
     private String separator = ";";
-    private Class objClass;
     private File storeFile;
     private List<String> columns = new ArrayList<>();
     private BufferedReader bufferedReader;
@@ -44,8 +46,6 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                 saveObject(bufferedWriter, object);
             }
             bufferedWriter.close();
-        } catch (UnsupportedEncodingException | FileNotFoundException e) {
-            throw new DataStoreException("Data cannot be saved.", e);
         } catch (IOException e) {
             throw new DataStoreException("Data cannot be saved.", e);
         }

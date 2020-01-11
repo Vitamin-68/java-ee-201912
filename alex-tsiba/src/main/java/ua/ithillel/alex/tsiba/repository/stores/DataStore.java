@@ -11,4 +11,6 @@ public interface DataStore<T extends BaseEntity> {
     T load() throws DataStoreException;
 
     boolean fieldExist(String name);
+
+    Class getObjClass();
 }
