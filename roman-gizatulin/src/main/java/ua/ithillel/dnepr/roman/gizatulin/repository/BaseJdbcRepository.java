@@ -11,6 +11,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,23 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
 
         StringBuilder query = new StringBuilder();
         query.append(" CREATE TABLE IF NOT EXISTS ");
-        query.append(this.clazz.getName());
+        query.append(this.clazz.getSimpleName());
         query.append(" ( ");
-        Field[] declaredFields = clazz.getDeclaredFields();
-        for (Field field : declaredFields) {
-            query.append(field.getName()).append(",");
+        final List<Field> declaredFields = new ArrayList<>();
+        Class<?> iterateType = clazz;
+        while (true) {
+            declaredFields.addAll(Arrays.asList(iterateType.getDeclaredFields()));
+            if (iterateType == AbstractEntity.class) {
+                break;
+            } else {
+                iterateType = iterateType.getSuperclass();
+            }
         }
+
+        for (Field field : declaredFields) {
+            query.append(field.getName()).append(" CLOB ").append(",");
+        }
+        query.delete(query.lastIndexOf(","), query.length());
         query.append(" ) ");
         QUERY_CREATE_TABLE = query.toString();
         try (Statement statement = connection.createStatement()) {
@@ -56,7 +68,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
             InstantiationException {
         EntityType result = null;
         try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(String.format(QUERY_SELECT_BY_ID, clazz.getName(), id));
+            ResultSet resultSet = statement.executeQuery(String.format(QUERY_SELECT_BY_ID, getTableName(), id));
             if (resultSet.next()) {
                 result = clazz.getDeclaredConstructor().newInstance();
                 mapField(result, resultSet);
@@ -88,7 +100,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
     protected boolean isEntityExists(EntityType entity) throws SQLException {
         boolean result = false;
         try (Statement statement = connection.createStatement()) {
-            ResultSet resultSet = statement.executeQuery(String.format(QUERY_COUNT_BY_ID, clazz.getName(), entity.getId()));
+            ResultSet resultSet = statement.executeQuery(String.format(QUERY_COUNT_BY_ID, getTableName(), entity.getId()));
             while (resultSet.next()) {
                 int count = resultSet.getInt(1);
                 if (count > 0) {
@@ -97,5 +109,9 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
             }
         }
         return result;
+    }
+
+    protected String getTableName() {
+        return clazz.getSimpleName().toLowerCase();
     }
 }

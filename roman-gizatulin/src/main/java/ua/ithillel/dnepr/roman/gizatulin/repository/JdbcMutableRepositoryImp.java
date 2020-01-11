@@ -58,7 +58,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             throw new IllegalStateException("Failed to get entity by id", e);
         }
         try (Statement statement = connection.createStatement()) {
-            String query = " DELETE FROM " + clazz.getName() + " WHERE id = " + id;
+            String query = " DELETE FROM " + getTableName() + " WHERE id = " + id;
             statement.executeUpdate(query);
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to delete entity", e);
@@ -84,14 +84,14 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         StringBuilder query = new StringBuilder();
         if (isEntityExists) {
             query.append(" UPDATE ");
-            query.append(clazz.getName());
+            query.append(getTableName());
             query.append(" SET ");
             for (Map.Entry<String, Object> objectsEntry : entityKeyValue.entrySet()) {
                 query.append(objectsEntry).append(" = ").append(objectsEntry.getValue()).append(" , ");
             }
             query.append(" WHERE id = ").append(entity.getId());
         } else {
-            query.append(" INSERT INTO ").append(clazz.getName());
+            query.append(" INSERT INTO ").append(getTableName());
             StringBuilder keys = new StringBuilder();
             StringBuilder values = new StringBuilder();
             keys.append(" ( ");

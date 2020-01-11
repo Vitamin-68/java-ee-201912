@@ -23,7 +23,8 @@ public class H2Server implements AutoCloseable {
             embeddedH2Server = Server.createTcpServer(
                     "-tcp",
                     "-tcpAllowOthers",
-                    //"-webAllowOthers",
+                    "-webAllowOthers",
+                    "-ifNotExists",
                     "-tcpPort",
                     String.valueOf(this.port));
         }

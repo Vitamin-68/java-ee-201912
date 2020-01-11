@@ -26,16 +26,14 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
 
     @Override
     public Optional<List<EntityType>> findAll() {
-        Optional<List<EntityType>> result;
+        final List<EntityType> result = new ArrayList<>();
         try (Statement statement = connection.createStatement()) {
-            final List<EntityType> entities = new ArrayList<>();
-            ResultSet resultSet = statement.executeQuery(String.format(QUERY_SELECT_ALL, clazz.getName()));
+            ResultSet resultSet = statement.executeQuery(String.format(QUERY_SELECT_ALL, getTableName()));
             while (resultSet.next()) {
                 EntityType entity = clazz.getDeclaredConstructor().newInstance();
                 mapField(entity, resultSet);
-                entities.add(entity);
+                result.add(entity);
             }
-            result = Optional.of(entities);
         } catch (SQLException |
                 NoSuchMethodException |
                 InstantiationException |
@@ -44,7 +42,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
                 NoSuchFieldException e) {
             throw new IllegalStateException("Failed to create entity", e);
         }
-        return result;
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     @Override
@@ -70,7 +68,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
             final List<EntityType> entities = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(String.format(
                     QUERY_SELECT_BY_FIELD,
-                    clazz.getName(),
+                    getTableName(),
                     fieldName,
                     value));
             while (resultSet.next()) {
