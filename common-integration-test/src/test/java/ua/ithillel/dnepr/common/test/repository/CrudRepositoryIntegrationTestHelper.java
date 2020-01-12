@@ -77,8 +77,8 @@ public class CrudRepositoryIntegrationTestHelper {
     public static void checkEntities(TestEntity first, TestEntity second) {
         assertEquals(first.getId(), second.getId());
         assertEquals(first.getUuid(), second.getUuid());
-        assertEquals(first.getFiled1(), second.getFiled1());
-        assertEquals(first.getFiled2(), second.getFiled2());
+        assertEquals(first.getField1(), second.getField1());
+        assertEquals(first.getField2(), second.getField2());
         assertEquals(first.getField3(), second.getField3());
     }
 }
