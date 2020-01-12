@@ -40,6 +40,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
         for (Field field : declaredFields) {
             if(query.indexOf(field.getName()) == -1) {
+                //TODO: solve field type
                 query.append(field.getName()).append(" CLOB ").append(",");
             }
         }
