@@ -1,22 +1,17 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.*;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
 import ua.ithillel.dnepr.dml.domain.City;
-import ua.ithillel.dnepr.dml.service.LoggerTrigger;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
-
+@Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class jdbcCrudRepositoryTest {
 
@@ -24,12 +19,15 @@ class jdbcCrudRepositoryTest {
     H2Server dbserver;
     private Connection conn;
     private City tmpCity;
-    private LoggerTrigger trigger;
+    //private LoggerTrigger trigger;
+    private int DBPort;
 
     @BeforeAll
     void generalSetup() throws SQLException, ClassNotFoundException {
-        dbserver = new H2Server(NetUtils.getFreePort());
+        DBPort = NetUtils.getFreePort();
+        dbserver = new H2Server(DBPort);
         dbserver.start();
+        log.info("Server started on "+NetUtils.getHostName()+" port:"+DBPort);
         Class.forName("org.h2.Driver");
     }
 
@@ -40,10 +38,10 @@ class jdbcCrudRepositoryTest {
 
     @BeforeEach
     void setUp() throws SQLException{
-        conn = DriverManager.getConnection("jdbc:h2:file:./src/main/resources/h2crudbase","sa","");
-
-        Statement stmt = conn.createStatement();
-        stmt.execute("DROP TRIGGER IF EXISTS CITY_INSERT; CREATE TRIGGER CITY_INSERT AFTER UPDATE ON CITY FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
+        //conn = DriverManager.getConnection("jdbc:h2:file:./src/main/resources/h2crudbase","sa","");
+        conn = DriverManager.getConnection("jdbc:h2:tcp://"+NetUtils.getHostName()+':'+DBPort+"/./src/main/resources/h2crudbase","sa","");
+        //Statement stmt = conn.createStatement();
+        //stmt.execute("DROP TRIGGER IF EXISTS CITY_INSERT; CREATE TRIGGER CITY_INSERT AFTER UPDATE ON CITY FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
 
         testRepository = new jdbcCrudRepositoryImpl(conn, City.class);
         tmpCity = new City();

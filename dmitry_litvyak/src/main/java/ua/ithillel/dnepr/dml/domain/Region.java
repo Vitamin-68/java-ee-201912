@@ -6,7 +6,6 @@ import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-//"region_id";"country_id";"city_id";"name"
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,5 +15,8 @@ public class Region extends AbstractEntity<Integer> implements BaseEntity<Intege
     private Integer country_id;
     private Integer city_id;
     private String name;
+
+    @Override
+    public Integer getId(){return Id;}
 
 }

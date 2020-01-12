@@ -57,8 +57,8 @@ class IndexedCrudRepositoryImplTest {
     @Test
     void findById() {
         AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
-        test.setId(4317);
-        Assertions.assertNotNull(indexedCrudRepository.findById(test).get());
+        test.setId(4400);
+        Assertions.assertNotNull(indexedCrudRepository.findById(test.getId()).get());
     }
 
     @Test

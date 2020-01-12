@@ -4,15 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -23,17 +19,53 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     private final Class<? extends EntityType> clazz;
 
     public jdbcCrudRepositoryImpl(Connection connection, Class<? extends EntityType> clazz) {
+        Objects.requireNonNull(connection, "Connection is undefined");
         this.connection = connection;
         this.clazz = clazz;
+
+        StringBuilder query = new StringBuilder();
+        query.append(" CREATE TABLE IF NOT EXISTS ");
+        query.append(this.clazz.getSimpleName());
+        query.append(" ( ");
+        final List<Field> declaredFields = new ArrayList<>();
+        Class<?> iterateType = clazz;
+        while (true) {
+            declaredFields.addAll(Arrays.asList(iterateType.getDeclaredFields()));
+            if (iterateType == AbstractEntity.class) {
+                break;
+            } else {
+                iterateType = iterateType.getSuperclass();
+            }
+        }
+
+        for (Field field : declaredFields) {
+            if(query.indexOf(field.getName()) == -1) {
+                query.append(field.getName()).append(" CLOB ").append(",");
+            }
+        }
+        query.delete(query.lastIndexOf(","), query.length());
+        query.append(" ) ");
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate(query.toString());
+        } catch (SQLException e) {
+            throw new IllegalStateException("Failed to create table", e);
+        }
+
+        try {
+            PreparedStatement stmt = connection.prepareStatement("DROP TRIGGER IF EXISTS "+clazz.getSimpleName()+"_INSERT; CREATE TRIGGER "+clazz.getSimpleName()+"_INSERT AFTER UPDATE ON "+clazz.getSimpleName()+" FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
+            stmt.execute();
+        } catch (SQLException e) {
+            log.error("No connection",e);
+        }
     }
 
     @Override
     public Optional<List<EntityType>> findAll() {
-        String findAllQuery = "select * from public." + clazz.getSimpleName();
+        String findAllQuery = "select * from " + clazz.getSimpleName();
         return execListQuery(findAllQuery);
     }
 
-    private Optional<List<EntityType>> execListQuery(String queryString){
+    private Optional<List<EntityType>> execListQuery(String queryString) {
         Optional<List<EntityType>> result = Optional.empty();
         final List<EntityType> entityList = new ArrayList<>();
         try (final Statement stmt = connection.createStatement()) {
@@ -42,14 +74,14 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 EntityType entity = getEntityFromDBResulSet(resultSet);
                 entityList.add(entity);
             }
-            if(!entityList.isEmpty()){
+            if (!entityList.isEmpty()) {
                 result = Optional.of(entityList);
             }
             resultSet.close();
         } catch (SQLException e) {
             log.error("Failed to find all elements", e);
         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            log.error("wrong POJO",e);
+            log.error("wrong POJO", e);
         }
         return result;
     }
@@ -57,19 +89,19 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     private EntityType getEntityFromDBResulSet(ResultSet resultSet) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         EntityType entity = clazz.getDeclaredConstructor().newInstance();
         Stream<Method> methodStream = Stream.of(clazz.getDeclaredMethods());
-        methodStream.filter(method->method.getName().startsWith("set")).forEach(method -> {
+        methodStream.filter(method -> method.getName().startsWith("set")).forEach(method -> {
             Object value = null;
             try {
-                value = resultSet.getObject(method.getName().replaceFirst("set",""));
+                value = resultSet.getObject(method.getName().replaceFirst("set", ""));
             } catch (SQLException e) {
-                log.error("SQL error while get field value",e);
+                log.error("SQL error while get field value", e);
             }
             Class<?>[] types = method.getParameterTypes();
-            if(types.length>0){
+            if (types.length > 0) {
                 try {
-                    method.invoke(entity,types[0].cast(value));
+                    method.invoke(entity, types[0].cast(value));
                 } catch (IllegalAccessException | InvocationTargetException e) {
-                   log.error("Unecpected filed",e);
+                    log.error("Unecpected filed", e);
                 }
             }
         });
@@ -78,16 +110,17 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
     @Override
     public Optional<EntityType> findById(IdType id) {
-        Optional<EntityType> result =  Optional.empty();
+        Optional<EntityType> result = Optional.empty();
         String entityName = clazz.getSimpleName();
-        try (final Statement stmt = connection.createStatement()) {
-            ResultSet resultSet = stmt.executeQuery("select * from public." + entityName+" WHERE Id="+id);
-            if(resultSet.next()) {
+        try (final PreparedStatement stmt = connection.prepareStatement("SELECT * FROM "+entityName+" WHERE Id=?")) {
+            stmt.setObject(1, id);
+            ResultSet resultSet = stmt.executeQuery();
+            if (resultSet.next()) {
                 result = Optional.of(getEntityFromDBResulSet(resultSet));
             }
             resultSet.close();
-        }catch (Exception e){
-            log.error("Failed to find element by Id",e);
+        } catch (Exception e) {
+            log.error("Failed to find element by Id", e);
         }
         return result;
     }
@@ -109,17 +142,17 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     @Override
     public void addIndexes(List<String> fields) {
         StringBuilder query = new StringBuilder();
-        for (String field:fields) {
+        for (String field : fields) {
             query.append("DROP INDEX IF EXISTS idx_").append(field).append(" ON ").append(clazz.getSimpleName()).append(';')
                     .append(" CREATE INDEX idx_").append(field).append(" ON ")
                     .append(clazz.getSimpleName())
                     .append('(').append(field).append(')')
                     .append(';');
         }
-        try(Statement stmt = connection.createStatement()){
+        try (Statement stmt = connection.createStatement()) {
             stmt.execute(query.toString());
-        }catch (Exception e){
-            log.error("Add index failure",e);
+        } catch (Exception e) {
+            log.error("Add index failure", e);
         }
     }
 
@@ -153,7 +186,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     @Override
     public EntityType update(EntityType entity) {
         Optional<EntityType> DBentity = findById(entity.getId());
-        if(DBentity.isPresent()){
+        if (DBentity.isPresent()) {
             StringBuilder query = new StringBuilder("UPDATE ");
             query.append(clazz.getSimpleName()).append(" SET ");
             Stream<Method> methodStream = Stream.of(clazz.getDeclaredMethods());
@@ -172,10 +205,10 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             query.deleteCharAt(query.length() - 1).append(" WHERE ID=").append(entity.getId());
             try (final Statement stmt = connection.createStatement()) {
                 stmt.execute(query.toString());
-            }catch (Exception e){
-                log.error("Update failed",e);
+            } catch (Exception e) {
+                log.error("Update failed", e);
             }
-        }else {
+        } else {
             create(entity);
         }
         return entity;
@@ -184,18 +217,18 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     @Override
     public EntityType delete(IdType id) {
         Optional<EntityType> entity = findById(id);
-        if(entity.isPresent()){
+        if (entity.isPresent()) {
             try (final Statement stmt = connection.createStatement()) {
-                stmt.execute("DELETE FROM "+clazz.getSimpleName()+ " WHERE ID="+id);
-            }catch (Exception e){
-                log.error("DELETE failed",e);
+                stmt.execute("DELETE FROM " + clazz.getSimpleName() + " WHERE ID=" + id);
+            } catch (Exception e) {
+                log.error("DELETE failed", e);
             }
         }
-        if(entity.isEmpty()){
+        if (entity.isEmpty()) {
             try {
                 entity = Optional.of(clazz.getDeclaredConstructor().newInstance());
-            }catch (Exception e){
-                log.error("New Entity",e);
+            } catch (Exception e) {
+                log.error("New Entity", e);
             }
         }
         return entity.get();
