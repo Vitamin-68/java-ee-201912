@@ -50,11 +50,9 @@ public class H2TypeUtils {
         public static String toH2Type(Class<?> javaType) {
             String result = null;
             for (H2Types h2Type : H2Types.values()) {
-                for (String h2TypeAlias : h2Type.typeAliases) {
-                    if (h2Type.javaType == javaType) {
-                        result = h2Type.defaultType;
-                        break;
-                    }
+                if (h2Type.javaType == javaType) {
+                    result = h2Type.defaultType;
+                    break;
                 }
             }
             return result;
