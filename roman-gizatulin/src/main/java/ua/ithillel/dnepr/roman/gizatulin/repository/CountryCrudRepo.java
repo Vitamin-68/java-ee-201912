@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Slf4j
 public class CountryCrudRepo implements CrudRepository<Country, Integer> {
-    private final String filePath;
+    private String filePath;
 
     public CountryCrudRepo(String filePath) {
         this.filePath = filePath;
