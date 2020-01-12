@@ -13,11 +13,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>ua.ithillel.dnepr</groupId>
-            <artifactId>java-ee-201912</artifactId>
-        </dependency>
-
-        <dependency>
             <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-csv</artifactId>
