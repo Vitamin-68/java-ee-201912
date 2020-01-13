@@ -30,14 +30,15 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
     private File storeFile;
     private List<String> columns = new ArrayList<>();
     private BufferedReader bufferedReader;
+    private String table;
 
     public CSVDataStore(Class objClass) throws IOException, DataStoreException {
         this.objClass = objClass;
 
         final Table tableAnnotation = (Table) objClass.getDeclaredAnnotation(Table.class);
-        final String table = tableAnnotation.table();
+        table = tableAnnotation.table();
 
-        if (table == null || "".equals(table)) {
+        if ("".equals(table)) {
             throw new IllegalStateException("Object don't has table annotation;");
         }
 
@@ -82,6 +83,9 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                             Integer key = columns.indexOf(columnName);
                             if (fieldValues.length >= key) {
                                 String fieldValue = fieldValues[key];
+                                if(fieldValue.charAt(0) == '\"' && fieldValue.charAt(fieldValue.length()-1) == '\"'){
+                                    fieldValue = fieldValue.substring(1, fieldValue.length()-1);
+                                }
                                 field.setAccessible(true);
                                 switch (type) {
                                     case INTEGER:
@@ -97,7 +101,7 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                     }
                 }
             }
-        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ArrayIndexOutOfBoundsException e) {
             throw new DataStoreException("Data cannot be uploaded.", e);
         }
         return result;
@@ -130,6 +134,12 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
         }
 
         for (String column : columnsString.split(separator)) {
+            if(column.charAt(0) == '\"' && column.charAt(column.length()-1) == '\"'){
+                column = column.substring(1, column.length()-1);
+            }
+            if(column.equals(table+"_id")){
+                column = "id";
+            }
             if (columns.contains(column)) {
                 throw new DataStoreException("Duplicate columns");
             }
