@@ -208,8 +208,8 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
     @Override
     public EntityType update(EntityType entity) {
-        Optional<EntityType> DBentity = findById(entity.getId());
-        if (DBentity.isPresent()) {
+        Optional<EntityType> dbEntity = findById(entity.getId());
+        if (dbEntity.isPresent()) {
             StringBuilder query = new StringBuilder("UPDATE ");
             query.append(clazz.getSimpleName()).append(" SET ");
             final List<Field> declaredFields = getEntityFields();
