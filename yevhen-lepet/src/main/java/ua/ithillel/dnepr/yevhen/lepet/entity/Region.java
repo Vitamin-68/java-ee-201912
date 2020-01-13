@@ -8,6 +8,8 @@ import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 @Setter
 public class Region implements BaseEntity<Integer> {
     private int id;
+    private int country_id;
+    private int city_id;
     private String name;
 
     @Override

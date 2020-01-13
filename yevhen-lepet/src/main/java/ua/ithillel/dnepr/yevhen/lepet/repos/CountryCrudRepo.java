@@ -1,10 +1,12 @@
 package ua.ithillel.dnepr.yevhen.lepet.repos;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
-
 
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -19,6 +21,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     private final String filePath;
     private final char delimiter;
     private final String COUNTRY_ID = "country_id";
+    private final String CITY_ID = "city_id";
     private final String NAME = "name";
 
     public CountryCrudRepo(String filePath) {
@@ -69,6 +72,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     private Country getCountry(CSVRecord csvRecord) {
         Country country = new Country();
         country.setName(csvRecord.get(NAME));
+        country.setCity_id(Integer.parseInt(csvRecord.get(CITY_ID)));
         country.setId(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
         return country;
     }
@@ -106,7 +110,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
             countries.add(entity);
             try {
                 CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
-                        .withHeader(COUNTRY_ID, NAME)
+                        .withHeader(COUNTRY_ID, CITY_ID, NAME)
                         .withDelimiter(delimiter));
                 for (Country country : countries) {
                     csvPrinter.printRecord(country.getId(), country.getName());
@@ -125,8 +129,9 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
         Optional<List<Country>> countries = findAll();
         for (Country country : countries.get()) {
             if (country.getId().equals(entity.getId())) {
+                country.setCity_id(entity.getCity_id());
                 country.setName(entity.getName());
-                addCSVPrinter(countries);
+                addCSVPrinter(Collections.singletonList(country));
                 return country;
             }
         }
@@ -139,19 +144,19 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
         for (Country country : countries.get()) {
             if (country.getId().equals(id)) {
                 countries.get().remove(country);
-                addCSVPrinter(countries);
+                addCSVPrinter(Collections.singletonList(country));
                 return country;
             }
         }
         return new Country();
     }
 
-    private void addCSVPrinter(Optional<List<Country>> countries) {
+    private void addCSVPrinter(List<Country> countries) {
         try {
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
-                    .withHeader(COUNTRY_ID, NAME)
+                    .withHeader(COUNTRY_ID, CITY_ID, NAME)
                     .withDelimiter(delimiter));
-            for (Country someCountry : countries.get()) {
+            for (Country someCountry : countries) {
                 csvPrinter.printRecord(someCountry.getId(), someCountry.getName());
                 csvPrinter.flush();
                 csvPrinter.close();

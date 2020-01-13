@@ -113,7 +113,7 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
             cities.add(entity);
             try {
                 CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
-                        .withHeader(COUNTRY_ID, NAME)
+                        .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
                         .withDelimiter(delimiter));
                 for (City city : cities) {
                     csvPrinter.printRecord(city.getId(),
@@ -138,19 +138,19 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                 city.setCountry_id(entity.getCountry_id());
                 city.setRegion_id(entity.getRegion_id());
                 city.setName(entity.getName());
-                addCSVPrinter(cities);
+                addCSVPrinter((List<City>) city);
                 return city;
             }
         }
         return new City();
     }
 
-    private void addCSVPrinter(Optional<List<City>> cities) {
+    private void addCSVPrinter(List<City> cities) {
         try {
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
                     .withDelimiter(delimiter));
-            for (City someCity : cities.get()) {
+            for (City someCity : cities) {
                 csvPrinter.printRecord(someCity.getId(),
                         someCity.getCountry_id(),
                         someCity.getRegion_id(),
@@ -169,7 +169,7 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
         for (City city : cities.get()) {
             if (city.getId().equals(id)) {
                 cities.get().remove(city);
-                addCSVPrinter(cities);
+                addCSVPrinter((List<City>) city);
                 return city;
             }
         }
