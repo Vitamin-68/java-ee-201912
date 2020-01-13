@@ -1,7 +1,12 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
 import ua.ithillel.dnepr.dml.domain.City;
@@ -15,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class jdbcCrudRepositoryTest {
 
-    private jdbcCrudRepositoryImpl testRepository;
+    private JdbcCrudRepositoryImpl testRepository;
     H2Server dbserver;
     private Connection conn;
     private City tmpCity;
@@ -43,7 +48,7 @@ class jdbcCrudRepositoryTest {
         //Statement stmt = conn.createStatement();
         //stmt.execute("DROP TRIGGER IF EXISTS CITY_INSERT; CREATE TRIGGER CITY_INSERT AFTER UPDATE ON CITY FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
 
-        testRepository = new jdbcCrudRepositoryImpl(conn, City.class);
+        testRepository = new JdbcCrudRepositoryImpl(conn, City.class);
         tmpCity = new City();
         tmpCity.setName("Bandershtadt");
         tmpCity.setRegion_id(1000);

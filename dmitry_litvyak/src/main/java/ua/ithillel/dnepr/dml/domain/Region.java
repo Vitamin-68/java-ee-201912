@@ -4,19 +4,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
+public class Region extends AbstractEntity<Integer> {
 
-    private Integer Id;
+    private Integer id;
     private Integer country_id;
     private Integer city_id;
     private String name;
 
     @Override
-    public Integer getId(){return Id;}
+    public Integer getId(){return id;}
 
 }

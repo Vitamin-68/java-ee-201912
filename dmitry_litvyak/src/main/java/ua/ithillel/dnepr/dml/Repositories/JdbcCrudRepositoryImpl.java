@@ -7,7 +7,6 @@ import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,13 +20,13 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
-public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType>
+public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType>
         implements IndexedCrudRepository<EntityType, IdType> {
 
     private final Connection connection;
     private final Class<? extends EntityType> clazz;
 
-    public jdbcCrudRepositoryImpl(Connection connection, Class<? extends EntityType> clazz) {
+    public JdbcCrudRepositoryImpl(Connection connection, Class<? extends EntityType> clazz) {
         Objects.requireNonNull(connection, "Connection is undefined");
         this.connection = connection;
         this.clazz = clazz;
@@ -60,8 +59,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             throw new IllegalStateException("Failed to create table", e);
         }
 
-        try {
-            PreparedStatement stmt = connection.prepareStatement("DROP TRIGGER IF EXISTS "+clazz.getSimpleName()+"_INSERT; CREATE TRIGGER "+clazz.getSimpleName()+"_INSERT AFTER UPDATE ON "+clazz.getSimpleName()+" FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
+        try (PreparedStatement stmt = connection.prepareStatement("DROP TRIGGER IF EXISTS "+clazz.getSimpleName()+"_INSERT; CREATE TRIGGER "+clazz.getSimpleName()+"_INSERT AFTER UPDATE ON "+clazz.getSimpleName()+" FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ")){
             stmt.execute();
         } catch (SQLException e) {
             log.error("No connection",e);
@@ -97,7 +95,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
     private EntityType getEntityFromDBResulSet(ResultSet resultSet) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         EntityType entity = clazz.getDeclaredConstructor().newInstance();
-        final List<Field> declaredFields = getEntityMethods();
+        final List<Field> declaredFields = getEntityFields();
         Stream<Field> fieldStream = declaredFields.stream();
         fieldStream.forEach(field -> {
             field.setAccessible(true);
@@ -166,7 +164,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         try (final Statement stmt = connection.createStatement()) {
             StringBuilder insertQueryStart = new StringBuilder("INSERT INTO " + clazz.getSimpleName() + " (");
             StringBuilder insertQueryEnd = new StringBuilder(" VALUES ( ");
-            final List<Field> declaredFields = getEntityMethods();
+            final List<Field> declaredFields = getEntityFields();
             Stream<Field> methodStream = declaredFields.stream();
             methodStream.forEach(field -> {
                 String fieldName;
@@ -175,7 +173,11 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 if (insertQueryStart.indexOf(fieldName) == -1) {
                     insertQueryStart.append(fieldName).append(',');
                     try {
-                        insertQueryEnd.append('\'').append(field.get(entity).toString()).append('\'').append(',');
+                        if(field.get(entity)==null){
+                            insertQueryEnd.append('\'').append('\'').append(',');
+                        }else{
+                            insertQueryEnd.append('\'').append(field.get(entity).toString()).append('\'').append(',');
+                        }
                     } catch (IllegalAccessException e) {
                         log.error("Create invoke problem", e);
                     }
@@ -190,18 +192,18 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         return entity;
     }
 
-    private List<Field> getEntityMethods() {
-        final List<Field> declaredMethods = new ArrayList<>();
+    private List<Field> getEntityFields() {
+        final List<Field> declaredFields = new ArrayList<>();
         Class<?> iterateType = clazz;
         while (true) {
-            declaredMethods.addAll(Arrays.asList(iterateType.getDeclaredFields()));
+            declaredFields.addAll(Arrays.asList(iterateType.getDeclaredFields()));
             if (iterateType == AbstractEntity.class) {
                 break;
             } else {
                 iterateType = iterateType.getSuperclass();
             }
         }
-        return declaredMethods;
+        return declaredFields;
     }
 
     @Override
@@ -210,15 +212,16 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         if (DBentity.isPresent()) {
             StringBuilder query = new StringBuilder("UPDATE ");
             query.append(clazz.getSimpleName()).append(" SET ");
-            Stream<Method> methodStream = Stream.of(clazz.getDeclaredMethods());
-            methodStream.filter(method -> method.getName().startsWith("get")).forEach(method -> {
-                String fieldName;
-                fieldName = method.getName().replaceFirst("get", "");
+            final List<Field> declaredFields = getEntityFields();
+            Stream<Field> fieldStream = declaredFields.stream();
+            fieldStream.forEach(field -> {
+                String fieldName = field.getName();
+                field.setAccessible(true);
                 if (query.indexOf(fieldName) == -1) {
                     query.append(fieldName).append('=');
                     try {
-                        query.append('\'').append(method.invoke(entity).toString()).append('\'').append(',');
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        query.append('\'').append(field.get(entity).toString()).append('\'').append(',');
+                    } catch (IllegalAccessException e) {
                         log.error("Create invoke problem", e);
                     }
                 }
@@ -252,6 +255,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 log.error("New Entity", e);
             }
         }
+
         return entity.get();
     }
 }
