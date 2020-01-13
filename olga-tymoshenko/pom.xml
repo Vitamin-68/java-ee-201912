@@ -9,21 +9,21 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>eugene-kovalov</artifactId>
+    <artifactId>olga-tymoshenko</artifactId>
 
     <dependencies>
-        <dependency>
-            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>ua.ithillel.dnepr</groupId>
             <artifactId>common</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.7</version>
         </dependency>
     </dependencies>
+
 
 </project>
