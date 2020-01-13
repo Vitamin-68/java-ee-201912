@@ -15,7 +15,7 @@ import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegration
 import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegrationTestHelper.testCreateOneNewEntity;
 
 @Slf4j
-class FileCrudRepositoryIntegrationTest {
+class FileIndexedCrudRepositoryIntegrationTest {
     private IndexedCrudFileRepository<TestEntity, Integer> crudRepository;
 
     @BeforeEach
