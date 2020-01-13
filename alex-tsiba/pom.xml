@@ -9,36 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>common-integration-test</artifactId>
+    <artifactId>alex-tsiba</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>ua.ithillel.dnepr</groupId>
             <artifactId>common</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>ua.ithillel.dnepr</groupId>
-            <artifactId>dmitry_litvyak</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>ua.ithillel.dnepr</groupId>
-            <artifactId>roman-gizatulin</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ua.ithillel.dnepr</groupId>
-            <artifactId>eugene-kovalov</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>ua.ithillel.dnepr</groupId>
-            <artifactId>alex-tsiba</artifactId>
-            <version>1.0-SNAPSHOT</version>
-            <scope>test</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 
