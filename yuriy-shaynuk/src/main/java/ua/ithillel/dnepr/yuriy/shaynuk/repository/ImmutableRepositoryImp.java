@@ -26,10 +26,10 @@ public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, I
     @Override
     public Optional<EntityType> findById(IdType id) {
         Optional<EntityType> result = Optional.empty();
-        CSVParser parser = getParser();
+        CSVParser parser = Utils.getParser(repoRootPath);
         try {
             for (CSVRecord csvLine : parser.getRecords()) {
-                if (Integer.parseInt(csvLine.get(getFieldId())) == (Integer)id) {
+                if (Integer.parseInt(csvLine.get(0)) == (Integer)id) {
                     result = createEntity(csvLine);
                 }
             }
@@ -41,7 +41,7 @@ public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, I
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        CSVParser parser = getParser();
+        CSVParser parser = Utils.getParser(repoRootPath);
         Optional<List<EntityType>> result;
         Map<String, Integer> header = parser.getHeaderMap();
         List<EntityType> entities = new ArrayList<>();

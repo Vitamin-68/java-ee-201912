@@ -2,7 +2,9 @@ package ua.ithillel.dnepr.yuriy.shaynuk.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
@@ -11,7 +13,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,22 +32,46 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
 
     @Override
     public EntityType create(EntityType entity) {
-        List<String> entityValuesList = new ArrayList<>();
-        entityValuesList.add(entity.getId().toString());
-        addEntityValueToList(entity,entityValuesList, COUNTRY_ID);
-        addEntityValueToList(entity,entityValuesList, REGION_ID);
-        addEntityValueToList(entity,entityValuesList, CITY_ID);
-        addEntityValueToList(entity,entityValuesList, NAME);
+        List<EntityType> entityList = new ArrayList<>();
+        entityList.add(entity);
+        saveAllToFile(entityList, false);
 
-        try {
-            CSVPrinter csvPrinter = getPrinter();
-            String namesString = String.join("\";\"", entityValuesList);
-            csvPrinter.printRecord("\""+namesString+"\"");
-            csvPrinter.flush();
-            csvPrinter.close();
-        } catch (IOException e) {
-            log.error("CSV printer:", e);
-        }
+//        Field[] fields = entity.getClass().getDeclaredFields();
+//        List<String> entityValuesList = new ArrayList<>();
+//        for (Field field : fields) {
+//
+//        }
+//        field.setAccessible(true);
+//        if(field.canAccess(entity)) {
+//            entityValuesList.add(field.get(entity).toString());
+//        }
+
+//        try {
+//            CSVPrinter csvPrinter = Utils.getPrinter(repoRootPath);
+//            String namesString = String.join("\";\"", entityValuesList);
+//            csvPrinter.printRecord("\""+namesString+"\"");
+//            csvPrinter.flush();
+//            csvPrinter.close();
+//        } catch (IOException e) {
+//            log.error("CSV printer:", e);
+//        }
+
+//        List<String> entityValuesList = new ArrayList<>();
+//        entityValuesList.add(entity.getId().toString());
+//        addEntityValueToList(entity,entityValuesList, COUNTRY_ID);
+//        addEntityValueToList(entity,entityValuesList, REGION_ID);
+//        addEntityValueToList(entity,entityValuesList, CITY_ID);
+//        addEntityValueToList(entity,entityValuesList, NAME);
+//
+//        try {
+//            CSVPrinter csvPrinter = getPrinter();
+//            String namesString = String.join("\";\"", entityValuesList);
+//            csvPrinter.printRecord("\""+namesString+"\"");
+//            csvPrinter.flush();
+//            csvPrinter.close();
+//        } catch (IOException e) {
+//            log.error("CSV printer:", e);
+//        }
         return entity;
     }
 
@@ -54,10 +84,9 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
                 int index = entitiesList.get().indexOf(tmpEntity);
                 entitiesList.get().set(index,entity);
                 result = tmpEntity;
-                break;
             }
         }
-        saveListToFile(entitiesList.get());
+        saveAllToFile(entitiesList.get(), true);
         return result;
     }
 
@@ -65,42 +94,83 @@ public class MutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdT
     public EntityType delete(IdType id) {
         EntityType result = null;
         final Optional<List<EntityType>> entitiesList = getAllRecords();
-        for(EntityType tmpEntity : entitiesList.get()){
-            if(tmpEntity.getId().equals(id)){
-                entitiesList.get().remove(tmpEntity);
-                result = tmpEntity;
-                break;
+        if(entitiesList.isPresent()) {
+            Iterator<EntityType> it = entitiesList.get().iterator();
+            while(it.hasNext()){
+                EntityType tmpEntity = it.next();
+                if (tmpEntity.getId().equals(id)) {
+                    result = tmpEntity;
+                    it.remove();
+                    break;
+                }
             }
+            saveAllToFile(entitiesList.get(),true);
+            //saveListToFile(entitiesList.get());
         }
-        saveListToFile(entitiesList.get());
         return result;
     }
 
-    private void saveListToFile(List<EntityType> listEntity){
+    private void saveAllToFile(List<EntityType> entityList, Boolean clearFile){
+        CSVPrinter csvPrinter;
         try {
-            BufferedReader brTest = new BufferedReader(new FileReader(repoRootPath));
-            String headerLine = brTest .readLine();
-
-            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(repoRootPath), CSVFormat.DEFAULT.withHeader(headerLine).withDelimiter(delimiter).withQuote(null));
-            csvPrinter.flush();
-            csvPrinter.close();
-            for(EntityType tmpEntity : listEntity){
-                create(tmpEntity);
+            CSVParser parser = Utils.getParser(repoRootPath);
+            List<String> headerNames = parser.getHeaderNames();
+            try {
+                parser.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
+            if(clearFile){
+                csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(repoRootPath)),
+                        CSVFormat.DEFAULT.withDelimiter(Utils.delimiter).withQuoteMode(QuoteMode.ALL).withFirstRecordAsHeader());
+                csvPrinter.printRecord(headerNames);
+            }else {
+                csvPrinter = Utils.getPrinter(repoRootPath);
+            }
+
+            for (EntityType entity:entityList) {
+                csvPrinter.print(entity.getId().toString());
+                for (int i=1; i<headerNames.size();i++) {
+                    String name = headerNames.get(i);
+                    Field field = entity.getClass().getDeclaredField(name);
+                    field.setAccessible(true);
+                    if(field.canAccess(entity)) {
+                        csvPrinter.print(field.get(entity).toString());
+                    }
+                }
+                csvPrinter.println();
+            }
+            csvPrinter.close(true);
+        } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
+//    private void saveListToFile(List<EntityType> listEntity){
+//        try {
+//            BufferedReader brTest = new BufferedReader(new FileReader(repoRootPath));
+//            String headerLine = brTest .readLine();
+//
+//            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(repoRootPath), CSVFormat.DEFAULT.withHeader(headerLine).withDelimiter(Utils.delimiter).withQuote(null));
+//            csvPrinter.flush();
+//            csvPrinter.close();
+//            for(EntityType tmpEntity : listEntity){
+//                create(tmpEntity);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-    private void addEntityValueToList(EntityType entity,List<String> entityValues, String fieldId){
-        try {
-            Field field = entity.getClass().getDeclaredField(fieldId);
-            field.setAccessible(true);
-            if(field.canAccess(entity)) {
-                entityValues.add(field.get(entity).toString());
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            //log.error("addEntityValueToList error:", e);
-        }
-    }
+//    }
+//    private void addEntityValueToList(EntityType entity,List<String> entityValues, String fieldId){
+//        try {
+//            Field field = entity.getClass().getDeclaredField(fieldId);
+//            field.setAccessible(true);
+//            if(field.canAccess(entity)) {
+//                entityValues.add(field.get(entity).toString());
+//            }
+//        } catch (NoSuchFieldException | IllegalAccessException e) {
+//            //log.error("addEntityValueToList error:", e);
+//        }
+
+//    }
 }
