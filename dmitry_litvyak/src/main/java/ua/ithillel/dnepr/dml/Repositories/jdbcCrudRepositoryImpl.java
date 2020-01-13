@@ -3,12 +3,21 @@ package ua.ithillel.dnepr.dml.Repositories;
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
+import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -40,8 +49,7 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
         for (Field field : declaredFields) {
             if(query.indexOf(field.getName()) == -1) {
-                //TODO: solve field type
-                query.append(field.getName()).append(" CLOB ").append(",");
+                query.append(field.getName()).append(' ').append(H2TypeUtils.H2Types.toH2Type(field.getType())).append(",");
             }
         }
         query.delete(query.lastIndexOf(","), query.length());
@@ -89,21 +97,17 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
     private EntityType getEntityFromDBResulSet(ResultSet resultSet) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         EntityType entity = clazz.getDeclaredConstructor().newInstance();
-        Stream<Method> methodStream = Stream.of(clazz.getDeclaredMethods());
-        methodStream.filter(method -> method.getName().startsWith("set")).forEach(method -> {
-            Object value = null;
+        final List<Field> declaredFields = getEntityMethods();
+        Stream<Field> fieldStream = declaredFields.stream();
+        fieldStream.forEach(field -> {
+            field.setAccessible(true);
             try {
-                value = resultSet.getObject(method.getName().replaceFirst("set", ""));
+                Class <?> castType = H2TypeUtils.H2Types.toJavaType(resultSet.getMetaData().getColumnTypeName(resultSet.findColumn(field.getName())));
+                field.set(entity,castType.cast(resultSet.getObject(field.getName())));
             } catch (SQLException e) {
                 log.error("SQL error while get field value", e);
-            }
-            Class<?>[] types = method.getParameterTypes();
-            if (types.length > 0) {
-                try {
-                    method.invoke(entity, types[0].cast(value));
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    log.error("Unecpected filed", e);
-                }
+            } catch (IllegalAccessException e) {
+                log.error("Value cast error",e);
             }
         });
         return entity;
@@ -162,15 +166,17 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         try (final Statement stmt = connection.createStatement()) {
             StringBuilder insertQueryStart = new StringBuilder("INSERT INTO " + clazz.getSimpleName() + " (");
             StringBuilder insertQueryEnd = new StringBuilder(" VALUES ( ");
-            Stream<Method> methodStream = Stream.of(clazz.getDeclaredMethods());
-            methodStream.filter(method -> method.getName().startsWith("get")).forEach(method -> {
+            final List<Field> declaredFields = getEntityMethods();
+            Stream<Field> methodStream = declaredFields.stream();
+            methodStream.forEach(field -> {
                 String fieldName;
-                fieldName = method.getName().replaceFirst("get", "");
+                fieldName = field.getName();
+                field.setAccessible(true);
                 if (insertQueryStart.indexOf(fieldName) == -1) {
                     insertQueryStart.append(fieldName).append(',');
                     try {
-                        insertQueryEnd.append('\'').append(method.invoke(entity).toString()).append('\'').append(',');
-                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        insertQueryEnd.append('\'').append(field.get(entity).toString()).append('\'').append(',');
+                    } catch (IllegalAccessException e) {
                         log.error("Create invoke problem", e);
                     }
                 }
@@ -182,6 +188,20 @@ public class jdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             log.error("Create operation failed", e);
         }
         return entity;
+    }
+
+    private List<Field> getEntityMethods() {
+        final List<Field> declaredMethods = new ArrayList<>();
+        Class<?> iterateType = clazz;
+        while (true) {
+            declaredMethods.addAll(Arrays.asList(iterateType.getDeclaredFields()));
+            if (iterateType == AbstractEntity.class) {
+                break;
+            } else {
+                iterateType = iterateType.getSuperclass();
+            }
+        }
+        return declaredMethods;
     }
 
     @Override
