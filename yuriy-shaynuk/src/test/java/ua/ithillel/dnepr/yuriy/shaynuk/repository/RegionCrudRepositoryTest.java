@@ -10,7 +10,6 @@ import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Region;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @Slf4j
@@ -22,7 +21,7 @@ class RegionCrudRepositoryTest {
     static void setUp() {
         dataFile = Utils.createTempFile("region.csv");
         if (dataFile != null) {
-            regionRepository = new CrudRepositoryImp<Region, Integer>(dataFile.getPath(),Region.class);
+            regionRepository = new CrudRepositoryImp<>(dataFile.getPath(),Region.class);
         }
     }
 
