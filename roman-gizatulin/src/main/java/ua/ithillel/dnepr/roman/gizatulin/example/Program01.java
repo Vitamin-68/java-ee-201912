@@ -9,6 +9,7 @@ public class Program01 {
 
     public int add(int a, int b) {
         LOGGER.info("Input params: a={}; b={}", a, b);
+
         return a + b;
     }
 }
