@@ -5,7 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.test.repository.TestEntity;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.CrudRepositoryImp;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.CrudRepositoryImp;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +20,7 @@ class CsvCrudRepositoryIntegrationTest {
 
     @BeforeEach
     void setup() throws IOException {
-        File repoFile = ua.ithillel.dnepr.yuriy.shaynuk.repository.Utils.createTempFile("cityyy.csv");
+        File repoFile = Utils.createTempFile("cityyy.csv");
         crudRepository = new CrudRepositoryImp<>(repoFile.getPath(),TestEntity.class) {
         };
     }

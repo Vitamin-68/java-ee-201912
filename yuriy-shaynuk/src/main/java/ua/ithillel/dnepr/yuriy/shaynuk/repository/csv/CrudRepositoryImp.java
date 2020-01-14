@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.yuriy.shaynuk.repository;
+package ua.ithillel.dnepr.yuriy.shaynuk.repository.csv;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVPrinter;

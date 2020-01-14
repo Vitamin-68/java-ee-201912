@@ -247,7 +247,11 @@
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- logger -->
+        <!-- database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
