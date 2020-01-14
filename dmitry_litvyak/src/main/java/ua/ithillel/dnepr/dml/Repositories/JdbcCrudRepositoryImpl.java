@@ -178,8 +178,8 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 fieldName = field.getName();
                 field.setAccessible(true);
                 try {
-                    if(fieldName=="id"){
-                        stmt.setObject(declaredFields.indexOf(field) + 1, " CAST("+field.get(entity)+" AS OTHER)");
+                    if (H2TypeUtils.toH2Type(field.getType()).equals(H2TypeUtils.H2Types.OTHER.getH2Type())) {
+                        stmt.setObject(declaredFields.indexOf(field) + 1, field.get(entity), Types.JAVA_OBJECT);
                     }
                     else if (field.get(entity) == null) {
                         stmt.setObject(declaredFields.indexOf(field) + 1, "");
