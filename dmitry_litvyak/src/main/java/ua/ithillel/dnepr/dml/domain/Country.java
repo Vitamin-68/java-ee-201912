@@ -9,12 +9,6 @@ import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 @Setter
 @NoArgsConstructor
 public class Country extends AbstractEntity<Integer> {
-
-    private Integer id;
     private Integer city_id;
     private String name;
-
-    @Override
-    public Integer getId(){return id;}
-
 }

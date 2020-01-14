@@ -5,22 +5,15 @@ import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 
+import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.sql.*;
+import java.util.*;
 import java.util.stream.Stream;
 
 @Slf4j
-public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType>
+public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements IndexedCrudRepository<EntityType, IdType> {
 
     private final Connection connection;
@@ -47,8 +40,8 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         }
 
         for (Field field : declaredFields) {
-            if(query.indexOf(field.getName()) == -1) {
-                query.append(field.getName()).append(' ').append(H2TypeUtils.H2Types.toH2Type(field.getType())).append(",");
+            if (query.indexOf(field.getName()) == -1) {
+                query.append(field.getName()).append(' ').append(H2TypeUtils.toH2Type(field.getType())).append(",");
             }
         }
         query.delete(query.lastIndexOf(","), query.length());
@@ -59,10 +52,10 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             throw new IllegalStateException("Failed to create table", e);
         }
 
-        try (PreparedStatement stmt = connection.prepareStatement("DROP TRIGGER IF EXISTS "+clazz.getSimpleName()+"_INSERT; CREATE TRIGGER "+clazz.getSimpleName()+"_INSERT AFTER UPDATE ON "+clazz.getSimpleName()+" FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ")){
+        try (PreparedStatement stmt = connection.prepareStatement("DROP TRIGGER IF EXISTS " + clazz.getSimpleName() + "_INSERT; CREATE TRIGGER " + clazz.getSimpleName() + "_INSERT AFTER UPDATE ON " + clazz.getSimpleName() + " FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ")) {
             stmt.execute();
         } catch (SQLException e) {
-            log.error("No connection",e);
+            log.error("No connection", e);
         }
     }
 
@@ -100,12 +93,16 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         fieldStream.forEach(field -> {
             field.setAccessible(true);
             try {
-                Class <?> castType = H2TypeUtils.H2Types.toJavaType(resultSet.getMetaData().getColumnTypeName(resultSet.findColumn(field.getName())));
-                field.set(entity,castType.cast(resultSet.getObject(field.getName())));
+                Class<?> castType = H2TypeUtils.toJavaType(resultSet.getMetaData().getColumnTypeName(resultSet.findColumn(field.getName())));
+                if (castType.isPrimitive()) {
+                    field.set(entity, resultSet.getObject(field.getName()));
+                } else {
+                    field.set(entity, castType.cast(resultSet.getObject(field.getName())));
+                }
             } catch (SQLException e) {
                 log.error("SQL error while get field value", e);
             } catch (IllegalAccessException e) {
-                log.error("Value cast error",e);
+                log.error("Value cast error", e);
             }
         });
         return entity;
@@ -115,7 +112,7 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     public Optional<EntityType> findById(IdType id) {
         Optional<EntityType> result = Optional.empty();
         String entityName = clazz.getSimpleName();
-        try (final PreparedStatement stmt = connection.prepareStatement("SELECT * FROM "+entityName+" WHERE Id=?")) {
+        try (final PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + entityName + " WHERE Id=?")) {
             stmt.setObject(1, id);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
@@ -161,7 +158,7 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
 
     @Override
     public EntityType create(EntityType entity) {
-        try (final Statement stmt = connection.createStatement()) {
+        try {
             StringBuilder insertQueryStart = new StringBuilder("INSERT INTO " + clazz.getSimpleName() + " (");
             StringBuilder insertQueryEnd = new StringBuilder(" VALUES ( ");
             final List<Field> declaredFields = getEntityFields();
@@ -169,23 +166,31 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             methodStream.forEach(field -> {
                 String fieldName;
                 fieldName = field.getName();
+                insertQueryStart.append(fieldName).append(',');
+                insertQueryEnd.append(" ?, ");
+            });
+            insertQueryEnd.deleteCharAt(insertQueryEnd.lastIndexOf(",")).append(')');
+            insertQueryStart.deleteCharAt(insertQueryStart.lastIndexOf(",")).append(')').append(insertQueryEnd.toString());
+            PreparedStatement stmt = connection.prepareStatement(insertQueryStart.toString());
+            methodStream = declaredFields.stream();
+            methodStream.forEach(field -> {
+                String fieldName;
+                fieldName = field.getName();
                 field.setAccessible(true);
-                if (insertQueryStart.indexOf(fieldName) == -1) {
-                    insertQueryStart.append(fieldName).append(',');
-                    try {
-                        if(field.get(entity)==null){
-                            insertQueryEnd.append('\'').append('\'').append(',');
-                        }else{
-                            insertQueryEnd.append('\'').append(field.get(entity).toString()).append('\'').append(',');
-                        }
-                    } catch (IllegalAccessException e) {
-                        log.error("Create invoke problem", e);
+                try {
+                    if(fieldName=="id"){
+                        stmt.setObject(declaredFields.indexOf(field) + 1, " CAST("+field.get(entity)+" AS OTHER)");
                     }
+                    else if (field.get(entity) == null) {
+                        stmt.setObject(declaredFields.indexOf(field) + 1, "");
+                    } else {
+                        stmt.setObject(declaredFields.indexOf(field) + 1, field.get(entity));
+                    }
+                } catch (Exception e) {
+                    log.error("Fail when getObject()", e);
                 }
             });
-            insertQueryEnd.deleteCharAt(insertQueryEnd.length() - 1).append(')');
-            insertQueryStart.deleteCharAt(insertQueryStart.length() - 1).append(')').append(insertQueryEnd.toString());
-            stmt.execute(insertQueryStart.toString());
+            stmt.execute();
         } catch (Exception e) {
             log.error("Create operation failed", e);
         }
@@ -217,13 +222,11 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
             fieldStream.forEach(field -> {
                 String fieldName = field.getName();
                 field.setAccessible(true);
-                if (query.indexOf(fieldName) == -1) {
-                    query.append(fieldName).append('=');
-                    try {
-                        query.append('\'').append(field.get(entity).toString()).append('\'').append(',');
-                    } catch (IllegalAccessException e) {
-                        log.error("Create invoke problem", e);
-                    }
+                query.append(fieldName).append('=');
+                try {
+                    query.append('\'').append(field.get(entity).toString()).append('\'').append(',');
+                } catch (IllegalAccessException e) {
+                    log.error("Create invoke problem", e);
                 }
             });
             query.deleteCharAt(query.length() - 1).append(" WHERE ID=").append(entity.getId());

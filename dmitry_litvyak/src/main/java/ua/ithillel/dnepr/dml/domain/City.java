@@ -9,15 +9,7 @@ import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 @Setter
 @NoArgsConstructor
 public class City extends AbstractEntity<Integer> {
-
-    private Integer id;
     private Integer country_id;
     private Integer region_id;
     private String name;
-
-    @Override
-    public Integer getId() {
-        return id;
-    }
-
 }

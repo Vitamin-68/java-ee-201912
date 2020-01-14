@@ -48,12 +48,13 @@ class jdbcCrudRepositoryTest {
         //Statement stmt = conn.createStatement();
         //stmt.execute("DROP TRIGGER IF EXISTS CITY_INSERT; CREATE TRIGGER CITY_INSERT AFTER UPDATE ON CITY FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
 
-        testRepository = new JdbcCrudRepositoryImpl(conn, City.class);
+
         tmpCity = new City();
         tmpCity.setName("Bandershtadt");
         tmpCity.setRegion_id(1000);
         tmpCity.setId(99999);
         tmpCity.setCountry_id(1000);
+        testRepository = new JdbcCrudRepositoryImpl(conn, City.class);
     }
 
     @Test
