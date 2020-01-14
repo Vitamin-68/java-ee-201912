@@ -6,6 +6,7 @@ import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import java.io.Serializable;
 import java.sql.Connection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,7 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
-public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>, IdType>
+public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements IndexedCrudRepository<EntityType, IdType> {
 
     private final Connection connection;
