@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.test.repository.TestEntity;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
-import ua.ithillel.dnepr.dml.Repositories.jdbcCrudRepositoryImpl;
+import ua.ithillel.dnepr.dml.Repositories.JdbcCrudRepositoryImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +23,7 @@ public class JdbcIndexedCrudRepository {
     private static final int PORT = NetUtils.getFreePort();
 
     private H2Server h2Server;
-    private jdbcCrudRepositoryImpl<TestEntity, Integer> crudRepository;
+    private JdbcCrudRepositoryImpl<TestEntity, Integer> crudRepository;
     private String repoRootPath;
 
     @BeforeEach
@@ -36,7 +36,7 @@ public class JdbcIndexedCrudRepository {
         Class.forName("org.h2.Driver");
         Connection connection = DriverManager.getConnection(
                 String.format("jdbc:h2:tcp://%s:%s/%s", NetUtils.getHostName(), PORT, repoRootPath));
-        crudRepository = new jdbcCrudRepositoryImpl<>(connection, TestEntity.class);
+        crudRepository = new JdbcCrudRepositoryImpl<>(connection, TestEntity.class);
     }
 
     @AfterEach
