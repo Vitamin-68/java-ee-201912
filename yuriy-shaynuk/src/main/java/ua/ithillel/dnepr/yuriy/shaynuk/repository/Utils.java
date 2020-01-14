@@ -43,11 +43,16 @@ public class Utils {
         }
     }
 
-    public static CSVPrinter getPrinter(String repoRootPath){
+    public static CSVPrinter getPrinter(String repoRootPath, Boolean clearFile){
         CSVPrinter csvPrinter = null;
         try {
-            csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(repoRootPath), StandardOpenOption.APPEND),
-                    CSVFormat.DEFAULT.withDelimiter(delimiter).withQuoteMode(QuoteMode.ALL));
+            if(clearFile){
+                csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(repoRootPath)),
+                        CSVFormat.DEFAULT.withDelimiter(delimiter).withQuoteMode(QuoteMode.ALL));
+            }else {
+                csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(repoRootPath), StandardOpenOption.APPEND),
+                        CSVFormat.DEFAULT.withDelimiter(delimiter).withQuoteMode(QuoteMode.ALL));
+            }
         } catch (IOException e) {
             log.error("getPrinter exception",e);
         }

@@ -1,9 +1,7 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
@@ -12,9 +10,6 @@ import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,23 +60,17 @@ public class CrudRepositoryImp<EntityType extends BaseEntity<IdType>, IdType> im
 
     private void addHeaderToFile(String filePath,Field[] fields) {
         CSVPrinter csvPrinter = null;
+        csvPrinter = Utils.getPrinter(filePath, false);
         try {
-            csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(filePath), StandardOpenOption.APPEND),
-                    CSVFormat.DEFAULT.withDelimiter(Utils.delimiter).withQuoteMode(QuoteMode.ALL));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            if (csvPrinter != null) {
-                csvPrinter.print("id");
-                for (Field field : fields) {
-                    csvPrinter.print(field.getName());
-                }
-                csvPrinter.println();
-                csvPrinter.close(true);
+
+            csvPrinter.print("id");
+            for (Field field : fields) {
+                csvPrinter.print(field.getName());
             }
+            csvPrinter.println();
+            csvPrinter.close(true);
         } catch (IOException e) {
-            log.error("header creation error",e);
+            log.error("header creation error", e);
         }
     }
 }

@@ -1,25 +1,12 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Country;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Region;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,11 +14,6 @@ import java.util.Optional;
 @Slf4j
 public abstract class BaseCrudRepository<EntityType> {
     protected final String repoRootPath;
-    public static final String REGION_ID = "region_id";
-    public static final String CITY_ID = "city_id";
-    public static final String COUNTRY_ID = "country_id";
-    public static final String NAME = "name";
-//    public static final char delimiter = ';';
 
     protected final Class<EntityType> typeArgumentClass;
     protected BaseCrudRepository(String repoRootPath, Class<EntityType> typeArgumentClass){
@@ -82,27 +64,4 @@ public abstract class BaseCrudRepository<EntityType> {
 
         return entities.isEmpty() ? Optional.empty() : Optional.of(entities);
     }
-
-//    protected CSVParser getParser(){
-//        CSVParser csvParser = null;
-//        try {
-//            csvParser = CSVFormat.DEFAULT
-//                    .withFirstRecordAsHeader()
-//                    .withDelimiter(delimiter)
-//                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(repoRootPath))));
-//        } catch (IOException e) {
-//            log.error("getParser exception",e);
-//        }
-//        return csvParser;
-//    }
-
-//    protected CSVPrinter getPrinter(){
-//        CSVPrinter csvPrinter = null;
-//        try {
-//            csvPrinter = new CSVPrinter(Files.newBufferedWriter(Path.of(repoRootPath), StandardOpenOption.APPEND), CSVFormat.DEFAULT.withDelimiter(delimiter).withQuote(null));
-//        } catch (IOException e) {
-//            log.error("getPrinter exception",e);
-//        }
-//        return csvPrinter;
-//    }
 }

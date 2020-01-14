@@ -41,11 +41,11 @@ class CityCrudRepositoryTest {
     @Test
     void findByField() {
         Optional<List<City>> test = cityRepository.findByField("name", "Москва");
-        Assertions.assertFalse(test.get().isEmpty());
+        Assertions.assertFalse(test.isEmpty());
         Optional<List<City>> test2 = cityRepository.findByField("name", "some string name");
-        Assertions.assertTrue(test2.get().isEmpty());
+        Assertions.assertTrue(test2.isEmpty());
         Optional<List<City>> test3 = cityRepository.findByField("1name1", 99999);
-        Assertions.assertTrue(test3.get().isEmpty());
+        Assertions.assertTrue(test3.isEmpty());
     }
 
     @Test

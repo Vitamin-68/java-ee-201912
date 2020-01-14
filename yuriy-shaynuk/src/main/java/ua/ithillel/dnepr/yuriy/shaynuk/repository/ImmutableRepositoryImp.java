@@ -7,7 +7,11 @@ import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
@@ -56,7 +60,6 @@ public class ImmutableRepositoryImp<EntityType extends AbstractEntity<IdType>, I
                 log.error("parser.findByField exception", e);
             }
         }
-        result = Optional.of(entities);
-        return result;
+        return entities.isEmpty() ? Optional.empty() : Optional.of(entities);
     }
 }
