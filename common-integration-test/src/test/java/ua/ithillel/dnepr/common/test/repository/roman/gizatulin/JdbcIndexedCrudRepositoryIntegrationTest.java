@@ -10,6 +10,7 @@ import ua.ithillel.dnepr.common.utils.NetUtils;
 import ua.ithillel.dnepr.roman.gizatulin.repository.JdbcIndexedCrudRepository;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,16 +30,21 @@ class JdbcIndexedCrudRepositoryIntegrationTest {
     @BeforeEach
     void setup() throws IOException, SQLException, ClassNotFoundException {
         String repoRootPath = Path.of(
-                "C:\\Users\\unsreg\\AppData\\Local\\Temp\\romanGizatulin",
-                //Files.createTempDirectory("romanGizatulin").toString(),
+                Files.createTempDirectory("romanGizatulin").toString(),
                 TEST_DB_NAME
         ).toString();
         h2Server = new H2Server(PORT);
         h2Server.start();
 
         Class.forName("org.h2.Driver");
-        Connection connection = DriverManager.getConnection(
-                String.format("jdbc:h2:tcp://%s:%s/%s", NetUtils.getHostName(), PORT, repoRootPath));
+        final String connectionString = String.format(
+                "jdbc:h2:tcp://%s:%s/%s",
+                NetUtils.getHostName(),
+                PORT,
+                repoRootPath
+        );
+        log.info("Database connection string: {}", connectionString);
+        Connection connection = DriverManager.getConnection(connectionString);
         crudRepository = new JdbcIndexedCrudRepository<>(connection, TestEntity.class);
     }
 
@@ -49,11 +55,11 @@ class JdbcIndexedCrudRepositoryIntegrationTest {
 
     @Test
     void createOneNewEntity() {
-//        testCreateOneNewEntity(crudRepository);
+        testCreateOneNewEntity(crudRepository);
     }
 
     @Test
     void createManyNewEntities() {
-//        testCreateManyNewEntities(crudRepository);
+        testCreateManyNewEntities(crudRepository);
     }
 }
