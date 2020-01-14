@@ -29,6 +29,7 @@
         <module>dmitry_litvyak</module>
         <module>alex-tsiba</module>
         <module>olga-tymoshenko</module>
+        <module>yuriy-shaynuk</module>
         <module>common-integration-test</module>
     </modules>
 
@@ -246,7 +247,11 @@
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- logger -->
+        <!-- database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
