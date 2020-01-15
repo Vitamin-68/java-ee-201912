@@ -21,7 +21,7 @@ class RegionCrudRepositoryTest {
 
     @BeforeAll
     static void setUp() {
-        dataFile = Utils.createTempFile("region.csv");
+        dataFile = Utils.createTempFile("regionn.csv");
         if (dataFile != null) {
             regionRepository = new CrudRepositoryImp<>(dataFile.getPath(),Region.class);
         }
@@ -57,7 +57,7 @@ class RegionCrudRepositoryTest {
         testRegion.setCity_id(222);
         testRegion.setId(99999);
         regionRepository.create(testRegion);
-        Optional<Region> test3 = regionRepository.findById(999);
+        Optional<Region> test3 = regionRepository.findById(99999);
         Assertions.assertFalse(test3.isEmpty());
     }
 
