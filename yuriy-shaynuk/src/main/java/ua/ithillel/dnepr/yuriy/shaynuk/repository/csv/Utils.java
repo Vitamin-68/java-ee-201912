@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -65,7 +66,7 @@ public class Utils {
             csvParser = CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
                     .withDelimiter(delimiter)
-                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(repoRootPath))));
+                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(repoRootPath)), StandardCharsets.UTF_8));
         } catch (IOException e) {
             log.error("getParser exception",e);
         }
