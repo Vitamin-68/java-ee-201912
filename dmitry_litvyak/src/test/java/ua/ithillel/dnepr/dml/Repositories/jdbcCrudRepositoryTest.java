@@ -1,6 +1,5 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,7 +14,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class jdbcCrudRepositoryTest {
@@ -24,7 +26,6 @@ class jdbcCrudRepositoryTest {
     H2Server dbserver;
     private Connection conn;
     private City tmpCity;
-    //private LoggerTrigger trigger;
     private int DBPort;
 
     @BeforeAll
@@ -43,12 +44,7 @@ class jdbcCrudRepositoryTest {
 
     @BeforeEach
     void setUp() throws SQLException{
-        //conn = DriverManager.getConnection("jdbc:h2:file:./src/main/resources/h2crudbase","sa","");
         conn = DriverManager.getConnection("jdbc:h2:tcp://"+NetUtils.getHostName()+':'+DBPort+"/./src/main/resources/h2crudbase","sa","");
-        //Statement stmt = conn.createStatement();
-        //stmt.execute("DROP TRIGGER IF EXISTS CITY_INSERT; CREATE TRIGGER CITY_INSERT AFTER UPDATE ON CITY FOR EACH ROW CALL \"ua.ithillel.dnepr.dml.service.LoggerTrigger\" ");
-
-
         tmpCity = new City();
         tmpCity.setName("Bandershtadt");
         tmpCity.setRegion_id(1000);

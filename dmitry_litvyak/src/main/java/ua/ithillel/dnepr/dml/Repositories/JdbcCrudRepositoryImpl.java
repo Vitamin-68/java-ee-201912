@@ -8,8 +8,17 @@ import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -38,11 +47,8 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 iterateType = iterateType.getSuperclass();
             }
         }
-
         for (Field field : declaredFields) {
-            if (query.indexOf(field.getName()) == -1) {
-                query.append(field.getName()).append(' ').append(H2TypeUtils.toH2Type(field.getType())).append(",");
-            }
+            query.append(field.getName()).append(' ').append(H2TypeUtils.toH2Type(field.getType())).append(",");
         }
         query.delete(query.lastIndexOf(","), query.length());
         query.append(" ) ");
@@ -113,7 +119,7 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
         Optional<EntityType> result = Optional.empty();
         String entityName = clazz.getSimpleName();
         try (final PreparedStatement stmt = connection.prepareStatement("SELECT * FROM " + entityName + " WHERE Id=?")) {
-            stmt.setObject(1, id);
+            stmt.setObject(1,id, Types.JAVA_OBJECT);
             ResultSet resultSet = stmt.executeQuery();
             if (resultSet.next()) {
                 result = Optional.of(getEntityFromDBResulSet(resultSet));
@@ -180,8 +186,7 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                 try {
                     if (H2TypeUtils.toH2Type(field.getType()).equals(H2TypeUtils.H2Types.OTHER.getH2Type())) {
                         stmt.setObject(declaredFields.indexOf(field) + 1, field.get(entity), Types.JAVA_OBJECT);
-                    }
-                    else if (field.get(entity) == null) {
+                    } else if (field.get(entity) == null) {
                         stmt.setObject(declaredFields.indexOf(field) + 1, "");
                     } else {
                         stmt.setObject(declaredFields.indexOf(field) + 1, field.get(entity));
@@ -229,9 +234,10 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
                     log.error("Create invoke problem", e);
                 }
             });
-            query.deleteCharAt(query.length() - 1).append(" WHERE ID=").append(entity.getId());
-            try (final Statement stmt = connection.createStatement()) {
-                stmt.execute(query.toString());
+            query.deleteCharAt(query.length() - 1).append(" WHERE ID=?");
+            try (final PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+                stmt.setObject(1,entity.getId(), Types.JAVA_OBJECT);
+                stmt.execute();
             } catch (Exception e) {
                 log.error("Update failed", e);
             }
@@ -242,23 +248,20 @@ public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, I
     }
 
     @Override
-    public EntityType delete(IdType id) {
+    public EntityType delete(IdType id)  {
+        EntityType result = null;
         Optional<EntityType> entity = findById(id);
         if (entity.isPresent()) {
-            try (final Statement stmt = connection.createStatement()) {
-                stmt.execute("DELETE FROM " + clazz.getSimpleName() + " WHERE ID=" + id);
+            try (final PreparedStatement stmt = connection.prepareStatement("DELETE FROM " + clazz.getSimpleName() + " WHERE ID=?")) {
+                stmt.setObject(1,id, Types.JAVA_OBJECT);
+                stmt.execute();
             } catch (Exception e) {
                 log.error("DELETE failed", e);
             }
         }
-        if (entity.isEmpty()) {
-            try {
-                entity = Optional.of(clazz.getDeclaredConstructor().newInstance());
-            } catch (Exception e) {
-                log.error("New Entity", e);
-            }
+        if(entity.isPresent()){
+            result = entity.get();
         }
-
-        return entity.get();
+        return result;
     }
 }
