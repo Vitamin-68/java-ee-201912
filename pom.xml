@@ -31,8 +31,8 @@
         <module>olga-tymoshenko</module>
         <module>yuriy-shaynuk</module>
         <module>common-integration-test</module>
+        <module>oleg_kovalenko</module>
     </modules>
-
     <dependencyManagement>
         <dependencies>
             <!-- testing -->
