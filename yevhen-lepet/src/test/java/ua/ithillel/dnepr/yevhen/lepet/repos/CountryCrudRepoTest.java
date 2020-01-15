@@ -44,7 +44,7 @@ public class CountryCrudRepoTest {
         Country result = countryCrudRepo.update(testCountry);
         Assertions.assertNotNull(result);
     }
-
+/*
     @Test
     void update(){
         Country testCountry = countryCrudRepo.findById(3159).get();
@@ -58,4 +58,6 @@ public class CountryCrudRepoTest {
         countryCrudRepo.delete(3159);
         Assertions.assertTrue(countryCrudRepo.findById(3159).isEmpty());
     }
+
+ */
 }

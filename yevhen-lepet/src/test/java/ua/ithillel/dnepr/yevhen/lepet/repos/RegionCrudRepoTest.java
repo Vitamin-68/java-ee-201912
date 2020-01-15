@@ -49,7 +49,7 @@ public class RegionCrudRepoTest {
         Optional <Region> result = regionCrudRepo.findById(111212121);
         Assertions.assertNotNull(result);
     }
-
+/*
     @Test
     void update(){
         Region testRegion = regionCrudRepo.findById(3352).get();
@@ -63,4 +63,6 @@ public class RegionCrudRepoTest {
         regionCrudRepo.delete(3630);
         Assertions.assertTrue(regionCrudRepo.findById(3630).isEmpty());
     }
+
+ */
 }

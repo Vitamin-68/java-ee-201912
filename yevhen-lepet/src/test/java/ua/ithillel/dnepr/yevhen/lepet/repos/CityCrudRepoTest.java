@@ -14,11 +14,11 @@ import java.util.Optional;
 @Slf4j
 public class CityCrudRepoTest {
     private CityCrudRepo cityCrudRepo;
-    private static final String PATH_COUNTRY_CSV = "./src/main/resources/city.csv";
+    private static final String PATH_CITY_CSV = "./src/main/resources/city.csv";
 
     @BeforeEach
     void setUp() {
-        cityCrudRepo = new CityCrudRepo(PATH_COUNTRY_CSV);
+        cityCrudRepo = new CityCrudRepo(PATH_CITY_CSV);
     }
 
     @Test
@@ -49,7 +49,7 @@ public class CityCrudRepoTest {
         Optional <City> result = cityCrudRepo.findById(111212121);
         Assertions.assertNotNull(result);
     }
-
+/*
     @Test
     void update(){
         City testCity = cityCrudRepo.findById(4313).get();
@@ -63,4 +63,6 @@ public class CityCrudRepoTest {
         cityCrudRepo.delete(4313);
         Assertions.assertTrue(cityCrudRepo.findById(4313).isEmpty());
     }
+
+ */
 }

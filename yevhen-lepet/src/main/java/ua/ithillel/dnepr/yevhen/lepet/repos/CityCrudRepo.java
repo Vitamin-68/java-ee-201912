@@ -1,10 +1,7 @@
 package ua.ithillel.dnepr.yevhen.lepet.repos;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.City;
 import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
@@ -114,7 +111,8 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
             try {
                 CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                         .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
-                        .withDelimiter(delimiter));
+                        .withDelimiter(delimiter)
+                        .withQuoteMode(QuoteMode.ALL));
                 for (City city : cities) {
                     csvPrinter.printRecord(city.getId(),
                             city.getCountry_id(),
@@ -123,11 +121,12 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                     csvPrinter.flush();
                     csvPrinter.close();
                 }
+                return entity;
             } catch (IOException e) {
                 log.error("Exception CSV " + e);
             }
         }
-        return entity;
+        return null;
     }
 
     @Override
