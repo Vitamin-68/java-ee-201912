@@ -24,12 +24,13 @@ public class EntitySerializerImp<EntityType extends Serializable> implements Ent
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public EntityType deserialize(byte[] entity) {
         EntityType result;
         final ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(entity);
         try (final ObjectInputStream objectInputStream = new ObjectInputStream(byteArrayInputStream)) {
             result = (EntityType) objectInputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             log.error("Failed to read entity", e);
             throw new IllegalArgumentException("Failed to read entity", e);
         }

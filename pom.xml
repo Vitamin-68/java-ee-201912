@@ -25,6 +25,13 @@
     <modules>
         <module>common</module>
         <module>roman-gizatulin</module>
+        <module>eugene-kovalov</module>
+        <module>dmitry_litvyak</module>
+        <module>alex-tsiba</module>
+        <module>olga-tymoshenko</module>
+        <module>yuriy-shaynuk</module>
+        <module>oleg_kovalenko</module>
+        <module>common-integration-test</module>
     </modules>
 
     <dependencyManagement>
@@ -101,13 +108,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.4</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -130,7 +137,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.28</version>
+                <version>1.7.30</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -153,6 +160,37 @@
                 </exclusions>
             </dependency>
             <!-- logger -->
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>1.7</version>
+            </dependency>
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.9</version>
+            </dependency>
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>2.0.1.Final</version>
+            </dependency>
+            <!-- data base -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.4.200</version>
+            </dependency>
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/net.sourceforge.csvjdbc/csvjdbc -->
+                <groupId>net.sourceforge.csvjdbc</groupId>
+                <artifactId>csvjdbc</artifactId>
+                <version>1.0.36</version>
+            </dependency>
+            <!-- data base -->
         </dependencies>
     </dependencyManagement>
 
@@ -210,7 +248,11 @@
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- logger -->
+        <!-- database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -219,12 +261,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>

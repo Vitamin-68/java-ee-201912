@@ -18,6 +18,7 @@ public abstract class BasePrefixFileRepository<EntityType extends AbstractEntity
     protected final String repoRootPath;
 
     protected BasePrefixFileRepository(String repoRootPath) {
+
         this.repoRootPath = repoRootPath;
     }
 
@@ -34,29 +35,31 @@ public abstract class BasePrefixFileRepository<EntityType extends AbstractEntity
         final Set<Path> result = new HashSet<>();
         final FileVisitor<Path> entityVisitor = new FileVisitor<>() {
             @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) {
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
-            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
                 result.add(file);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
-            public FileVisitResult visitFileFailed(Path file, IOException exc) throws IOException {
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
                 log.error("Failed to visit file: " + file.toString(), exc);
                 return FileVisitResult.CONTINUE;
             }
 
             @Override
-            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) {
                 return FileVisitResult.CONTINUE;
             }
         };
         try {
-            Files.walkFileTree(Path.of(repoRootPath, OBJECTS_SUB_PATH), entityVisitor);
+            if (Files.exists(Path.of(repoRootPath, OBJECTS_SUB_PATH))) {
+                Files.walkFileTree(Path.of(repoRootPath, OBJECTS_SUB_PATH), entityVisitor);
+            }
         } catch (IOException e) {
             log.error("Failed to walk entities", e);
         }
