@@ -32,6 +32,7 @@
         <module>yuriy-shaynuk</module>
         <module>oleg_kovalenko</module>
         <module>common-integration-test</module>
+        <module>vitaly-mosin</module>
     </modules>
 
     <dependencyManagement>
