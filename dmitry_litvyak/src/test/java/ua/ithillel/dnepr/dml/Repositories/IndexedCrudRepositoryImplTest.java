@@ -1,7 +1,11 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.dml.domain.City;
 
@@ -9,8 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class IndexedCrudRepositoryImplTest {
@@ -49,18 +51,16 @@ class IndexedCrudRepositoryImplTest {
     void tearDown() {
     }
 
-    @Disabled
     @Test
     void findAll() {
         Assertions.assertNotNull(((ArrayList)indexedCrudRepository.findAll().get()).size()>0);
     }
 
-    @Disabled
     @Test
     void findById() {
         AbstractEntity<Integer> test = new AbstractEntity<Integer>() {};
-        test.setId(4317);
-        Assertions.assertNotNull(indexedCrudRepository.findById(test).get());
+        test.setId(4400);
+        Assertions.assertNotNull(indexedCrudRepository.findById(test.getId()).get());
     }
 
     @Test
