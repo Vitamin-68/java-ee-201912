@@ -73,6 +73,21 @@
                     <logging>${profile.logging}</logging>
                     <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <changeLogFile>src/main/resources/${profile.changeLogFile}/master.xml</changeLogFile>
+                            <driver>oracle.jdbc.driver.OracleDriver</driver>
+                            <url>jdbc:oracle:thin:@tf-appserv-linux:1521:xe</url>
+                            <username>sa</username>
+                            <password/>
+                        </configuration>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
@@ -86,6 +101,7 @@
                     <name>env</name>
                     <value>dev</value>
                 </property>
+                <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
                 <profile.propertyFile>dev/liquibase.properties</profile.propertyFile>
