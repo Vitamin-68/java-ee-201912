@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.*;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.City;
-import ua.ithillel.dnepr.yevhen.lepet.entity.Country;
 
 import java.io.FileReader;
 import java.io.FileWriter;
