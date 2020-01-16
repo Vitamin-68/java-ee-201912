@@ -3,10 +3,9 @@ package ua.ithillel;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ua.hillel.entity.City;
-import ua.hillel.repository.CrudRepositoryCity;
+import ua.hillel.csvRepo.CrudRepositoryCity;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 
 import java.util.List;

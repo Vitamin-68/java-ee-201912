@@ -1,10 +1,5 @@
 package ua.hillel.config;
 
-import ua.hillel.entity.City;
-import ua.hillel.repository.CrudRepositoryCity;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
-import ua.ithillel.dnepr.common.utils.H2Server;
-
 import java.sql.*;
 
 public class DbConfig {
