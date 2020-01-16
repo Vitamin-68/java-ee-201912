@@ -22,10 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @Slf4j
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class jdbcCrudRepositoryTest {
 
+    public static final String B_POSTFIX = LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYYMMddHHmmss"));
     private JdbcCrudRepositoryImpl testRepository;
     H2Server dbserver;
     private Connection conn;
@@ -38,19 +40,19 @@ class jdbcCrudRepositoryTest {
         DBPort = NetUtils.getFreePort();
         dbserver = new H2Server(DBPort);
         dbserver.start();
-        log.info("Server started on "+NetUtils.getHostName()+" port:"+DBPort);
+        log.info("Server started on " + NetUtils.getHostName() + " port:" + DBPort);
         Class.forName("org.h2.Driver");
-        databaseName = File.createTempFile("dml_", LocalDateTime.now().format(DateTimeFormatter.ofPattern("YYYYMMddHHmmss"))).toString();
+        databaseName = File.createTempFile("dml_", B_POSTFIX).toString();
     }
 
     @AfterAll
-    void generalClose(){
+    void generalClose() {
         dbserver.stop();
     }
 
     @BeforeEach
-    void setUp() throws SQLException{
-        conn = DriverManager.getConnection("jdbc:h2:tcp://"+NetUtils.getHostName()+':'+DBPort+'/'+databaseName,"sa","");
+    void setUp() throws SQLException {
+        conn = DriverManager.getConnection("jdbc:h2:tcp://" + NetUtils.getHostName() + ':' + DBPort + '/' + databaseName, "sa", "");
         tmpCity = new City();
         tmpCity.setName("Bandershtadt");
         tmpCity.setRegion_id(1000);
@@ -74,30 +76,31 @@ class jdbcCrudRepositoryTest {
     @Test
     void findByField() {
         testRepository.update(tmpCity);
-        assertNotNull(testRepository.findByField("Name","Bandershtadt"));
-        assertTrue(testRepository.findByField("Name","Нью Васюки").isEmpty());
+        assertNotNull(testRepository.findByField("Name", "Bandershtadt"));
+        assertTrue(testRepository.findByField("Name", "Нью Васюки").isEmpty());
     }
 
     @Test
     void addIndex() {
         testRepository.addIndex("name");
     }
+
     @Test
     void create() {
-        assertEquals(testRepository.create(tmpCity),tmpCity);
+        assertEquals(testRepository.create(tmpCity), tmpCity);
         testRepository.delete(tmpCity.getId());
     }
 
     @Test
     void update() {
         tmpCity.setName("Lviv1715");
-        assertNotEquals( ((City)testRepository.update(tmpCity)).getName(),"Bandershtadt");
+        assertNotEquals(((City) testRepository.update(tmpCity)).getName(), "Bandershtadt");
         testRepository.delete(tmpCity.getId());
     }
 
     @Test
     void delete() {
         testRepository.update(tmpCity);
-        assertEquals(testRepository.delete(99999).getId(),99999);
+        assertEquals(testRepository.delete(99999).getId(), 99999);
     }
 }
