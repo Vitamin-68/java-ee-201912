@@ -6,7 +6,9 @@ import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -52,7 +54,17 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         Optional<List<EntityType>> result;
-        try (Statement statement = connection.createStatement()) {
+        final String query = String.format(QUERRY_DATA_TYPE, getTableName(), fieldName);
+//        try (Statement statement = connection.createStatement()) {
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+//            final Field idField = super.getFieldByName("id");
+            for (int i = 1; i <= statement.getMetaData().getColumnCount(); i++) {
+                if (statement.getMetaData().getColumnName(i).equalsIgnoreCase(value.toString())) {
+                    String n = statement.getMetaData().getColumnTypeName(i);
+                    System.out.println(n);
+                }
+            }
+//            statement.getMetaData().getColumnTypeName(value)
             final List<EntityType> entities = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery(String.format(
                     QUERRY_DATA_TYPE, getTableName(), fieldName));
@@ -65,11 +77,11 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
                 e1.printStackTrace();
             }
 //        }
-            resultSet = statement.executeQuery(String.format(
-                    QUERY_SELECT_BY_FIELD,
-                    getTableName(),
-                    fieldName,
-                    value));
+//            resultSet = statement.executeQuery(String.format(
+//                    QUERY_SELECT_BY_FIELD,
+//                    getTableName(),
+//                    fieldName,
+//                    value));
             while (resultSet.next()) {
                 EntityType entity = createEntity();
                 mapField(entity, resultSet);
