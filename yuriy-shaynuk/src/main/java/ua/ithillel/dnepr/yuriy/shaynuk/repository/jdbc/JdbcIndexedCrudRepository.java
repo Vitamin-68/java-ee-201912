@@ -30,17 +30,17 @@ public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>
 
     @Override
     public Optional<List<EntityType>> findAll() {
-        return Optional.empty();
+        return immutableRepository.findAll();
     }
 
     @Override
     public Optional<EntityType> findById(IdType id) {
-        return Optional.empty();
+        return immutableRepository.findById(id);
     }
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        return Optional.empty();
+        return immutableRepository.findByField(fieldName,value);
     }
 
     @Override
@@ -55,16 +55,16 @@ public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>
 
     @Override
     public EntityType create(EntityType entity) {
-        return null;
+        return mutableRepository.create(entity);
     }
 
     @Override
     public EntityType update(EntityType entity) {
-        return null;
+        return mutableRepository.update(entity);
     }
 
     @Override
     public EntityType delete(IdType id) {
-        return null;
+        return mutableRepository.delete(id);
     }
 }

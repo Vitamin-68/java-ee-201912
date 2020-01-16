@@ -3,7 +3,9 @@ package ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +26,18 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
 
     @Override
     public Optional<EntityType> findById(IdType id) {
-        return Optional.empty();
+        Optional<EntityType> result;
+        try {
+            result = Optional.ofNullable(getEntityById(id));
+        } catch (SQLException |
+                NoSuchMethodException |
+                InstantiationException |
+                IllegalAccessException |
+                InvocationTargetException |
+                NoSuchFieldException e) {
+            throw new IllegalStateException("Failed to create entity", e);
+        }
+        return result;
     }
 
     @Override
