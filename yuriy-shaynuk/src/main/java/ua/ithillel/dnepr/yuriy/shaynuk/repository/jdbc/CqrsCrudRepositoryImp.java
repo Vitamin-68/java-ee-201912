@@ -1,8 +1,10 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc;
 
-import ua.ithillel.dnepr.common.repository.ImmutableRepository;
-import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
-import ua.ithillel.dnepr.common.repository.MutableRepository;
+import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.CqrsCrudRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.CqrsImmutableRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.CqrsMutableRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.Observer;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import java.sql.Connection;
@@ -12,20 +14,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>, IdType>
-        implements IndexedCrudRepository<EntityType, IdType> {
+public class CqrsCrudRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
+        implements CqrsCrudRepository<EntityType, IdType> {
 
     private final Connection connection;
     private final Class<? extends EntityType> clazz;
-    private final ImmutableRepository<EntityType, IdType> immutableRepository;
-    private final MutableRepository<EntityType, IdType> mutableRepository;
+    private final CqrsImmutableRepository<EntityType, IdType> immutableRepository;
+    private final CqrsMutableRepository<EntityType, IdType> mutableRepository;
     private final Set<String> indexes = Collections.synchronizedSet(new HashSet<>());
 
-    public JdbcIndexedCrudRepository(Connection connection, Class<? extends EntityType> clazz) {
+    public CqrsCrudRepositoryImp(Connection connection, Class<? extends EntityType> clazz, CrudRepository<EntityType, IdType> crudRepository) {
         this.connection = connection;
         this.clazz = clazz;
-        immutableRepository = new JdbcImmutableRepositoryImp<>(this.connection, this.clazz);
-        mutableRepository = new JdbcMutableRepositoryImp<>(this.connection, this.clazz);
+
+        immutableRepository = new CqrsImmutableRepositoryImp<>(crudRepository);
+        mutableRepository = new CqrsMutableRepositoryImp<>(this.connection, this.clazz);
+
+        for (Observer<EntityType, IdType> observer : immutableRepository.getObservers()) {
+            mutableRepository.addListener(observer);
+        }
     }
 
     @Override
@@ -41,16 +48,6 @@ public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         return immutableRepository.findByField(fieldName,value);
-    }
-
-    @Override
-    public void addIndex(String field) {
-
-    }
-
-    @Override
-    public void addIndexes(List<String> fields) {
-
     }
 
     @Override

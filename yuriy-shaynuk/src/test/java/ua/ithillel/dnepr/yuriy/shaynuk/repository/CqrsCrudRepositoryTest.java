@@ -5,28 +5,30 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.CrudRepositoryImp;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.Utils;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc.JdbcIndexedCrudRepository;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc.CqrsCrudRepositoryImp;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
 @Slf4j
-class JdbcIndexedCrudRepositoryTest {
+class CqrsCrudRepositoryTest {
     private static final int PORT = NetUtils.getFreePort();
     private static final String TEST_DB_NAME = "test_sqlite.db";
 
     private static H2Server h2Server;
-    private static JdbcIndexedCrudRepository<City, Integer> cityRepository;
+    private static CqrsCrudRepositoryImp<City, Integer> cityRepository;
+    static private CrudRepository<City, Integer> cityCrudRepository;
 
     @BeforeAll
     static void setup() throws IOException, SQLException, ClassNotFoundException {
@@ -41,7 +43,11 @@ class JdbcIndexedCrudRepositoryTest {
         h2Server.start();
         Class.forName("org.sqlite.JDBC");
         Connection connection = DriverManager.getConnection("jdbc:sqlite:".concat(repoRootPath));
-        cityRepository = new JdbcIndexedCrudRepository<>(connection, City.class);
+        File dataFile = Utils.createTempFile("cityyy.csv");
+        if (dataFile != null) {
+            cityCrudRepository = new CrudRepositoryImp<City, Integer>(dataFile.getPath(),City.class);
+        }
+        cityRepository = new CqrsCrudRepositoryImp<>(connection, City.class, cityCrudRepository);
     }
 
     @AfterAll
@@ -55,11 +61,11 @@ class JdbcIndexedCrudRepositoryTest {
 //        assertFalse(cities.get().isEmpty());
 //    }
 //
-//    @Test
-//    void findById() {
-//        Optional<City> test = cityRepository.findById(999);
-//        Assertions.assertFalse(test.isEmpty());
-//    }
+    @Test
+    void findById() {
+        Optional<City> test = cityRepository.findById(999);
+        Assertions.assertFalse(test.isEmpty());
+    }
 //
 //    @Test
 //    void findByField() {

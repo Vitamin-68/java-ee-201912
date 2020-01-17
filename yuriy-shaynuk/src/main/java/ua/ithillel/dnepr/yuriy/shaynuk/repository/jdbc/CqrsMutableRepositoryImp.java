@@ -1,7 +1,9 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
-import ua.ithillel.dnepr.common.repository.MutableRepository;
+import ua.ithillel.dnepr.common.repository.IndexedRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.CqrsMutableRepository;
+import ua.ithillel.dnepr.common.repository.cqrs.Observer;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import java.lang.reflect.Field;
@@ -12,15 +14,16 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Slf4j
-public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
-        extends BaseJdbcRepository<EntityType, IdType>
-        implements MutableRepository<EntityType, IdType> {
+public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
+        extends BaseCqrsRepository<EntityType, IdType>
+        implements CqrsMutableRepository<EntityType, IdType>, IndexedRepository {
 
+    private final List<Observer<EntityType, IdType>> observers = new ArrayList<>();
     private PreparedStatement insertStatement;
     private PreparedStatement updateStatement;
     private PreparedStatement deleteStatement;
 
-    public JdbcMutableRepositoryImp(Connection connection, Class<? extends EntityType> clazz) {
+    public CqrsMutableRepositoryImp(Connection connection, Class<? extends EntityType> clazz) {
         super(connection, clazz);
         try {
             insertStatement = connection.prepareStatement(getSQLInsertString());
@@ -49,6 +52,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         } catch (SQLException | IllegalAccessException e) {
             log.error("create error",e);
         }
+        sendNotification(entity);
         return entity;
     }
 
@@ -68,7 +72,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         } catch (IllegalAccessException | SQLException e) {
             e.printStackTrace();
         }
-
+        sendNotification(entity);
         return entity;
     }
 
@@ -87,6 +91,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         } catch (SQLException e) {
             log.error("deleteStatement error",e);
         }
+        sendNotification(entity);
         return entity;
     }
 
@@ -129,7 +134,6 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
                 query.append(",");
             }
         }
-
         query.append(" WHERE id= ?");
         return query.toString();
     }
@@ -139,5 +143,26 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         return " DELETE FROM " +
                 getTableName() +
                 " WHERE id= ?";
+    }
+
+    @Override
+    public void addIndex(String field) {
+
+    }
+
+    @Override
+    public void addIndexes(List<String> fields) {
+
+    }
+
+    @Override
+    public void addListener(Observer<EntityType, IdType> observer) {
+        observers.add(observer);
+    }
+
+    private void sendNotification(EntityType entity) {
+        observers.forEach(observer -> {
+            observer.update(entity);
+        });
     }
 }

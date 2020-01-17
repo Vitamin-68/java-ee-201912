@@ -2,7 +2,6 @@ package ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc;
 
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.utils.H2TypeUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class BaseJdbcRepository <EntityType extends AbstractEntity<IdType>, IdType> {
+public class BaseCqrsRepository<EntityType extends AbstractEntity<IdType>, IdType> {
     protected static final String QUERY_SELECT_BY_ID = "SELECT * FROM %s WHERE id = %s";
     protected static final String QUERY_COUNT_BY_ID = "SELECT COUNT(*) FROM %s WHERE id = %s";
     protected static final String SQL_INSERT = "insert";
@@ -28,7 +27,7 @@ public class BaseJdbcRepository <EntityType extends AbstractEntity<IdType>, IdTy
     protected final Connection connection;
     protected final Class<? extends EntityType> clazz;
 
-    protected BaseJdbcRepository(Connection connection, Class<? extends EntityType> clazz) {
+    protected BaseCqrsRepository(Connection connection, Class<? extends EntityType> clazz) {
         Objects.requireNonNull(connection, "Connection is undefined");
         this.connection = connection;
         this.clazz = clazz;
