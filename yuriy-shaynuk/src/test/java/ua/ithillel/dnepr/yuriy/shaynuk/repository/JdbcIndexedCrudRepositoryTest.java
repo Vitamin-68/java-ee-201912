@@ -87,7 +87,7 @@ class JdbcIndexedCrudRepositoryTest {
     void update() {
         City testCity = new City();
         testCity.setName("Москва");
-        testCity.setCountry_id(31599);
+        testCity.setCountry_id(3159);
         testCity.setRegion_id(4312);
         testCity.setId(999);
 
