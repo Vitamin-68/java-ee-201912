@@ -5,8 +5,8 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <include file="changelog/001_create_table_user.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/002_create_table_countries.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/003_create_table_regions.xml" relativeToChangelogFile="true"/>
-    <include file="changelog/004_create_table_cities.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-17-01-create-table-user.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-17-02-create-table-countries.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-17-03-create-table-regions.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-17-04-create-table-cities.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
