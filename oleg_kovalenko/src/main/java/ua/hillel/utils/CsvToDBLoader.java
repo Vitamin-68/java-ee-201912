@@ -17,31 +17,33 @@ import java.util.List;
 @Slf4j
 public class CsvToDBLoader {
 
-    public void init() {
+    public void init(int port) {
         CsvToDBLoader loader = new CsvToDBLoader();
-        try (H2Server h2Server = new H2Server(9092)) {
+        try (H2Server h2Server = new H2Server(port)) {
             h2Server.start();
-            loader.addFromCsv("/home/oleg/study/prj_hillel_java_ee_201912/oleg_kovalenko/src/main/resources/city.csv");
-            loader.addFromCsv("/home/oleg/study/prj_hillel_java_ee_201912/oleg_kovalenko/src/main/resources/country.csv");
+            loader.addFromCsv("src/main/resources/city.csv", "CITY");
+            loader.addFromCsv("src/main/resources/country.csv", "COUNTRY");
             h2Server.stop();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void addFromCsv(String pathToCsv) {
+    public void addFromCsv(String pathToCsv, String tableName) {
 
         String fileName = pathToCsv.substring(pathToCsv.lastIndexOf("/") + 1);
         PreparedStatement statement;
         createSchema();
         createTables();
+        String fillCity = String.format("insert into %s values (?,?,?,?)", tableName);
+        String fillCountry = String.format("insert into %s values (?,?,?)", tableName);
 
         try {
             if (fileName.equals("city.csv")) {
                 CrudRepository repoCity = new CrudRepositoryCity(pathToCsv, ';');
 
                 List<City> cities = (List<City>) repoCity.findAll().get();
-                statement = DbConfig.getConnectJdbc().prepareStatement("insert into STUDY.CITY values (?,?,?,?)");
+                statement = DbConfig.getConnectJdbc().prepareStatement(fillCity);
                 for (City city : cities) {
                     statement.setInt(1, city.getCityId());
                     statement.setInt(2, city.getCountryId());
@@ -53,7 +55,7 @@ public class CsvToDBLoader {
                 CrudRepository repoCountry = new CrudRepositoryCountry(pathToCsv, ';');
                 List<Country> countries = (List<Country>) repoCountry.findAll().get();
 
-                statement = DbConfig.getConnectJdbc().prepareStatement("insert into STUDY.COUNTRY values (?,?,?)");
+                statement = DbConfig.getConnectJdbc().prepareStatement(fillCountry);
                 for (Country country : countries) {
                     statement.setInt(1, country.getCountryId());
                     statement.setInt(2, country.getCityId());
@@ -69,7 +71,7 @@ public class CsvToDBLoader {
         }
     }
 
-    private void createSchema() {
+    public void createSchema() {
         try {
             PreparedStatement statement = DbConfig.getConnectJdbc().prepareStatement("create schema if not exists STUDY");
             statement.executeUpdate();
@@ -79,7 +81,7 @@ public class CsvToDBLoader {
         }
     }
 
-    private void createTables() {
+    public void createTables() {
         String createCity = "create table if not exists STUDY.City(city_id int primary key , country_id int, region_id int, name varchar(100))";
         String createCountry = "create table if not exists STUDY.Country(country_id int primary key , city_id int, name varchar(100))";
         try {

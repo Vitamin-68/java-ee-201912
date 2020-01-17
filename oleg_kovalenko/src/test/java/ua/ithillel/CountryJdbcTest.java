@@ -1,29 +1,45 @@
 package ua.ithillel;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import ua.hillel.config.DbConfig;
 import ua.hillel.entity.Country;
-import ua.hillel.csvRepo.CrudRepositoryCountry;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.hillel.entity.Country;
+import ua.hillel.jdbcRepo.JdbcRepoCountry;
+import ua.hillel.utils.CsvToDBLoader;
+import ua.ithillel.dnepr.common.utils.H2Server;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class CountryRepositoryTest {
-
-    private CrudRepository repositoryRead;
-    private CrudRepository repositoryDml;
-    String pathForRead = "../oleg_kovalenko/src/test/resources/country.csv";
-    String pathForDml = "../oleg_kovalenko/src/test/resources/countryTest.csv";
-    char delimeter = ';';
+public class CountryJdbcTest {
+    private JdbcRepoCountry repositoryRead;
+    private JdbcRepoCountry repositoryDml;
+    private static H2Server server;
 
     @BeforeEach
-    void init() {
-        repositoryRead = new CrudRepositoryCountry(pathForRead, delimeter);
-        repositoryDml = new CrudRepositoryCountry(pathForDml, delimeter);
+    void initEach() {
+        repositoryRead = new JdbcRepoCountry("STUDY.COUNTRY");
+        repositoryDml = new JdbcRepoCountry("STUDY.COUNTRY_TMP");
+    }
+
+    @BeforeAll
+    static void initAll() {
+        CsvToDBLoader loader = new CsvToDBLoader();
+        server = new H2Server(9092);
+        String into = "create table STUDY.COUNTRY_TMP as SELECT * FROM STUDY.COUNTRY LIMIT 0";
+        try {
+            server.start();
+            PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(into);
+            stmt.execute();
+            loader.addFromCsv("src/test/resources/Country.csv", "STUDY.COUNTRY_TMP");
+
+        } catch (SQLException e) {
+            log.error("error creation {}", e.getMessage());
+        }
     }
 
     @Test
@@ -40,7 +56,7 @@ public class CountryRepositoryTest {
 
     @Test
     public void findByFieldIdTest() {
-        Optional<List<Country>> expected = repositoryRead.findByField("countryId", "11014");
+        Optional<List<Country>> expected = repositoryRead.findByField("country_id", "11014");
         int actual = 1;
         Assertions.assertEquals(actual, expected.get().size());
     }
@@ -63,10 +79,10 @@ public class CountryRepositoryTest {
     }
 
     @Test
-    public void updateCityIdTest() {
+    public void updateCountryIdTest() {
         repositoryDml.update(new Country(11060, 123657, "Япония"));
         Optional<Country> country = repositoryDml.findById(11060);
-        int expected = country.get().getCityId();
+        int expected = country.get().getCountryId();
         int actual = 123657;
         Assertions.assertEquals(actual, expected);
     }
@@ -78,5 +94,19 @@ public class CountryRepositoryTest {
         String expected = country.get().getName();
         String actual = "Ямайка Туц-Туц";
         Assertions.assertEquals(actual, expected);
+    }
+
+    @AfterAll
+    static void finish() throws InterruptedException {
+        String sql = "drop table STUDY.COUNTRY_TMP";
+        try {
+            server.start();
+            PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql);
+            stmt.execute();
+            server.stop();
+            server.close();
+        } catch (SQLException e) {
+            log.error("error drop {}", e.getMessage());
+        }
     }
 }

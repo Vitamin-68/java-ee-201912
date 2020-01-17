@@ -3,7 +3,7 @@ package ua.hillel.jdbcRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.config.DbConfig;
-import ua.hillel.entity.City;
+import ua.hillel.entity.Country;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 
 import java.sql.PreparedStatement;
@@ -15,47 +15,47 @@ import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
-public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
+public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> {
 
     private String tableName;
 
     @Override
-    public Optional<List<City>> findAll() {
-        String sql = "select * from STUDY.CITY";
-        List<City> cities = new ArrayList<>();
+    public Optional<List<Country>> findAll() {
+        String sql = "select * from STUDY.COUNTRY";
+        List<Country> countries = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                cities.add(new City(rs.getInt(1), rs.getInt(2),
-                        rs.getInt(3), rs.getString(4)));
+                countries.add(new Country(rs.getInt(1), rs.getInt(2),
+                        rs.getString(3)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return Optional.of(cities);
+        return Optional.of(countries);
     }
 
     @Override
-    public Optional<City> findById(Integer id) {
-        String sql = "select * from STUDY.CITY where city_id = ?";
-        City city = null;
+    public Optional<Country> findById(Integer id) {
+        String sql = "select * from STUDY.COUNTRY where Country_id = ?";
+        Country country = null;
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             rs.next();
-            city = new City(rs.getInt(1), rs.getInt(2),
-                    rs.getInt(3), rs.getString(4));
+            country = new Country(rs.getInt(1), rs.getInt(2),
+                    rs.getString(3));
             rs.close();
         } catch (SQLException e) {
             log.info("can't find {}", e.getMessage());
         }
-        return Optional.of(city);
+        return Optional.of(country);
     }
 
     @Override
-    public Optional<List<City>> findByField(String fieldName, Object value) {
-        String sql = String.format("select * from STUDY.City where %s = ?", fieldName);
-        List<City> cities = new ArrayList<>();
+    public Optional<List<Country>> findByField(String fieldName, Object value) {
+        String sql = String.format("select * from STUDY.COUNTRY where %s = ?", fieldName);
+        List<Country> countries = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             if (fieldName.equals("name")) {
                 stmt.setString(1, value.toString());
@@ -64,19 +64,19 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
             }
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                cities.add(new City(rs.getInt(1), rs.getInt(2),
-                        rs.getInt(3), rs.getString(4)));
+                countries.add(new Country(rs.getInt(1), rs.getInt(2),
+                        rs.getString(3)));
             }
             rs.close();
         } catch (SQLException e) {
             log.info("can't find {}", e.getMessage());
         }
-        return Optional.of(cities);
+        return Optional.of(countries);
     }
 
     @Override
     public void addIndex(String field) {
-        String sql = String.format("CREATE INDEX id_idx ON STUDY.CITY(%s)", field);
+        String sql = String.format("CREATE INDEX id_idx ON STUDY.COUNTRY(%s)", field);
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -87,7 +87,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
     @Override
     public void addIndexes(List<String> fields) {
         for (String field : fields) {
-            String sql = String.format("CREATE INDEX id_idx ON STUDY.CITY(%s)", field);
+            String sql = String.format("CREATE INDEX id_idx ON STUDY.COUNTRY(%s)", field);
             try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -97,23 +97,21 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
     }
 
     @Override
-    public City create(City entity) {
-        String sql = "insert into STUDY.CITY values (?,?,?,?)";
-        return getCity(entity, sql);
+    public Country create(Country entity) {
+        String sql = "insert into STUDY.COUNTRY values (?,?,?)";
+        return getCountry(entity, sql);
     }
 
     @Override
-    public City update(City entity) {
-        String sql = "update STUDY.CITY " +
-                "set country_id = ?," +
-                "region_id = ?," +
+    public Country update(Country entity) {
+        String sql = "update STUDY.COUNTRY " +
+                "set region_id = ?," +
                 "name =? " +
-                "where city_id = ?";
+                "where Country_id = ?";
 
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
-            stmt.setInt(4, entity.getCityId());
+            stmt.setInt(2, entity.getCountryId());
             stmt.setInt(1, entity.getCountryId());
-            stmt.setInt(2, entity.getRegionId());
             stmt.setString(3, entity.getName());
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -123,24 +121,23 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
     }
 
     @Override
-    public City delete(Integer id) {
-        String sql = "delete from STUDY.CITY where city_id = ?";
-        City city = findById(id).get();
+    public Country delete(Integer id) {
+        String sql = "delete from STUDY.COUNTRY where Country_id = ?";
+        Country country = findById(id).get();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return city;
+        return country;
     }
 
-    private City getCity(City entity, String sql) {
+    private Country getCountry(Country entity, String sql) {
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
-            stmt.setInt(1, entity.getCityId());
+            stmt.setInt(1, entity.getCountryId());
             stmt.setInt(2, entity.getCountryId());
-            stmt.setInt(3, entity.getRegionId());
-            stmt.setString(4, entity.getName());
+            stmt.setString(3, entity.getName());
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.info("Error executing {}", e.getMessage());
