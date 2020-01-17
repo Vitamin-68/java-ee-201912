@@ -97,6 +97,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
         }
     }
 
+    @SuppressWarnings("Duplicates")
     protected boolean isEntityExists(EntityType entity) throws SQLException {
         final String idFieldName = "id";
         boolean result = false;

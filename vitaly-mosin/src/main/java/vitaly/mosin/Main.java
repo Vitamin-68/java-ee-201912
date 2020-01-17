@@ -20,7 +20,7 @@ public class Main {
         log.info("=== My application started ===");
         final int PORT = NetUtils.getFreePort();
         final String TEST_DB_NAME = "test_db";
-        final String PATH_TEST_DB = "./vitaly-mosin/tmp_DB/";
+        final String PATH_TEST_DB = "./vitaly-mosin/target/temp_DB/";
         Connection connection;
 
 
@@ -43,6 +43,7 @@ public class Main {
 
 //        crudRepository.findAll();
 //        crudRepository.findById(4400);
+//        crudRepository.findByField("id", 4313);
         crudRepository.findByField("name", "Москва");
         System.out.println("Done");
 
