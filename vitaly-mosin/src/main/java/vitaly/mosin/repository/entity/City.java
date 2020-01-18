@@ -2,10 +2,12 @@ package vitaly.mosin.repository.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 @Getter
 @Setter
+@ToString
 public class City extends AbstractEntity<Integer> {
 
     private Integer id;

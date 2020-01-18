@@ -39,6 +39,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
                 EntityType entity = createEntity();
                 mapField(entity, resultSet);
                 result.add(entity);
+                System.out.println(entity);
             }
         } catch (SQLException | IllegalAccessException e) {
             throw new IllegalStateException(e);

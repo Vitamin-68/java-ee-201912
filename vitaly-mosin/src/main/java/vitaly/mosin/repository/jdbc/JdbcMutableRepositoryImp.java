@@ -63,6 +63,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         return result;
     }
 
+    @SuppressWarnings("Duplicates")
     private EntityType createOrUpdateEntity(EntityType entity) {
         Objects.requireNonNull(entity, "Entity is undefined");
         Objects.requireNonNull(entity.getId(), "Entity id is undefined");
@@ -79,8 +80,17 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             query.append(getTableName());
             query.append(" SET ");
             for (Field objectsEntry : entityFields) {
-                query.append(objectsEntry).append(" = ").append(objectsEntry.getName()).append(" , ");
+                try {
+                    if (!objectsEntry.getName().equalsIgnoreCase("name")) {
+                        query.append(objectsEntry.getName()).append(" = ").append(objectsEntry.get(entity)).append(" , ");
+                    } else {
+                        query.append(objectsEntry.getName()).append(" = ").append("'").append(objectsEntry.get(entity)).append("'").append(" , ");
+                    }
+                } catch (IllegalAccessException e) {
+                    log.error("Error create query string", e);
+                }
             }
+
             query.delete(query.lastIndexOf(","), query.length());
             query.append(" WHERE id = ? ");
         } else {
@@ -99,6 +109,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             values.append(" ) ");
             query.append(keys).append(" ").append(" VALUES ").append(values);
         }
+        System.out.println(query);
         try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
             if (isEntityExists) {
                 statement.setObject(1, entity.getId());
