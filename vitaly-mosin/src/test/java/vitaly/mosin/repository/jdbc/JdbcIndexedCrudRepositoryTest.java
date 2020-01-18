@@ -10,6 +10,7 @@ class JdbcIndexedCrudRepositoryTest {
 
     @BeforeEach
     void setUp() {
+
     }
 
     @AfterEach
