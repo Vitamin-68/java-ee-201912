@@ -14,6 +14,7 @@ import vitaly.mosin.repository.exceptions.MyRepoException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
                 .withHeader(regionCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             for (CSVRecord oneStr : csvParser) {
                 Region region = new Region();
                 setFieldsRegion(oneStr, region);
@@ -65,7 +66,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
                 .withHeader(regionCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             Region city = new Region();
             for (CSVRecord oneStr : csvParser) {
                 if (Integer.parseInt(oneStr.get(0)) == id) {
@@ -88,7 +89,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
                 .withHeader(regionCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             int fieldNumber = numberOfColumn4Seek(csvParser, fieldName);
             if (fieldNumber < 0) {
                 log.error("Field name is wrong");
@@ -116,7 +117,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
         if (findById(entity.getId()).isEmpty()) {
             final List<Region> regions = findAll().get();
             regions.add(entity);
-            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                     .withHeader(regionCsvHeader)
                     .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
@@ -142,7 +143,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
             throw new MyRepoException(ExceptionResponseCode.FAILED_UPDATE_CONTACT, "Update error, region not found.");
         }
         List<Region> result = findAll().get();
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(regionCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {
@@ -182,7 +183,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
                 break;
             }
         }
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(regionCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {
