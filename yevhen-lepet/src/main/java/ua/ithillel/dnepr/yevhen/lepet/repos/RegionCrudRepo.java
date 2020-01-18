@@ -15,7 +15,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class RegionCrudRepo implements CrudRepository<Region, Integer> {
@@ -26,9 +30,9 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
     private final String CITY_ID = "city_id";
     private final String NAME = "name";
 
-    public RegionCrudRepo(String filePath) {
+    public RegionCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
-        this.delimiter = ';';
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -41,7 +45,7 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
-                getRegion(csvRecord);
+                convertRegion(csvRecord);
                 Region region = new Region();
                 regions.add(region);
             }
@@ -52,14 +56,7 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
         return result;
     }
 
-    private Region getRegion(CSVRecord csvRecord) {
-        Region region = new Region();
-        region.setId(Integer.parseInt(csvRecord.get(REGION_ID)));
-        region.setCountry_id(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
-        region.setCity_id(Integer.parseInt(csvRecord.get(CITY_ID)));
-        region.setName(csvRecord.get(NAME));
-        return region;
-    }
+
 
     @Override
     public Optional<Region> findById(Integer id) {
@@ -71,7 +68,7 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 if (Integer.parseInt(csvRecord.get(REGION_ID)) == id) {
-                    result = Optional.of(getRegion(csvRecord));
+                    result = Optional.of(convertRegion(csvRecord));
                 }
             }
         } catch (IOException e) {
@@ -94,7 +91,7 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
                 if (City.class.getDeclaredField(fieldName) != null) {
                     for (CSVRecord csvRecord : csvParser.getRecords()) {
                         if (Objects.equals(csvRecord.get(fieldName), value.toString())) {
-                            searchRegion.add(getRegion(csvRecord));
+                            searchRegion.add(convertRegion(csvRecord));
                         }
                     }
                     result = Optional.of(searchRegion);
@@ -139,10 +136,32 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
                 region.setCity_id(entity.getCity_id());
                 region.setName(entity.getName());
                 addCSVPrinter((List<Region>) region);
+                return entity;
+            }
+        }
+        return entity;
+    }
+
+    @Override
+    public Region delete(Integer id) {
+        Optional<List<Region>> regions = findAll();
+        for (Region region : regions.get()) {
+            if (region.getId().equals(id)) {
+                regions.get().remove(region);
+                addCSVPrinter((List<Region>) region);
                 return region;
             }
         }
         return new Region();
+    }
+
+    private Region convertRegion(CSVRecord csvRecord) {
+        Region region = new Region();
+        region.setId(Integer.parseInt(csvRecord.get(REGION_ID)));
+        region.setCountry_id(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
+        region.setCity_id(Integer.parseInt(csvRecord.get(CITY_ID)));
+        region.setName(csvRecord.get(NAME));
+        return region;
     }
 
     private void addCSVPrinter(List<Region> regions) {
@@ -161,19 +180,6 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
         } catch (IOException e) {
             log.error("Exception CSV " + e);
         }
-    }
-
-    @Override
-    public Region delete(Integer id) {
-        Optional<List<Region>> regions = findAll();
-        for (Region region : regions.get()) {
-            if (region.getId().equals(id)) {
-                regions.get().remove(region);
-                addCSVPrinter((List<Region>) region);
-                return region;
-            }
-        }
-        return new Region();
     }
 }
 

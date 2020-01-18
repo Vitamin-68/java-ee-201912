@@ -14,10 +14,11 @@ import java.util.Optional;
 public class CountryCrudRepoTest {
     private CountryCrudRepo countryCrudRepo;
     private static final String PATH_COUNTRY_CSV = "./src/main/resources/country.csv";
+    private static final char DELIMITER = ';';
 
     @BeforeEach
     void setUp() {
-        countryCrudRepo = new CountryCrudRepo(PATH_COUNTRY_CSV);
+        countryCrudRepo = new CountryCrudRepo(PATH_COUNTRY_CSV, DELIMITER);
     }
 
     @Test

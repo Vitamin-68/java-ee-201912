@@ -15,10 +15,11 @@ import java.util.Optional;
 public class CityCrudRepoTest {
     private CityCrudRepo cityCrudRepo;
     private static final String PATH_CITY_CSV = "./src/main/resources/city.csv";
+    private static final char DELIMITER = ';';
 
     @BeforeEach
     void setUp() {
-        cityCrudRepo = new CityCrudRepo(PATH_CITY_CSV);
+        cityCrudRepo = new CityCrudRepo(PATH_CITY_CSV, DELIMITER);
     }
 
     @Test

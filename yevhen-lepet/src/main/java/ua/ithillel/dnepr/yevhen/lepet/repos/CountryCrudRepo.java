@@ -14,7 +14,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class CountryCrudRepo implements CrudRepository<Country, Integer> {
@@ -24,9 +29,9 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     private final String CITY_ID = "city_id";
     private final String NAME = "name";
 
-    public CountryCrudRepo(String filePath) {
+    public CountryCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
-        this.delimiter = ';';
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -39,7 +44,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
-                getCountry(csvRecord);
+                convertCountry(csvRecord);
                 Country country = new Country();
                 countries.add(country);
             }
@@ -60,21 +65,13 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 if (Integer.parseInt(csvRecord.get(COUNTRY_ID)) == id) {
-                    result = Optional.of(getCountry(csvRecord));
+                    result = Optional.of(convertCountry(csvRecord));
                 }
             }
         } catch (IOException e) {
             log.error("Exception CSV " + e);
         }
         return result;
-    }
-
-    private Country getCountry(CSVRecord csvRecord) {
-        Country country = new Country();
-        country.setName(csvRecord.get(NAME));
-        country.setCity_id(Integer.parseInt(csvRecord.get(CITY_ID)));
-        country.setId(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
-        return country;
     }
 
     @Override
@@ -91,7 +88,7 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                 if (Country.class.getDeclaredField(fieldName) != null) {
                     for (CSVRecord csvRecord : csvParser.getRecords()) {
                         if (Objects.equals(csvRecord.get(fieldName), value.toString())) {
-                            searchCountry.add(getCountry(csvRecord));
+                            searchCountry.add(convertCountry(csvRecord));
                         }
                     }
                     result = Optional.of(searchCountry);
@@ -132,10 +129,10 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                 country.setCity_id(entity.getCity_id());
                 country.setName(entity.getName());
                 addCSVPrinter(Collections.singletonList(country));
-                return country;
+                return entity;
             }
         }
-        return new Country();
+        return entity;
     }
 
     @Override
@@ -164,5 +161,13 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
         } catch (IOException e) {
             log.error("Exception CSV " + e);
         }
+    }
+
+    private Country convertCountry(CSVRecord csvRecord) {
+        Country country = new Country();
+        country.setName(csvRecord.get(NAME));
+        country.setCity_id(Integer.parseInt(csvRecord.get(CITY_ID)));
+        country.setId(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
+        return country;
     }
 }

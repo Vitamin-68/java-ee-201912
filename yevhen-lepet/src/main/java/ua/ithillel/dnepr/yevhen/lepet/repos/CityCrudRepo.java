@@ -1,7 +1,11 @@
 package ua.ithillel.dnepr.yevhen.lepet.repos;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yevhen.lepet.entity.City;
 
@@ -11,7 +15,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Slf4j
 public class CityCrudRepo implements CrudRepository<City, Integer> {
@@ -22,9 +30,9 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
     private final String REGION_ID = "region_id";
     private final String NAME = "name";
 
-    public CityCrudRepo(String filePath) {
+    public CityCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
-        this.delimiter = ';';
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -37,7 +45,7 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                     .withDelimiter(delimiter)
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
-                getCity(csvRecord);
+                convetCity(csvRecord);
                 City city = new City();
                 cities.add(city);
             }
@@ -58,22 +66,13 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                     .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 if (Integer.parseInt(csvRecord.get(CITY_ID)) == id) {
-                    result = Optional.of(getCity(csvRecord));
+                    result = Optional.of(convetCity(csvRecord));
                 }
             }
         } catch (IOException e) {
             log.error("Exception CSV " + e);
         }
         return result;
-    }
-
-    private City getCity(CSVRecord csvRecord) {
-        City city = new City();
-        city.setId(Integer.parseInt(csvRecord.get(CITY_ID)));
-        city.setCountry_id(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
-        city.setRegion_id(Integer.parseInt(csvRecord.get(REGION_ID)));
-        city.setName(csvRecord.get(NAME));
-        return city;
     }
 
     @Override
@@ -90,7 +89,7 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                 if (City.class.getDeclaredField(fieldName) != null) {
                     for (CSVRecord csvRecord : csvParser.getRecords()) {
                         if (Objects.equals(csvRecord.get(fieldName), value.toString())) {
-                            searchCity.add(getCity(csvRecord));
+                            searchCity.add(convetCity(csvRecord));
                         }
                     }
                     result = Optional.of(searchCity);
@@ -137,10 +136,32 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                 city.setRegion_id(entity.getRegion_id());
                 city.setName(entity.getName());
                 addCSVPrinter((List<City>) city);
+                return entity;
+            }
+        }
+        return entity;
+    }
+
+    @Override
+    public City delete(Integer id) {
+        Optional<List<City>> cities = findAll();
+        for (City city : cities.get()) {
+            if (city.getId().equals(id)) {
+                cities.get().remove(city);
+                addCSVPrinter((List<City>) city);
                 return city;
             }
         }
         return new City();
+    }
+
+    private City convetCity(CSVRecord csvRecord) {
+        City city = new City();
+        city.setId(Integer.parseInt(csvRecord.get(CITY_ID)));
+        city.setCountry_id(Integer.parseInt(csvRecord.get(COUNTRY_ID)));
+        city.setRegion_id(Integer.parseInt(csvRecord.get(REGION_ID)));
+        city.setName(csvRecord.get(NAME));
+        return city;
     }
 
     private void addCSVPrinter(List<City> cities) {
@@ -159,18 +180,5 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
         } catch (IOException e) {
             log.error("Exception CSV " + e);
         }
-    }
-
-    @Override
-    public City delete(Integer id) {
-        Optional<List<City>> cities = findAll();
-        for (City city : cities.get()) {
-            if (city.getId().equals(id)) {
-                cities.get().remove(city);
-                addCSVPrinter((List<City>) city);
-                return city;
-            }
-        }
-        return new City();
     }
 }
