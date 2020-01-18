@@ -2,7 +2,11 @@ package ua.ithillel.dnepr.dml.service;
 
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 @Slf4j
 public class FileEntitySerializer<EntityType extends Serializable> implements EntitySerializer {
