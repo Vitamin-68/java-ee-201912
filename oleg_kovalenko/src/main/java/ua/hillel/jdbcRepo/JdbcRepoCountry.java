@@ -4,7 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.config.DbConfig;
 import ua.hillel.entity.Country;
+import ua.hillel.entity.Region;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
+import ua.ithillel.dnepr.common.utils.H2Server;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,7 +23,7 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
 
     @Override
     public Optional<List<Country>> findAll() {
-        String sql = "select * from STUDY.COUNTRY";
+        String sql = String.format("select * from %s ", tableName);
         List<Country> countries = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -30,14 +32,14 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
                         rs.getString(3)));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            log.error("Empty {}", e.getMessage());
         }
         return Optional.of(countries);
     }
 
     @Override
     public Optional<Country> findById(Integer id) {
-        String sql = "select * from STUDY.COUNTRY where Country_id = ?";
+        String sql = String.format("select * from %s where Country_id = ?", tableName);
         Country country = null;
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -54,7 +56,7 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
 
     @Override
     public Optional<List<Country>> findByField(String fieldName, Object value) {
-        String sql = String.format("select * from STUDY.COUNTRY where %s = ?", fieldName);
+        String sql = String.format("select * from %s where %s = ?", tableName, fieldName);
         List<Country> countries = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             if (fieldName.equals("name")) {
@@ -76,7 +78,7 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
 
     @Override
     public void addIndex(String field) {
-        String sql = String.format("CREATE INDEX id_idx ON STUDY.COUNTRY(%s)", field);
+        String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -87,7 +89,7 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
     @Override
     public void addIndexes(List<String> fields) {
         for (String field : fields) {
-            String sql = String.format("CREATE INDEX id_idx ON STUDY.COUNTRY(%s)", field);
+            String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
             try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -98,21 +100,21 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
 
     @Override
     public Country create(Country entity) {
-        String sql = "insert into STUDY.COUNTRY values (?,?,?)";
+        String sql = String.format("insert into %s values (?,?,?)", tableName);
         return getCountry(entity, sql);
     }
 
     @Override
     public Country update(Country entity) {
-        String sql = "update STUDY.COUNTRY " +
-                "set region_id = ?," +
+        String sql = String.format("update %s " +
+                "set city_id = ?," +
                 "name =? " +
-                "where Country_id = ?";
+                "where Country_id = ?", tableName);
 
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
-            stmt.setInt(2, entity.getCountryId());
-            stmt.setInt(1, entity.getCountryId());
-            stmt.setString(3, entity.getName());
+            stmt.setInt(3, entity.getCountryId());
+            stmt.setInt(1, entity.getCityId());
+            stmt.setString(2, entity.getName());
             stmt.executeUpdate();
         } catch (SQLException e) {
             log.info("Error executing {}", e.getMessage());
@@ -122,7 +124,7 @@ public class JdbcRepoCountry implements IndexedCrudRepository<Country, Integer> 
 
     @Override
     public Country delete(Integer id) {
-        String sql = "delete from STUDY.COUNTRY where Country_id = ?";
+        String sql = String.format("delete from %s where Country_id = ?", tableName);
         Country country = findById(id).get();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);

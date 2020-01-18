@@ -35,8 +35,7 @@ public class RegionJdbcTest {
             server.start();
             PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(into);
             stmt.execute();
-            loader.addFromCsv("src/test/resources/Region.csv", "STUDY.REGION_TMP");
-
+            loader.addFromCsv("src/test/resources/region.csv", "STUDY.REGION_TMP");
         } catch (SQLException e) {
             log.error("error creation {}", e.getMessage());
         }
@@ -84,7 +83,7 @@ public class RegionJdbcTest {
 
     @Test
     public void createTest() {
-        repositoryDml.create(new Region(1852456, 12365, 212, "Просто город"));
+        repositoryDml.create(new Region(1852456, 12365, 212, "Просто регион"));
         Optional<Region> region = repositoryDml.findById(1852456);
         int expected = region.get().getRegionId();
         int actual = 1852456;
@@ -102,7 +101,7 @@ public class RegionJdbcTest {
 
     @Test
     public void updateRegionTest() {
-        repositoryDml.update(new Region(1998532, 3159, 0, "Адыгея"));
+        repositoryDml.update(new Region(1998532, 3159, 120, "Адыгея"));
         Optional<Region> region = repositoryDml.findById(1998532);
         int expected = region.get().getRegionId();
         int actual = 1998532;

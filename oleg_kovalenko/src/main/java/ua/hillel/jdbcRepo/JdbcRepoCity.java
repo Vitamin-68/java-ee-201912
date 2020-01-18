@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.config.DbConfig;
 import ua.hillel.entity.City;
+import ua.hillel.utils.TriggerUtils;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 
 import java.sql.PreparedStatement;
@@ -21,7 +22,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
 
     @Override
     public Optional<List<City>> findAll() {
-        String sql = "select * from STUDY.CITY";
+        String sql = String.format("select * from %s", tableName);
         List<City> cities = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -37,7 +38,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
 
     @Override
     public Optional<City> findById(Integer id) {
-        String sql = "select * from STUDY.CITY where city_id = ?";
+        String sql = String.format("select * from %s where city_id = ?", tableName);
         City city = null;
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -54,7 +55,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
 
     @Override
     public Optional<List<City>> findByField(String fieldName, Object value) {
-        String sql = String.format("select * from STUDY.City where %s = ?", fieldName);
+        String sql = String.format("select * from %s where %s = ?", tableName, fieldName);
         List<City> cities = new ArrayList<>();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             if (fieldName.equals("name")) {
@@ -76,7 +77,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
 
     @Override
     public void addIndex(String field) {
-        String sql = String.format("CREATE INDEX id_idx ON STUDY.CITY(%s)", field);
+        String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -87,7 +88,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
     @Override
     public void addIndexes(List<String> fields) {
         for (String field : fields) {
-            String sql = String.format("CREATE INDEX id_idx ON STUDY.CITY(%s)", field);
+            String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
             try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -98,17 +99,18 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
 
     @Override
     public City create(City entity) {
-        String sql = "insert into STUDY.CITY values (?,?,?,?)";
+        String sql = String.format("insert into %s values (?,?,?,?)", tableName);
+        TriggerUtils.setRecordToLog(String.format("id - %s name - %s %s created", tableName, entity.getCountryId(), entity.getName()));
         return getCity(entity, sql);
     }
 
     @Override
     public City update(City entity) {
-        String sql = "update STUDY.CITY " +
+        String sql = String.format("update %s " +
                 "set country_id = ?," +
                 "region_id = ?," +
                 "name =? " +
-                "where city_id = ?";
+                "where city_id = ?", tableName);
 
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(4, entity.getCityId());
@@ -119,12 +121,13 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
         } catch (SQLException e) {
             log.info("Error executing {}", e.getMessage());
         }
+        TriggerUtils.setRecordToLog(String.format("id - %s name - %s %s updated", tableName, entity.getCountryId(), entity.getName()));
         return entity;
     }
 
     @Override
     public City delete(Integer id) {
-        String sql = "delete from STUDY.CITY where city_id = ?";
+        String sql = String.format("delete from %s where city_id = ?", tableName);
         City city = findById(id).get();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -132,6 +135,7 @@ public class JdbcRepoCity implements IndexedCrudRepository<City, Integer> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        TriggerUtils.setRecordToLog(String.format("id - %s %s updated", tableName, id));
         return city;
     }
 

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.config.DbConfig;
 import ua.hillel.entity.Region;
+import ua.hillel.utils.TriggerUtils;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 
 import java.sql.PreparedStatement;
@@ -18,6 +19,7 @@ import java.util.Optional;
 public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
 
     private String tableName;
+
 
     @Override
     public Optional<List<Region>> findAll() {
@@ -37,7 +39,7 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
 
     @Override
     public Optional<Region> findById(Integer id) {
-        String sql = "select * from STUDY.REGION where region_id = ?";
+        String sql = String.format("select * from %s where region_id = ?", tableName);
         Region region = null;
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -76,7 +78,7 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
 
     @Override
     public void addIndex(String field) {
-        String sql = String.format("CREATE INDEX id_idx ON STUDY.REGION(%s)", field);
+        String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.executeUpdate();
         } catch (SQLException e) {
@@ -87,7 +89,7 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
     @Override
     public void addIndexes(List<String> fields) {
         for (String field : fields) {
-            String sql = String.format("CREATE INDEX id_idx ON STUDY.REGION(%s)", field);
+            String sql = String.format("CREATE INDEX id_idx ON %s(%s)", tableName, field);
             try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
                 stmt.executeUpdate();
             } catch (SQLException e) {
@@ -98,17 +100,18 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
 
     @Override
     public Region create(Region entity) {
-        String sql = "insert into STUDY.REGION values (?,?,?,?)";
+        String sql = String.format("insert into %s values (?,?,?,?)", tableName);
+        TriggerUtils.setRecordToLog(String.format("id - %s name - %s %s create", tableName, entity.getCountryId(), entity.getName()));
         return getRegion(entity, sql);
     }
 
     @Override
     public Region update(Region entity) {
-        String sql = "update STUDY.REGION " +
+        String sql = String.format("update %s " +
                 "set country_id = ?," +
                 "region_id = ?," +
                 "name =? " +
-                "where region_id = ?";
+                "where region_id = ?", tableName);
 
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(4, entity.getRegionId());
@@ -116,15 +119,17 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
             stmt.setInt(2, entity.getRegionId());
             stmt.setString(3, entity.getName());
             stmt.executeUpdate();
+
         } catch (SQLException e) {
             log.info("Error executing {}", e.getMessage());
         }
+        TriggerUtils.setRecordToLog(String.format("id - %s name - %s %s updated", tableName, entity.getCountryId(), entity.getName()));
         return entity;
     }
 
     @Override
     public Region delete(Integer id) {
-        String sql = "delete from STUDY.REGION where region_id = ?";
+        String sql = String.format("delete from %s where region_id = ?", tableName);
         Region region = findById(id).get();
         try (PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql)) {
             stmt.setInt(1, id);
@@ -132,6 +137,8 @@ public class JdbcRepoRegion implements IndexedCrudRepository<Region, Integer> {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        TriggerUtils.setRecordToLog(String.format("id - %s  %s updated", tableName, id));
         return region;
     }
 

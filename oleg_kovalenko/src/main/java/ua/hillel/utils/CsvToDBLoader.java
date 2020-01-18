@@ -2,16 +2,15 @@ package ua.hillel.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.config.DbConfig;
+import ua.hillel.csvRepo.CrudRepositoryCity;
+import ua.hillel.csvRepo.CrudRepositoryCountry;
 import ua.hillel.csvRepo.CrudRepositoryRegion;
 import ua.hillel.entity.City;
 import ua.hillel.entity.Country;
-import ua.hillel.csvRepo.CrudRepositoryCity;
-import ua.hillel.csvRepo.CrudRepositoryCountry;
 import ua.hillel.entity.Region;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.utils.H2Server;
 
-import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
@@ -104,13 +103,17 @@ public class CsvToDBLoader {
         String createCity = "create table if not exists STUDY.City(city_id int primary key , country_id int, region_id int, name varchar(100))";
         String createCountry = "create table if not exists STUDY.Country(country_id int primary key , city_id int, name varchar(100))";
         String createRegion = "create table if not exists STUDY.REGION(region_id int primary key, country_id int , city_id int, name varchar(100))";
+        String createLogger = "create table if not exists STUDY.LOGGER(id int primary key auto_increment, event_date datetime, event_message varchar(150))";
         try {
             PreparedStatement cityStmt = DbConfig.getConnectJdbc().prepareStatement(createCity);
             PreparedStatement countryStmt = DbConfig.getConnectJdbc().prepareStatement(createCountry);
             PreparedStatement regionStmt = DbConfig.getConnectJdbc().prepareStatement(createRegion);
+            PreparedStatement triggerStmt = DbConfig.getConnectJdbc().prepareStatement(createLogger);
+
             cityStmt.executeUpdate();
             countryStmt.executeUpdate();
             regionStmt.executeUpdate();
+            triggerStmt.executeUpdate();
             log.info("create successfull");
         } catch (SQLException e) {
             log.error("create table failed {}", e.getMessage());

@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import ua.hillel.config.DbConfig;
 import ua.hillel.entity.Country;
-import ua.hillel.entity.Country;
 import ua.hillel.jdbcRepo.JdbcRepoCountry;
 import ua.hillel.utils.CsvToDBLoader;
 import ua.ithillel.dnepr.common.utils.H2Server;
@@ -35,7 +34,7 @@ public class CountryJdbcTest {
             server.start();
             PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(into);
             stmt.execute();
-            loader.addFromCsv("src/test/resources/Country.csv", "STUDY.COUNTRY_TMP");
+            loader.addFromCsv("src/test/resources/country.csv", "STUDY.COUNTRY_TMP");
 
         } catch (SQLException e) {
             log.error("error creation {}", e.getMessage());
@@ -71,10 +70,10 @@ public class CountryJdbcTest {
 
     @Test
     public void createTest() {
-        repositoryDml.create(new Country(1852456, 12365, "Просто страна"));
-        Optional<Country> country = repositoryDml.findById(1852456);
+        repositoryDml.create(new Country(7895233, 12365, "Просто страна"));
+        Optional<Country> country = repositoryDml.findById(7895233);
         int expected = country.get().getCountryId();
-        int actual = 1852456;
+        int actual = 7895233;
         Assertions.assertEquals(actual, expected);
     }
 
@@ -83,7 +82,7 @@ public class CountryJdbcTest {
         repositoryDml.update(new Country(11060, 123657, "Япония"));
         Optional<Country> country = repositoryDml.findById(11060);
         int expected = country.get().getCountryId();
-        int actual = 123657;
+        int actual = 11060;
         Assertions.assertEquals(actual, expected);
     }
 
