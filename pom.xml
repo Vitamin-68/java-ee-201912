@@ -24,15 +24,17 @@
     </properties>
 
     <modules>
+        <!-- internal -->
         <module>common</module>
+        <module>common-integration-test</module>
         <module>roman-gizatulin</module>
+        <!-- internal -->
         <module>eugene-kovalov</module>
         <module>dmitry_litvyak</module>
         <module>alex-tsiba</module>
         <module>olga-tymoshenko</module>
         <module>yuriy-shaynuk</module>
         <module>oleg_kovalenko</module>
-        <module>common-integration-test</module>
         <module>vitaly-mosin</module>
     </modules>
 
