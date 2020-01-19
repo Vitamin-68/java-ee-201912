@@ -14,6 +14,8 @@ import vitaly.mosin.repository.exceptions.MyRepoException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +46,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
                 .withHeader(cityCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             for (CSVRecord oneStr : csvParser) {
                 City city = new City();
                 setFieldsCity(oneStr, city);
@@ -64,7 +66,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
                 .withHeader(cityCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             City city = new City();
             for (CSVRecord oneStr : csvParser) {
                 if (Integer.parseInt(oneStr.get(0)) == id) {
@@ -87,7 +89,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
                 .withHeader(cityCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             int fieldNumber = numberOfColumn4Seek(csvParser, fieldName);
             if (fieldNumber < 0) {
                 log.error("Field name is wrong");
@@ -115,7 +117,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
         if (findById(entity.getId()).isEmpty()) {
             final List<City> cities = findAll().get();
             cities.add(entity);
-            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                     .withHeader(cityCsvHeader)
                     .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
@@ -141,7 +143,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
             throw new MyRepoException(ExceptionResponseCode.FAILED_UPDATE_CONTACT, "Update error, city not found.");
         }
         List<City> result = findAll().get();
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(cityCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {
@@ -176,7 +178,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtil
                 break;
             }
         }
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(cityCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {
