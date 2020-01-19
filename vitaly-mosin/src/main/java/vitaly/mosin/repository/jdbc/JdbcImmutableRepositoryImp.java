@@ -58,8 +58,8 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
         if (fieldName.equalsIgnoreCase("name")) {
             value = "'" + value + "'";
         }
-//        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, value);
-        final String query = String.format(QUERY_DATA_TYPE, getTableName(), fieldName);
+        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, value);
+//        final String query = String.format(QUERY_DATA_TYPE, getTableName(), fieldName);
         try (PreparedStatement statement = connection.prepareStatement(query)) {
 
             final List<EntityType> entities = new ArrayList<>();
@@ -92,6 +92,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
 //                    getTableName(),
 //                    fieldName,
 //                    value));
+
             while (resultSet.next()) {
                 EntityType entity = createEntity();
                 mapField(entity, resultSet);
