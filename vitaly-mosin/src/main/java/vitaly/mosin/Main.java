@@ -42,19 +42,20 @@ public class Main {
         JdbcIndexedCrudRepository crudRepository = new JdbcIndexedCrudRepository(connection, City.class);
 
         crudRepository.findAll();
-//        crudRepository.findById(4400);
-//        crudRepository.findByField("id", 4313);
-//        crudRepository.findByField("name", "Москва");
         City newCity = new City(123, 1, 2, "NewCity");
         City existCity = new City(10, 4, 5, "Гилонг");
         City updCity = new City(10, 4, 500, "UpdateCity");
+
+//        crudRepository.findById(4400);
+//        crudRepository.findByField("id", 4313);
+        crudRepository.findByField("name", existCity.getName());
 //        crudRepository.create(newCity);
 //        crudRepository.create(existCity);
 //        crudRepository.create(updCity);
 //        crudRepository.update(existCity);
 
 //        crudRepository.findAll();
-        crudRepository.delete(newCity.getId());
+//        crudRepository.delete(newCity.getId());
 
 
         crudRepository.findAll();

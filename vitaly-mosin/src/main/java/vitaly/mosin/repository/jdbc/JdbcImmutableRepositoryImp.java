@@ -22,8 +22,8 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
         implements ImmutableRepository<EntityType, IdType> {
     private static final String QUERY_SELECT_ALL = "SELECT * FROM %s";
     private static final String QUERY_SELECT_BY_FIELD = "SELECT * FROM %s WHERE %s = %s";
-    private static final String QUERRY_DATA_TYPE = "SELECT data_type FROM information_schema.columns " +
-            "WHERE table_name = '%s'";
+    private static final String QUERY_DATA_TYPE = "SELECT data_type FROM information_schema.columns " +
+            "WHERE table_name = '%s' AND column_name = '%s'";
 
 
     public JdbcImmutableRepositoryImp(Connection connection, Class<? extends EntityType> clazz) {
@@ -58,9 +58,16 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
         if (fieldName.equalsIgnoreCase("name")) {
             value = "'" + value + "'";
         }
-        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, value);
+//        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, value);
+        final String query = String.format(QUERY_DATA_TYPE, getTableName(), fieldName);
         try (PreparedStatement statement = connection.prepareStatement(query)) {
-//            ResultSet resultS = statement.executeQuery();
+
+            final List<EntityType> entities = new ArrayList<>();
+            ResultSet resultSet = statement.executeQuery();
+
+
+
+
 //            for (int i = 1; i <= statement.getMetaData().getColumnCount(); i++) {
 //                if (statement.getMetaData().getColumnName(i).equalsIgnoreCase(fieldName)) {
 //                    String n = statement.getMetaData().getColumnTypeName(i);
@@ -68,11 +75,9 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
 //                }
 //            }
 //            statement.getMetaData().getColumnTypeName(value)
-            final List<EntityType> entities = new ArrayList<>();
-            ResultSet resultSet = statement.executeQuery();
 
 //            ResultSet resultSet = statement.executeQuery(String.format(
-//                    QUERRY_DATA_TYPE, getTableName(), fieldName));
+//                    QUERY_DATA_TYPE, getTableName(), fieldName));
 //            try {
 //                while (resultSet.next()) {
 //                    //            if (resultSet.equals(H2TypeUtils.H2Types.VARCHAR.getH2Type())) {
