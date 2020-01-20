@@ -71,14 +71,16 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
     }
 
     Object changeValueForStringColumn(String fieldName, Object value) {
-        final String query = String.format(QUERY_DATA_TYPE, getTableName().toUpperCase(), fieldName.toUpperCase());
+        final String query = String.format(QUERY_DATA_TYPE, getTableName().toUpperCase(), fieldName.toUpperCase()); //так проходит и сделано в коде
+        final String query1 = String.format(QUERY_DATA_TYPE, "CITY", "NAME"); // так тоже проходит
+        final String query2 = String.format(QUERY_DATA_TYPE, "City", "name"); //так не проходит
+        final String query3 = String.format(QUERY_DATA_TYPE, getTableName(), fieldName); //и так не проходит
 
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             if (resultSet.getObject(1).equals(Types.VARCHAR)) {
                 value = "'" + value + "'";
-                System.out.println("STR");
             }
         } catch (SQLException e) {
             throw new IllegalStateException(e);
