@@ -21,7 +21,7 @@ import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegration
 class JdbcIndexedCrudRepositoryIntegrationTest {
     private static final String TEST_DB_NAME = "test_db";
 
-    private H2Server h2Server;
+    private static final H2Server H2_SERVER = new H2Server();
     private JdbcIndexedCrudRepository<TestEntity, Integer> crudRepository;
 
     @BeforeEach
@@ -30,16 +30,15 @@ class JdbcIndexedCrudRepositoryIntegrationTest {
                 Files.createTempDirectory("romanGizatulin").toString(),
                 TEST_DB_NAME
         ).toString();
-        h2Server = new H2Server();
 
         log.info("Database path: {}", repoRootPath);
-        Connection connection = h2Server.getConnection(repoRootPath);
+        final Connection connection = H2_SERVER.getConnection(repoRootPath);
         crudRepository = new JdbcIndexedCrudRepository<>(connection, TestEntity.class);
     }
 
     @AfterEach
     void tearDown() {
-        h2Server.stop();
+        H2_SERVER.stop();
     }
 
     @Test
