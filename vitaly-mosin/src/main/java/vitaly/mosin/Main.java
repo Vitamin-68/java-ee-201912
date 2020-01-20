@@ -49,6 +49,7 @@ public class Main {
 //        crudRepository.findById(4400);
 //        crudRepository.findByField("id", 4313);
         crudRepository.findByField("name", existCity.getName());
+        crudRepository.findByField("id", existCity.getId());
 //        crudRepository.create(newCity);
 //        crudRepository.create(existCity);
 //        crudRepository.create(updCity);
@@ -58,7 +59,7 @@ public class Main {
 //        crudRepository.delete(newCity.getId());
 
 
-        crudRepository.findAll();
+//        crudRepository.findAll();
 
         h2Server.stop();
 

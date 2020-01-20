@@ -3,15 +3,14 @@ package vitaly.mosin.repository.jdbc;
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
     private static final String QUERY_SELECT_BY_FIELD = "SELECT * FROM %s WHERE %s = %s";
     private static final String QUERY_DATA_TYPE = "SELECT data_type FROM information_schema.columns " +
             "WHERE table_name = '%s' AND column_name = '%s'";
-
 
     public JdbcImmutableRepositoryImp(Connection connection, Class<? extends EntityType> clazz) {
         super(connection, clazz);
@@ -54,45 +52,12 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        Optional<List<EntityType>> result;
-        if (fieldName.equalsIgnoreCase("name")) {
-            value = "'" + value + "'";
-        }
-        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, value);
-//        final String query = String.format(QUERY_DATA_TYPE, getTableName(), fieldName);
-        try (PreparedStatement statement = connection.prepareStatement(query)) {
+        final Optional<List<EntityType>> result;
+        final String query = String.format(QUERY_SELECT_BY_FIELD, getTableName(), fieldName, changeValueForStringColumn(fieldName, value));
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
             final List<EntityType> entities = new ArrayList<>();
             ResultSet resultSet = statement.executeQuery();
-
-
-
-
-//            for (int i = 1; i <= statement.getMetaData().getColumnCount(); i++) {
-//                if (statement.getMetaData().getColumnName(i).equalsIgnoreCase(fieldName)) {
-//                    String n = statement.getMetaData().getColumnTypeName(i);
-//                    System.out.println(n);
-//                }
-//            }
-//            statement.getMetaData().getColumnTypeName(value)
-
-//            ResultSet resultSet = statement.executeQuery(String.format(
-//                    QUERY_DATA_TYPE, getTableName(), fieldName));
-//            try {
-//                while (resultSet.next()) {
-//                    //            if (resultSet.equals(H2TypeUtils.H2Types.VARCHAR.getH2Type())) {
-//                    value = "'" + value + "'";
-//                }
-//            } catch (SQLException e1) {
-//                e1.printStackTrace();
-//            }
-//        }
-//            resultSet = statement.executeQuery(String.format(
-//                    QUERY_SELECT_BY_FIELD,
-//                    getTableName(),
-//                    fieldName,
-//                    value));
-
             while (resultSet.next()) {
                 EntityType entity = createEntity();
                 mapField(entity, resultSet);
@@ -105,5 +70,19 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
         return result;
     }
 
+    Object changeValueForStringColumn(String fieldName, Object value) {
+        final String query = String.format(QUERY_DATA_TYPE, getTableName().toUpperCase(), fieldName.toUpperCase());
 
+        try (PreparedStatement statement = connection.prepareStatement(query)) {
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            if (resultSet.getObject(1).equals(Types.VARCHAR)) {
+                value = "'" + value + "'";
+                System.out.println("STR");
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+        return value;
+    }
 }
