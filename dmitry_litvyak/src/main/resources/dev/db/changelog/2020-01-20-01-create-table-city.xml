@@ -22,7 +22,7 @@
             <column name="region_id" type="INTEGER">
                 <constraints nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(255)" defaultValue="0"/>
+            <column name="name" type="VARCHAR(255)" defaultValue="NONAME"/>
         </createTable>
     </changeSet>
 </databaseChangeLog>
