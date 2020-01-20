@@ -75,6 +75,7 @@ public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             updateStatement.setObject(index, entity.getId());
             updateStatement.executeUpdate();
         } catch (IllegalAccessException | SQLException e) {
+            log.error("update error",e);
             e.printStackTrace();
         }
         sendNotification(entity);
@@ -106,6 +107,7 @@ public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             String sqlInsertIndex = "CREATE INDEX IF NOT EXISTS "+field+" ON "+getTableName()+ " ("+field+")";
             statement.executeUpdate(sqlInsertIndex);
         } catch (SQLException e) {
+            log.error("addIndex error",e);
             e.printStackTrace();
         }
     }

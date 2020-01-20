@@ -1,5 +1,6 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc;
 
+import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.utils.H2TypeUtils;
 import java.lang.reflect.Field;
@@ -15,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
+@Slf4j
 public class BaseCqrsRepository<EntityType extends AbstractEntity<IdType>, IdType> {
     protected static final String QUERY_SELECT_BY_ID = "SELECT * FROM %s WHERE id = %s";
     protected static final String QUERY_COUNT_BY_ID = "SELECT COUNT(*) FROM %s WHERE id = %s";
@@ -36,6 +37,7 @@ public class BaseCqrsRepository<EntityType extends AbstractEntity<IdType>, IdTyp
             statement.executeUpdate(QUERY_CREATE_TABLE);
             statement.executeUpdate(QUERY_CREATE_LOG_TABLE);
         } catch (SQLException e) {
+            log.error("Failed to create table",e);
             throw new IllegalStateException("Failed to create table", e);
         }
 
@@ -51,6 +53,7 @@ public class BaseCqrsRepository<EntityType extends AbstractEntity<IdType>, IdTyp
                 statement.executeUpdate(getTriggerString(command, field.getName()));
             }
         } catch (SQLException e) {
+            log.error("createTriggers error",e);
             throw new IllegalStateException("createTriggers error", e);
         }
     }
