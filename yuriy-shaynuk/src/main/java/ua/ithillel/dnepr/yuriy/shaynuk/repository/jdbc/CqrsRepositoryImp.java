@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-public class CqrsCrudRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
+public class CqrsRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
         implements CqrsCrudRepository<EntityType, IdType> {
 
     private final Connection connection;
@@ -23,7 +23,7 @@ public class CqrsCrudRepositoryImp<EntityType extends AbstractEntity<IdType>, Id
     private final CqrsMutableRepository<EntityType, IdType> mutableRepository;
     private final Set<String> indexes = Collections.synchronizedSet(new HashSet<>());
 
-    public CqrsCrudRepositoryImp(Connection connection, Class<? extends EntityType> clazz, CrudRepository<EntityType, IdType> crudRepository) {
+    public CqrsRepositoryImp(Connection connection, Class<? extends EntityType> clazz, CrudRepository<EntityType, IdType> crudRepository) {
         this.connection = connection;
         this.clazz = clazz;
 

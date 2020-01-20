@@ -11,7 +11,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.*;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType>
@@ -32,6 +36,7 @@ public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         } catch (SQLException e) {
             log.error("prepare statement error",e);
         }
+        addIndex("uuid");
     }
 
     @Override
@@ -95,6 +100,26 @@ public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         return entity;
     }
 
+    @Override
+    public void addIndex(String field) {
+        try (Statement statement = connection.createStatement()) {
+            String sqlInsertIndex = "CREATE INDEX IF NOT EXISTS "+field+" ON "+getTableName()+ " ("+field+")";
+            statement.executeUpdate(sqlInsertIndex);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void addIndexes(List<String> fields) {
+        for (String field: fields) {
+            addIndex(field);
+        }
+    }
+
+    @Override
+    public void addListener(Observer<EntityType, IdType> observer) { observers.add(observer); }
+
     private String getSQLInsertString(){
         List<Field> fields = getAllEntityFields();
         StringBuilder query = new StringBuilder();
@@ -138,26 +163,10 @@ public class CqrsMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         return query.toString();
     }
 
-
     private String getSQLDeleteString() {
         return " DELETE FROM " +
                 getTableName() +
                 " WHERE id= ?";
-    }
-
-    @Override
-    public void addIndex(String field) {
-
-    }
-
-    @Override
-    public void addIndexes(List<String> fields) {
-
-    }
-
-    @Override
-    public void addListener(Observer<EntityType, IdType> observer) {
-        observers.add(observer);
     }
 
     private void sendNotification(EntityType entity) {

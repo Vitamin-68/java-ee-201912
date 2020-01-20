@@ -39,12 +39,12 @@ public class BaseCqrsRepository<EntityType extends AbstractEntity<IdType>, IdTyp
             throw new IllegalStateException("Failed to create table", e);
         }
 
-        createTriggers(SQL_INSERT);
-        createTriggers(SQL_DELETE);
-        createTriggers(SQL_UPDATE);
+        createTrigger(SQL_INSERT);
+        createTrigger(SQL_DELETE);
+        createTrigger(SQL_UPDATE);
     }
 
-    private void createTriggers(String command){
+    private void createTrigger(String command){
         try (Statement statement = connection.createStatement()) {
             List<Field> fields = getAllEntityFields();
             for (Field field : fields) {
