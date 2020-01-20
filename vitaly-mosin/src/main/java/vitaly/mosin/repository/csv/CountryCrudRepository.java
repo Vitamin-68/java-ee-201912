@@ -14,6 +14,7 @@ import vitaly.mosin.repository.exceptions.MyRepoException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -44,7 +45,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
                 .withHeader(countryCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             for (CSVRecord oneStr : csvParser) {
                 Country country = new Country();
                 setFieldsCountry(oneStr, country);
@@ -64,7 +65,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
                 .withHeader(countryCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             Country country = new Country();
             for (CSVRecord oneStr : csvParser) {
                 if (Integer.parseInt(oneStr.get(0)) == id) {
@@ -87,7 +88,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
                 .withHeader(countryCsvHeader)
                 .withFirstRecordAsHeader()
                 .withDelimiter(DELIMITER)
-                .parse(new FileReader(filePath))) {
+                .parse(new FileReader(filePath, StandardCharsets.UTF_8))) {
             int fieldNumber = numberOfColumn4Seek(csvParser, fieldName);
             if (fieldNumber < 0) {
                 log.error("Field name is wrong");
@@ -115,7 +116,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
         if (findById(entity.getId()).isEmpty()) {
             final List<Country> countries = findAll().get();
             countries.add(entity);
-            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+            try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                     .withHeader(countryCsvHeader)
                     .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
@@ -140,7 +141,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
             throw new MyRepoException(ExceptionResponseCode.FAILED_UPDATE_CONTACT, "Update error, country not found.");
         }
         List<Country> result = findAll().get();
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(countryCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {
@@ -179,7 +180,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer>, 
                 break;
             }
         }
-        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), DEFAULT
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                 .withHeader(countryCsvHeader)
                 .withQuoteMode(QuoteMode.ALL)
                 .withDelimiter(DELIMITER))) {

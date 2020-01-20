@@ -2,7 +2,7 @@ package vitaly.mosin.repository;
 
 public final class Constants {
 
-    public static final String FILE_PATH_TMP = "./temp_CSV/";
+    public static final String FILE_PATH_TMP = "./target/temp_CSV/";
     public static final String FILE_PATH_RESOURCE = "./src/main/resources/";
     public static final String FILE_COUNTRY = "country.csv";
     public static final String FILE_REGION = "region.csv";
