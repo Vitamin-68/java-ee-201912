@@ -1,14 +1,14 @@
-package ua.ithillel.dnepr.common.test.repository.roman.gizatulin;
+package ua.ithillel.dnepr.common.test.repository.dmitry.litvyak;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.test.repository.TestEntity;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
-import ua.ithillel.dnepr.roman.gizatulin.repository.JdbcIndexedCrudRepository;
+import ua.ithillel.dnepr.dml.Repositories.JdbcCrudRepositoryImpl;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -19,38 +19,31 @@ import java.sql.SQLException;
 import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegrationTestHelper.testCreateManyNewEntities;
 import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegrationTestHelper.testCreateOneNewEntity;
 
-@Slf4j
-class JdbcIndexedCrudRepositoryIntegrationTest {
+public class JdbcIndexedCrudRepository {
     private static final int PORT = NetUtils.getFreePort();
-    private static final String TEST_DB_NAME = "test_db.sqlite3";
 
     private H2Server h2Server;
-    private JdbcIndexedCrudRepository<TestEntity, Integer> crudRepository;
+    private JdbcCrudRepositoryImpl<TestEntity, Integer> crudRepository;
+    private String repoRootPath;
 
     @BeforeEach
     void setup() throws IOException, SQLException, ClassNotFoundException {
-        String repoRootPath = Path.of(
-                Files.createTempDirectory("romanGizatulin").toString(),
-                TEST_DB_NAME
-        ).toString();
+        repoRootPath = File.createTempFile("h2DB", "test").getPath().toString();// "/./src/main/resources/h2crudbase_test";
+
         h2Server = new H2Server(PORT);
         h2Server.start();
 
         Class.forName("org.h2.Driver");
-        final String connectionString = String.format(
-                "jdbc:h2:tcp://%s:%s/%s",
-                NetUtils.getHostName(),
-                PORT,
-                repoRootPath
-        );
-        log.info("Database connection string: {}", connectionString);
-        Connection connection = DriverManager.getConnection(connectionString);
-        crudRepository = new JdbcIndexedCrudRepository<>(connection, TestEntity.class);
+        Connection connection = DriverManager.getConnection(
+                String.format("jdbc:h2:tcp://%s:%s/%s", NetUtils.getHostName(), PORT, repoRootPath));
+        crudRepository = new JdbcCrudRepositoryImpl<>(connection, TestEntity.class);
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws IOException {
         h2Server.stop();
+        //не удаляет из темпа - а перегружать машину я нежелаю
+        Files.deleteIfExists(Path.of(repoRootPath));
     }
 
     @Test

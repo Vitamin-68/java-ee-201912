@@ -22,9 +22,9 @@ class CityCrudRepositoryTest {
 
     @BeforeAll
     static void setUp() {
-        dataFile = Utils.createTempFile("cityyy.csv");
+        dataFile = Utils.createTempFile("cityy.csv");
         if (dataFile != null) {
-            cityRepository = new CrudRepositoryImp<City, Integer>(dataFile.getPath(),City.class);
+            cityRepository = new CrudRepositoryImp<>(dataFile.getPath(),City.class);
         }
     }
 
