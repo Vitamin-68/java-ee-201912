@@ -8,7 +8,7 @@
         <preConditions>
             <rowCount tableName="country" expectedRows="0"/>
         </preConditions>
-        <loadData tableName="country" file="countryH2.csv" separator=";">
+        <loadData tableName="country" file="src/main/resources/country.csv" separator=";">
             <column name="id" header="country_id" type="NUMERIC"/>
             <column name="city_id" header="city_id" type="NUMERIC"/>
             <column name="name" header="name" type="STRING"/>
@@ -19,7 +19,7 @@
         <preConditions>
             <rowCount tableName="city" expectedRows="0"/>
         </preConditions>
-        <loadData tableName="city" file="cityH2.csv" separator=";">
+        <loadData tableName="city" file="src/main/resources/city.csv" separator=";">
             <column name="id" header="city_id" type="NUMERIC"/>
             <column name="country_id" header="country_id" type="NUMERIC"/>
             <column name="region_id" header="region_id" type="NUMERIC"/>
@@ -31,8 +31,8 @@
         <preConditions>
             <rowCount tableName="region" expectedRows="0"/>
         </preConditions>
-        <loadData tableName="region" file="regionH2.csv" separator=";">
-            <column name="id" header="country_id" type="NUMERIC"/>
+        <loadData tableName="region" file="src/main/resources/region.csv" separator=";">
+            <column name="id" header="region_id" type="NUMERIC"/>
             <column name="city_id" header="city_id" type="NUMERIC"/>
             <column name="name" header="name" type="STRING"/>
         </loadData>
