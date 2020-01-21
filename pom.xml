@@ -20,18 +20,22 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
+        <liquibase.version>3.8.4</liquibase.version>
     </properties>
 
     <modules>
+        <!-- internal -->
         <module>common</module>
+        <module>common-integration-test</module>
         <module>roman-gizatulin</module>
+        <!-- internal -->
         <module>eugene-kovalov</module>
         <module>dmitry_litvyak</module>
         <module>alex-tsiba</module>
         <module>olga-tymoshenko</module>
         <module>yuriy-shaynuk</module>
         <module>oleg_kovalenko</module>
-        <module>common-integration-test</module>
+        <module>vitaly-mosin</module>
     </modules>
 
     <dependencyManagement>
@@ -190,6 +194,11 @@
                 <artifactId>csvjdbc</artifactId>
                 <version>1.0.36</version>
             </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
+            </dependency>
             <!-- data base -->
         </dependencies>
     </dependencyManagement>
@@ -282,6 +291,14 @@
                     <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
+                    <configuration>
+                        <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
