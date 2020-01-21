@@ -8,5 +8,6 @@
     <include file="changelog/2020-01-20-01-create-table-city.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-20-02-create-table-region.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-20-03-create-table-country.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-21-01-create-table-log.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
