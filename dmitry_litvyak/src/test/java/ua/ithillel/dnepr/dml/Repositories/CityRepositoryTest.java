@@ -1,7 +1,10 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.dml.domain.City;
 
 import java.io.IOException;
@@ -9,8 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 class CityRepositoryTest {

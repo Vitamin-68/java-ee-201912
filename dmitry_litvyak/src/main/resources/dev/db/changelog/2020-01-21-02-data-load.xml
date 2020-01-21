@@ -1,0 +1,41 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+    <changeSet id="insert_data_into_countries_table" author="Dmitry Litvyak">
+        <preConditions>
+            <rowCount tableName="country" expectedRows="0"/>
+        </preConditions>
+        <loadData tableName="country" file="countryH2.csv" separator=";">
+            <column name="id" header="country_id" type="NUMERIC"/>
+            <column name="city_id" header="city_id" type="NUMERIC"/>
+            <column name="name" header="name" type="STRING"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="insert_data_into_cities_table" author="Dmitry Litvyak">
+        <preConditions>
+            <rowCount tableName="city" expectedRows="0"/>
+        </preConditions>
+        <loadData tableName="city" file="cityH2.csv" separator=";">
+            <column name="id" header="city_id" type="NUMERIC"/>
+            <column name="country_id" header="country_id" type="NUMERIC"/>
+            <column name="region_id" header="region_id" type="NUMERIC"/>
+            <column name="name" header="name" type="STRING"/>
+        </loadData>
+    </changeSet>
+
+    <changeSet id="insert_data_into_region_table" author="Dmitry Litvyak">
+        <preConditions>
+            <rowCount tableName="region" expectedRows="0"/>
+        </preConditions>
+        <loadData tableName="region" file="regionH2.csv" separator=";">
+            <column name="id" header="country_id" type="NUMERIC"/>
+            <column name="city_id" header="city_id" type="NUMERIC"/>
+            <column name="name" header="name" type="STRING"/>
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>
