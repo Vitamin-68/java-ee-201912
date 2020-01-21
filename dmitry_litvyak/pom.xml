@@ -95,6 +95,7 @@
                     <dataDir>${project.build.outputDirectory}/${profile.id}/db</dataDir>
                     <verbose>${profile.verbose}</verbose>
                     <logging>${profile.logging}</logging>
+                    <defaultCatalogName>${profile.data.root}</defaultCatalogName>
                 </configuration>
                 <executions>
                     <execution>
