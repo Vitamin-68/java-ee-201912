@@ -25,40 +25,25 @@ public class CountryCrudRepoTest {
     void findAll() {
         Assertions.assertNotNull(countryCrudRepo.findAll().get());
     }
+
     @Test
-    void findById(){
+    void findById() {
         Optional<Country> testCountry = countryCrudRepo.findById(3159);
         Assertions.assertEquals(3159, testCountry.get().getId());
     }
 
     @Test
-    void findByField(){
+    void findByField() {
         Optional<List<Country>> countries = countryCrudRepo.findByField("name", "Люксембург");
         Assertions.assertTrue(countries.isPresent());
     }
 
     @Test
-    void create(){
+    void create() {
         Country testCountry = new Country();
         testCountry.setId(111212121);
         testCountry.setName("NewCountry");
         Country result = countryCrudRepo.update(testCountry);
         Assertions.assertNotNull(result);
     }
-/*
-    @Test
-    void update(){
-        Country testCountry = countryCrudRepo.findById(3159).get();
-        testCountry.setName("NewCountry");
-        countryCrudRepo.update(testCountry);
-        Assertions.assertEquals(testCountry.getName(), countryCrudRepo.findById(3159).get().getName());
-    }
-
-    @Test
-    void delete(){
-        countryCrudRepo.delete(3159);
-        Assertions.assertTrue(countryCrudRepo.findById(3159).isEmpty());
-    }
-
- */
 }

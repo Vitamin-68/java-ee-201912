@@ -34,36 +34,20 @@ public class CityCrudRepoTest {
     }
 
     @Test
-    void findByField(){
+    void findByField() {
         Optional<List<City>> cities = cityCrudRepo.findByField("name", "Бородино");
         Assertions.assertTrue(cities.isPresent());
     }
 
     @Test
-    void create(){
+    void create() {
         City testCity = new City();
         testCity.setId(111212121);
         testCity.setCountry_id(1231233);
         testCity.setRegion_id(12332);
         testCity.setName("NewCity");
         cityCrudRepo.update(testCity);
-        Optional <City> result = cityCrudRepo.findById(111212121);
+        Optional<City> result = cityCrudRepo.findById(111212121);
         Assertions.assertNotNull(result);
     }
-/*
-    @Test
-    void update(){
-        City testCity = cityCrudRepo.findById(4313).get();
-        testCity.setName("NewCity");
-        cityCrudRepo.update(testCity);
-        Assertions.assertEquals(testCity.getName(), cityCrudRepo.findById(4313).get().getName());
-    }
-
-    @Test
-    void delete(){
-        cityCrudRepo.delete(4313);
-        Assertions.assertTrue(cityCrudRepo.findById(4313).isEmpty());
-    }
-
- */
 }

@@ -34,36 +34,20 @@ public class RegionCrudRepoTest {
     }
 
     @Test
-    void findByField(){
+    void findByField() {
         Optional<List<Region>> regions = regionCrudRepo.findByField("name", "Адыгея");
         Assertions.assertTrue(regions.isPresent());
     }
 
     @Test
-    void create(){
+    void create() {
         Region testRegion = new Region();
         testRegion.setId(111212121);
         testRegion.setCountry_id(1231233);
         testRegion.setCity_id(12332);
         testRegion.setName("NewRegion");
         regionCrudRepo.update(testRegion);
-        Optional <Region> result = regionCrudRepo.findById(111212121);
+        Optional<Region> result = regionCrudRepo.findById(111212121);
         Assertions.assertNotNull(result);
     }
-/*
-    @Test
-    void update(){
-        Region testRegion = regionCrudRepo.findById(3352).get();
-        testRegion.setName("NewRegion");
-        regionCrudRepo.update(testRegion);
-        Assertions.assertEquals(testRegion.getName(), regionCrudRepo.findById(3352).get().getName());
-    }
-
-    @Test
-    void delete(){
-        regionCrudRepo.delete(3630);
-        Assertions.assertTrue(regionCrudRepo.findById(3630).isEmpty());
-    }
-
- */
 }
