@@ -5,8 +5,6 @@ import org.apache.commons.lang3.StringUtils;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 import ua.ithillel.dnepr.common.utils.H2TypeUtils;
-import vitaly.mosin.repository.csv.CityCrudRepository;
-import vitaly.mosin.repository.entity.City;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -25,10 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static vitaly.mosin.repository.Constants.FILE_CITY;
-import static vitaly.mosin.repository.Constants.FILE_PATH_RESOURCE;
-import static vitaly.mosin.repository.Constants.FILE_PATH_TMP;
-
 @Slf4j
 public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable> {
     protected static final String QUERY_SELECT_BY_ID = "SELECT * FROM %s WHERE id = %s";
@@ -38,7 +32,6 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
     protected final Class<? extends EntityType> clazz;
     protected Map<String, Field> fields = new HashMap<>();
     protected final String tableName;
-//    private CityCrudRepository cityCrudRepository;
 
     protected BaseJdbcRepository(Connection connection, Class<? extends EntityType> clazz) {
         Objects.requireNonNull(connection, "Connection is undefined");
@@ -54,11 +47,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             final Field idField = getFieldByName("id");
             Objects.requireNonNull(idField, "Id field is undefined");
-//            if (H2TypeUtils.toH2Type(idField.getType()).equals(H2TypeUtils.H2Types.OTHER.getH2Type())) {
-//                statement.setObject(1, id, Types.JAVA_OBJECT);
-//            } else {
-                statement.setObject(1, id);
-//            }
+            statement.setObject(1, id);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
                 result = createEntity();
@@ -172,16 +161,15 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
     private void createTable(EntityType entity) {
         Objects.requireNonNull(entity, "Entity is undefined");
         final StringBuilder query = new StringBuilder();
-        query.append(" CREATE TABLE IF NOT EXISTS ");
+        query.append("CREATE TABLE IF NOT EXISTS ");
         query.append(entity.getClass().getSimpleName());
         query.append(" ( ");
 
         for (final Field field : getAllFields()) {
             final String h2Type = H2TypeUtils.toH2Type(field.getType());
-            query.append(field.getName()).append(" ").append(h2Type).append(" , ");
+            query.append(field.getName()).append(" ").append(h2Type).append(" ,");
         }
-        query.delete(query.lastIndexOf(","), query.length());
-        query.append(" ) ");
+        query.append(" PRIMARY KEY (ID))");
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(query.toString());
         } catch (SQLException e) {
@@ -189,6 +177,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
         }
 //        mapTableFromCsv(entity);
     }
+
     private void mapTableFromCsv(EntityType entity) {
     }
 }

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
 import vitaly.mosin.repository.entity.City;
+import vitaly.mosin.repository.entity.Country;
+import vitaly.mosin.repository.entity.Region;
 
 import java.io.File;
 import java.io.IOException;
@@ -86,6 +88,10 @@ class JdbcIndexedCrudRepositoryTest {
     void findAll() {
         crudRepository = new JdbcIndexedCrudRepository(connection, City.class);
         Optional<List<City>> result = crudRepository.findAll();
+        crudRepository = new JdbcIndexedCrudRepository(connection, Country.class);
+        Optional<List<City>> result2 = crudRepository.findAll();
+        crudRepository = new JdbcIndexedCrudRepository(connection, Region.class);
+        Optional<List<City>> result3 = crudRepository.findAll();
         assertTrue(result.isPresent());
 
     }

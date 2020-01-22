@@ -48,8 +48,8 @@ public class Main {
 
 //        crudRepository.findById(4400);
 //        crudRepository.findByField("id", 4313);
-        crudRepository.findByField("name", existCity.getName());
-        crudRepository.findByField("id", existCity.getId());
+//        crudRepository.findByField("name", existCity.getName());
+//        crudRepository.findByField("id", existCity.getId());
 //        crudRepository.create(newCity);
 //        crudRepository.create(existCity);
 //        crudRepository.create(updCity);

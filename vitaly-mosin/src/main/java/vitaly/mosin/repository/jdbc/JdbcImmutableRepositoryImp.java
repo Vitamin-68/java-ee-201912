@@ -39,6 +39,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
                 result.add(entity);
             }
         } catch (SQLException | IllegalAccessException e) {
+            log.error("DB connection error.", e);
             throw new IllegalStateException(e);
         }
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
@@ -64,6 +65,7 @@ public class JdbcImmutableRepositoryImp<EntityType extends AbstractEntity<IdType
             }
             result = Optional.of(entities);
         } catch (SQLException | IllegalAccessException e) {
+            log.error("Create entity error.", e);
             throw new IllegalStateException(e);
         }
         return result;

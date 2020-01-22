@@ -19,18 +19,17 @@ import java.util.Objects;
 public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         extends BaseJdbcRepository<EntityType, IdType>
         implements MutableRepository<EntityType, IdType> {
-//    private final Map
 
     public JdbcMutableRepositoryImp(Connection connection, Class<? extends EntityType> clazz) {
         super(connection, clazz);
-        //getEntityById()
     }
 
     @Override
     public EntityType create(EntityType entity) {
         try {
             if (isEntityExists(entity)) {
-                throw new IllegalArgumentException("Entity already exists");
+                log.error("Entity already exists");
+                throw new IllegalArgumentException();
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to check entity existing", e);
@@ -42,7 +41,8 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
     public EntityType update(EntityType entity) {
         try {
             if (!isEntityExists(entity)) {
-                throw new IllegalArgumentException("Entity doesn't exist");
+                log.error("Entity doesn't exist");
+                throw new IllegalArgumentException();
             }
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to check entity existing");
@@ -55,7 +55,7 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         EntityType result;
         result = getEntityById(id);
         try (Statement statement = connection.createStatement()) {
-            String query = " DELETE FROM " + getTableName() + " WHERE id = " + id;
+            String query = "DELETE FROM " + getTableName() + " WHERE id = " + id;
             statement.executeUpdate(query);
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to delete entity", e);
@@ -75,41 +75,40 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
         }
         final List<Field> entityFields = getAllFields();
         final StringBuilder query = new StringBuilder();
-        if (isEntityExists) {
-            query.append(" UPDATE ");
-            query.append(getTableName());
-            query.append(" SET ");
-            for (Field objectsEntry : entityFields) {
-                try {
-                    if (!objectsEntry.getName().equalsIgnoreCase("name")) {
-                        query.append(objectsEntry.getName()).append(" = ").append(objectsEntry.get(entity)).append(" , ");
-                    } else {
-                        query.append(objectsEntry.getName()).append(" = ").append("'").append(objectsEntry.get(entity)).append("'").append(" , ");
-                    }
-                } catch (IllegalAccessException e) {
-                    log.error("Error create query string", e);
-                }
-            }
-
-            query.delete(query.lastIndexOf(","), query.length());
-            query.append(" WHERE id = ? ");
-        } else {
-            query.append(" INSERT INTO ").append(getTableName());
-            final StringBuilder keys = new StringBuilder();
-            final StringBuilder values = new StringBuilder();
-            keys.append(" ( ");
-            values.append(" ( ");
-            for (Field objectsEntry : entityFields) {
-                keys.append(objectsEntry.getName()).append(" , ");
-                values.append(" ? ").append(" , ");
-            }
-            keys.delete(keys.lastIndexOf(","), keys.length());
-            values.delete(values.lastIndexOf(","), values.length());
-            keys.append(" ) ");
-            values.append(" ) ");
-            query.append(keys).append(" ").append(" VALUES ").append(values);
-        }
-        System.out.println(query);
+        query.append(isEntityExists ? queryStringUpdate(entityFields, entity) : queryStringCreate(entityFields));
+//        if (isEntityExists) {
+//            query.append(" UPDATE ");
+//            query.append(getTableName());
+//            query.append(" SET ");
+//            for (Field objectsEntry : entityFields) {
+//                try {
+//                    if (!objectsEntry.getName().equalsIgnoreCase("name")) {
+//                        query.append(objectsEntry.getName()).append(" = ").append(objectsEntry.get(entity)).append(" , ");
+//                    } else {
+//                        query.append(objectsEntry.getName()).append(" = ").append("'").append(objectsEntry.get(entity)).append("'").append(" , ");
+//                    }
+//                } catch (IllegalAccessException e) {
+//                    log.error("Error create query string", e);
+//                }
+//            }
+//            query.delete(query.lastIndexOf(","), query.length());
+//            query.append(" WHERE id = ? ");
+//        } else {
+//            query.append(" INSERT INTO ").append(getTableName());
+//            final StringBuilder keys = new StringBuilder();
+//            final StringBuilder values = new StringBuilder();
+//            keys.append(" ( ");
+//            values.append(" ( ");
+//            for (Field objectsEntry : entityFields) {
+//                keys.append(objectsEntry.getName()).append(" , ");
+//                values.append(" ? ").append(" , ");
+//            }
+//            keys.delete(keys.lastIndexOf(","), keys.length());
+//            values.delete(values.lastIndexOf(","), values.length());
+//            keys.append(" ) ");
+//            values.append(" ) ");
+//            query.append(keys).append(" ").append(" VALUES ").append(values);
+//        }
         try (PreparedStatement statement = connection.prepareStatement(query.toString())) {
             if (isEntityExists) {
                 statement.setObject(1, entity.getId());
@@ -128,5 +127,45 @@ public class JdbcMutableRepositoryImp<EntityType extends AbstractEntity<IdType>,
             throw new IllegalStateException("Failed to create entity", e);
         }
         return entity;
+    }
+
+    private StringBuilder queryStringUpdate(List<Field> listFields, EntityType entity) {
+        StringBuilder query = new StringBuilder();
+        query.append("UPDATE ");
+        query.append(getTableName());
+        query.append(" SET ");
+        for (Field objectsEntry : listFields) {
+            try {
+                if (!objectsEntry.getName().equalsIgnoreCase("name")) {
+                    query.append(objectsEntry.getName()).append(" = ").append(objectsEntry.get(entity)).append(" , ");
+                } else {
+                    query.append(objectsEntry.getName()).append(" = '").append(objectsEntry.get(entity)).append("' , ");
+                }
+            } catch (IllegalAccessException e) {
+                log.error("Error create query string", e);
+            }
+        }
+        query.delete(query.lastIndexOf(","), query.length());
+        query.append(" WHERE id = ? ");
+        return query;
+    }
+
+    private StringBuilder queryStringCreate(List<Field> listFields) {
+        StringBuilder query = new StringBuilder();
+        query.append("INSERT INTO ").append(getTableName());
+        final StringBuilder keys = new StringBuilder();
+        final StringBuilder values = new StringBuilder();
+        keys.append(" ( ");
+        values.append(" ( ");
+        for (Field objectsEntry : listFields) {
+            keys.append(objectsEntry.getName()).append(", ");
+            values.append(" ? ").append(" , ");
+        }
+        keys.delete(keys.lastIndexOf(","), keys.length());
+        values.delete(values.lastIndexOf(","), values.length());
+        keys.append(" ) ");
+        values.append(" )");
+        query.append(keys).append(" VALUES ").append(values);
+        return query;
     }
 }
