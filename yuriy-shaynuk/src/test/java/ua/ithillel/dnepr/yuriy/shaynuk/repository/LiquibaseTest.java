@@ -24,17 +24,14 @@ import java.sql.Statement;
 @Slf4j
 class LiquibaseTest {
     private static final int PORT = NetUtils.getFreePort();
-    private static H2Server h2Server;
     private static final String TEST_DB_NAME = "main";
-    //private static final H2Server H2_SERVER = new H2Server();
     static Connection connection;
 
     @BeforeAll
-    static void setup() throws IOException, SQLException {
+    static void setup() throws SQLException {
         String repoRootPath = Paths.get("./target/classes/dev.db/", TEST_DB_NAME).toAbsolutePath().toString();
         log.info("Database path: {}", repoRootPath);
-        //connection = H2_SERVER.getConnection(repoRootPath);
-        h2Server = new H2Server(PORT);
+        H2Server h2Server = new H2Server(PORT);
         h2Server.start();
         try {
             Class.forName("org.h2.Driver");
@@ -65,6 +62,64 @@ class LiquibaseTest {
     }
 
     @Test
+    void addColumnToRegions() {
+        int numRowsTestColumn = 0;
+        String sqlSelect = "SELECT count(test_column) as numRows FROM regions";
+
+        try (PreparedStatement statement = connection.prepareStatement(sqlSelect)) {
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            numRowsTestColumn = resultSet.getInt("numRows");
+            resultSet.close();
+        } catch (SQLException e) {
+            log.error("getSQLNumRows error",e);
+            e.printStackTrace();
+        }
+        Assertions.assertTrue(getSQLNumRows("regions") == numRowsTestColumn);
+    }
+
+    @Test
+    void citiesUpdated() {
+        boolean wrongCountryIdPresent = false;
+        String sqlSelect = "SELECT country_id FROM cities where region_id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(sqlSelect)) {
+            statement.setInt(1,5);
+            ResultSet resultSet = statement.executeQuery();
+            while(resultSet.next()) {
+                if(resultSet.getInt("country_id") != 444){
+                    wrongCountryIdPresent = true;
+                }
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            log.error("citiesUpdated select error",e);
+            e.printStackTrace();
+        }
+        Assertions.assertFalse(wrongCountryIdPresent);
+    }
+
+    @Test
+    void cityColumnChanged(){
+        String type = "null";
+        String sqlSelect = "select type_name from information_schema.columns where table_name=? and column_name=?";
+        try (PreparedStatement statement = connection.prepareStatement(sqlSelect)) {
+            statement.setString(1,"COUNTRIES");
+            statement.setString(2,"CITY_NULL");
+            ResultSet resultSet = statement.executeQuery();
+            if(resultSet.next()) {
+                type = resultSet.getString("type_name");
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            log.error("cityColumnChanged select type_name error",e);
+            e.printStackTrace();
+        }
+
+        Assertions.assertEquals("VARCHAR", type);
+    }
+
+    @Test
     void tableUserPresent() {
         boolean tableExist = false;
         try {
@@ -80,9 +135,10 @@ class LiquibaseTest {
         Assertions.assertTrue(tableExist);
     }
 
-    private int getSQLNumRows(String value){
+     private int getSQLNumRows(String fromValue){
         int numRows = 0;
-        String sqlSelect = "SELECT count(*) as numRows FROM "+value;
+        String sqlSelect = "SELECT count(*) as numRows FROM "+fromValue;
+
         try (PreparedStatement statement = connection.prepareStatement(sqlSelect)) {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -94,17 +150,4 @@ class LiquibaseTest {
         }
         return numRows;
     }
-
-//    @Test
-//    void delete() {
-//        City testCity = new City();
-//        testCity.setName("deleteCity");
-//        testCity.setCountry_id(11);
-//        testCity.setRegion_id(22);
-//        testCity.setId(333);
-//        cityRepository.create(testCity);
-//
-//        City test = cityRepository.delete(333);
-//        Assertions.assertNotNull(cityRepository.findById(333));
-//    }
 }
