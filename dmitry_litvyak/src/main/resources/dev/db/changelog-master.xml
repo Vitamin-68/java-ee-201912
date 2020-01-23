@@ -10,5 +10,7 @@
     <include file="changelog/2020-01-20-03-create-table-country.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-21-01-create-table-log.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-21-02-data-load.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-21-city-country_id-manipulation.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-01-21-log-column-manipulation.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

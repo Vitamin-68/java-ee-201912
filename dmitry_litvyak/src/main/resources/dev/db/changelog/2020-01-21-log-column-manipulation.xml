@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="create_table_city_if_not_exists" author="Dmitry Litvyak" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="log"/>
+        </preConditions>
+        <addColumn tableName="log">
+            <column name="val1" type="VARCHAR(255)"/>
+        </addColumn>
+        <mergeColumns tableName="log" column1Name="description" joinString="" column2Name="val1" finalColumnName="diff"
+                      finalColumnType="VARCHAR(255)"/>
+    </changeSet>
+</databaseChangeLog>
