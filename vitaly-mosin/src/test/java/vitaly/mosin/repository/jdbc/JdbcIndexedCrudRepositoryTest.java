@@ -31,12 +31,10 @@ import static vitaly.mosin.repository.Constants.FILE_PATH_RESOURCE;
 @Slf4j
 class JdbcIndexedCrudRepositoryTest {
     private static final int PORT = NetUtils.getFreePort();
-    private final String TEST_DB_NAME = "test_db";
     private static final String PATH_TEST_DB = "./target/temp_DB/";
     private static H2Server h2Server = new H2Server(PORT);
     private Connection connection;
     private JdbcIndexedCrudRepository crudRepository;
-    private String repoRootPath = PATH_TEST_DB + TEST_DB_NAME;
 
     private City newCity = new City(123999999, 1, 2, "NewCity");
     private City existCity = new City(10, 4, 5, "Гилонг");
@@ -68,9 +66,11 @@ class JdbcIndexedCrudRepositoryTest {
     @BeforeEach
     void setUp() {
 
+        String TEST_DB_NAME = "test_db";
+        String repoRootPath = PATH_TEST_DB + TEST_DB_NAME;
         try {
             Files.copy(new File(FILE_PATH_RESOURCE + TEST_DB_NAME + ".mv.db").toPath(),
-                    new File(PATH_TEST_DB + TEST_DB_NAME + ".mv.db").toPath(), REPLACE_EXISTING);
+                    new File(repoRootPath + ".mv.db").toPath(), REPLACE_EXISTING);
         } catch (IOException e) {
             log.error("Failed to copy files", e);
         }
@@ -81,7 +81,11 @@ class JdbcIndexedCrudRepositoryTest {
 
     @AfterEach
     void tearDown() {
-
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -93,7 +97,6 @@ class JdbcIndexedCrudRepositoryTest {
         crudRepository = new JdbcIndexedCrudRepository(connection, Region.class);
         Optional<List<City>> result3 = crudRepository.findAll();
         assertTrue(result.isPresent());
-
     }
 
     @Test
@@ -102,8 +105,8 @@ class JdbcIndexedCrudRepositoryTest {
         Optional<City> result = crudRepository.findById(existCity.getId());
         assertEquals(result.get().getId(), existCity.getId());
         assertEquals(result.get().getCountryId(), existCity.getCountryId());
-        assertTrue(result.get().getRegionId().equals(existCity.getRegionId()));
-        assertTrue(result.get().getName().equals(existCity.getName()));
+        assertEquals(result.get().getRegionId(), existCity.getRegionId());
+        assertEquals(result.get().getName(), existCity.getName());
 
         //поиск несуществующей сущности
         result = crudRepository.findById(newCity.getId());
@@ -121,7 +124,7 @@ class JdbcIndexedCrudRepositoryTest {
         }
         //поиск по id
         result = crudRepository.findByField("id", existCity.getId());
-        assertTrue(result.get().size() == 1);
+        assertEquals(1, result.get().size());
         for (City city : result.get()) {
             assertEquals(city.getName(), existCity.getName());
             assertEquals(city.getCountryId(), existCity.getCountryId());
@@ -130,7 +133,7 @@ class JdbcIndexedCrudRepositoryTest {
         }
         //wrong id
         result = crudRepository.findByField("id", newCity.getId());
-        assertTrue(result.get().size() == 0);
+        assertEquals(0, result.get().size());
     }
 
     @Test

@@ -25,8 +25,8 @@ import java.util.Objects;
 
 @Slf4j
 public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable> {
-    protected static final String QUERY_SELECT_BY_ID = "SELECT * FROM %s WHERE id = %s";
-    protected static final String QUERY_COUNT_BY_ID = "SELECT COUNT(*) FROM %s WHERE id = %s";
+    protected static final String QUERY_SELECT_BY_ID = "SELECT * FROM %s WHERE id = ?";
+    protected static final String QUERY_COUNT_BY_FIELD = "SELECT COUNT(*) FROM %s WHERE %s = ?";
 
     protected final Connection connection;
     protected final Class<? extends EntityType> clazz;
@@ -43,7 +43,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
 
     protected EntityType getEntityById(IdType id) {
         EntityType result = null;
-        final String query = String.format("SELECT * FROM %s WHERE id = ?", getTableName());
+        final String query = String.format(QUERY_SELECT_BY_ID, getTableName());
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             final Field idField = getFieldByName("id");
             Objects.requireNonNull(idField, "Id field is undefined");
@@ -65,7 +65,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
             final String columnName = resultSetMetaData.getColumnName(i);
             final Field field = getFieldByName(columnName);
             Objects.requireNonNull(field, "Field is undefined");
-            Object fieldValue = null;
+            Object fieldValue;
             if (field.getType().isPrimitive()) {
                 try {
                     final Method method = resultSet.getClass().getMethod(
@@ -90,7 +90,7 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
     protected boolean isEntityExists(EntityType entity) throws SQLException {
         final String idFieldName = "id";
         boolean result = false;
-        final String query = String.format("SELECT COUNT(*) FROM %s WHERE %s = ?", getTableName(), idFieldName);
+        final String query = String.format(QUERY_COUNT_BY_FIELD, getTableName(), idFieldName);
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             Field idField = null;
             for (Field field : getAllFields()) {
