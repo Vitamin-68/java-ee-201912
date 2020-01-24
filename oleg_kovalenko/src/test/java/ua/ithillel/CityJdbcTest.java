@@ -1,33 +1,49 @@
 package ua.ithillel;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
+import ua.hillel.config.DbConfig;
 import ua.hillel.entity.City;
-import ua.hillel.csvRepo.CrudRepositoryCity;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.hillel.jdbcRepo.JdbcRepoCity;
+import ua.hillel.utils.CsvToDBLoader;
+import ua.ithillel.dnepr.common.utils.H2Server;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class CityRepositoryTest {
+public class CityJdbcTest {
 
-    private CrudRepository repositoryRead;
-    private CrudRepository repositoryDml;
-    String pathForRead = "src/test/resources/city.csv";
-    String pathForDml = "src/test/resources/cityTest.csv";
-    char delimeter = ';';
+    private JdbcRepoCity repositoryRead;
+    private JdbcRepoCity repositoryDml;
+    private static H2Server server;
 
     @BeforeEach
-    void init() {
-        repositoryRead = new CrudRepositoryCity(pathForRead, delimeter);
-        repositoryDml = new CrudRepositoryCity(pathForDml, delimeter);
+    void initEach() {
+        repositoryRead = new JdbcRepoCity("STUDY.CITY");
+        repositoryDml = new JdbcRepoCity("STUDY.CITY_TMP");
+    }
+
+    @BeforeAll
+    static void initAll() {
+        CsvToDBLoader loader = new CsvToDBLoader();
+        server = new H2Server(9092);
+        String into = "create table STUDY.CITY_TMP as SELECT * FROM STUDY.CITY LIMIT 0";
+        try {
+            server.start();
+            PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(into);
+            stmt.execute();
+            loader.addFromCsv("src/test/resources/city.csv", "STUDY.CITY_TMP");
+
+        } catch (SQLException e) {
+            log.error("error creation {}", e.getMessage());
+        }
     }
 
     @Test
-    public void findAllTest() {
+    void findAllTest() {
         Assertions.assertNotNull(repositoryRead.findAll());
     }
 
@@ -40,21 +56,21 @@ public class CityRepositoryTest {
 
     @Test
     public void findByFieldIdTest() {
-        Optional<List<City>> expected = repositoryRead.findByField("cityId", "4313");
+        Optional<List<City>> expected = repositoryRead.findByField("city_id", "4313");
         int actual = 1;
         Assertions.assertEquals(actual, expected.get().size());
     }
 
     @Test
     public void findByFieldCountriIdTest() {
-        Optional<List<City>> expected = repositoryRead.findByField("countryId", "3159");
+        Optional<List<City>> expected = repositoryRead.findByField("country_id", "3159");
         int actual = 2505;
         Assertions.assertEquals(actual, expected.get().size());
     }
 
     @Test
     public void findByFieldRegionIdTest() {
-        Optional<List<City>> expected = repositoryRead.findByField("regionId", "4312");
+        Optional<List<City>> expected = repositoryRead.findByField("region_id", "4312");
         int actual = 172;
         Assertions.assertEquals(actual, expected.get().size());
     }
@@ -100,5 +116,19 @@ public class CityRepositoryTest {
         String expected = city.get().getName();
         String actual = "Кофу Туц-Туц";
         Assertions.assertEquals(actual, expected);
+    }
+
+    @AfterAll
+    static void finish() throws InterruptedException {
+        String sql = "drop table STUDY.CITY_TMP";
+        try {
+            server.start();
+            PreparedStatement stmt = DbConfig.getConnectJdbc().prepareStatement(sql);
+            stmt.execute();
+            server.stop();
+            server.close();
+        } catch (SQLException e) {
+            log.error("error drop {}", e.getMessage());
+        }
     }
 }
