@@ -8,7 +8,9 @@
 
     <changeSet id="create_table_city_if_not_exists" author="Dmitry Litvyak" runAlways="true">
         <preConditions onFail="MARK_RAN">
-            <tableExists tableName="log"/>
+            <not>
+                <columnExists tableName="log" columnName="diff"/>
+            </not>
         </preConditions>
         <addColumn tableName="log">
             <column name="val1" type="VARCHAR(255)"/>
