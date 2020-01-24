@@ -12,9 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class CsvCrudRepositoryTest {
     static CsvCrudRepository crudRepository;
@@ -46,6 +50,7 @@ class CsvCrudRepositoryTest {
 
     @Test
     void update() {
+        city.setId(2);
         city.setName("TestUpdate");
         assertEquals(city, crudRepository.update(city));
     }

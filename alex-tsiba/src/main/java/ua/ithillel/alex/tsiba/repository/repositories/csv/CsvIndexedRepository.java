@@ -8,7 +8,11 @@ import ua.ithillel.dnepr.common.repository.IndexedRepository;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 public class CsvIndexedRepository<EntityType extends AbstractEntity> extends AbstractRepository<EntityType>
@@ -52,14 +56,14 @@ public class CsvIndexedRepository<EntityType extends AbstractEntity> extends Abs
             result = new HashMap<String, List<Integer>>();
             Field declaredField = null;
             for (BaseEntity item : data.values()) {
-                if(declaredField == null){
-                    for (Field tmpFiled: item.getClass().getDeclaredFields()) {
+                if (declaredField == null) {
+                    for (Field tmpFiled : item.getClass().getDeclaredFields()) {
                         Column column = tmpFiled.getAnnotation(Column.class);
-                        if(column != null && column.name().equals(field)){
+                        if (column != null && column.name().equals(field)) {
                             declaredField = tmpFiled;
                         }
                     }
-                    if(declaredField == null){
+                    if (declaredField == null) {
                         throw new IllegalArgumentException("Field doesn't exist in object");
 
                     }

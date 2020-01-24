@@ -1,30 +1,44 @@
 package ua.ithillel.alex.tsiba.repository.stores;
 
+import lombok.Getter;
 import ua.ithillel.alex.tsiba.repository.annotations.Column;
 import ua.ithillel.alex.tsiba.repository.annotations.Table;
 import ua.ithillel.alex.tsiba.repository.exception.DataStoreException;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<EntityType> {
+    @Getter
+    private Class objClass;
     private String encoding = "UTF-8";
     private String separator = ";";
-    private Class objClass;
     private File storeFile;
     private List<String> columns = new ArrayList<>();
     private BufferedReader bufferedReader;
+    private String table;
 
     public CSVDataStore(Class objClass) throws IOException, DataStoreException {
         this.objClass = objClass;
 
         final Table tableAnnotation = (Table) objClass.getDeclaredAnnotation(Table.class);
-        final String table = tableAnnotation.table();
+        table = tableAnnotation.table();
 
-        if (table == null || "".equals(table)) {
+        if ("".equals(table)) {
             throw new IllegalStateException("Object don't has table annotation;");
         }
 
@@ -44,8 +58,6 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                 saveObject(bufferedWriter, object);
             }
             bufferedWriter.close();
-        } catch (UnsupportedEncodingException | FileNotFoundException e) {
-            throw new DataStoreException("Data cannot be saved.", e);
         } catch (IOException e) {
             throw new DataStoreException("Data cannot be saved.", e);
         }
@@ -71,6 +83,9 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                             Integer key = columns.indexOf(columnName);
                             if (fieldValues.length >= key) {
                                 String fieldValue = fieldValues[key];
+                                if(fieldValue.charAt(0) == '\"' && fieldValue.charAt(fieldValue.length()-1) == '\"'){
+                                    fieldValue = fieldValue.substring(1, fieldValue.length()-1);
+                                }
                                 field.setAccessible(true);
                                 switch (type) {
                                     case INTEGER:
@@ -86,7 +101,7 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
                     }
                 }
             }
-        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+        } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | ArrayIndexOutOfBoundsException e) {
             throw new DataStoreException("Data cannot be uploaded.", e);
         }
         return result;
@@ -119,6 +134,12 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
         }
 
         for (String column : columnsString.split(separator)) {
+            if(column.charAt(0) == '\"' && column.charAt(column.length()-1) == '\"'){
+                column = column.substring(1, column.length()-1);
+            }
+            if(column.equals(table+"_id")){
+                column = "id";
+            }
             if (columns.contains(column)) {
                 throw new DataStoreException("Duplicate columns");
             }

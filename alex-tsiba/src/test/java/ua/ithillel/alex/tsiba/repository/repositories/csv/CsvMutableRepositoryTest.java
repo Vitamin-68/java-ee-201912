@@ -8,12 +8,13 @@ import ua.ithillel.alex.tsiba.repository.stores.CSVDataStore;
 import ua.ithillel.alex.tsiba.repository.stores.DataStore;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 class CsvMutableRepositoryTest {
     static CsvMutableRepository mutableRepository;
@@ -40,6 +41,7 @@ class CsvMutableRepositoryTest {
 
     @Test
     void update() {
+        city.setId(2);
         city.setName("TestUpdate");
         assertEquals(city, mutableRepository.update(city));
     }

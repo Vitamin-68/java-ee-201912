@@ -18,16 +18,26 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <root.basedir>${user.dir}</root.basedir>
         <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
+        <liquibase.version>3.8.4</liquibase.version>
     </properties>
 
     <modules>
+        <!-- internal -->
         <module>common</module>
+        <module>common-integration-test</module>
         <module>roman-gizatulin</module>
+        <!-- internal -->
+        <module>eugene-kovalov</module>
+        <module>dmitry_litvyak</module>
         <module>alex-tsiba</module>
+        <module>olga-tymoshenko</module>
+        <module>yuriy-shaynuk</module>
+        <module>oleg_kovalenko</module>
+        <module>vitaly-mosin</module>
     </modules>
-
     <dependencyManagement>
         <dependencies>
             <!-- testing -->
@@ -102,13 +112,13 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.4</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
-                <version>3.0.0</version>
+                <version>3.2.4</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
@@ -131,7 +141,7 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.28</version>
+                <version>1.7.30</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -183,6 +193,11 @@
                 <groupId>net.sourceforge.csvjdbc</groupId>
                 <artifactId>csvjdbc</artifactId>
                 <version>1.0.36</version>
+            </dependency>
+            <dependency>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-core</artifactId>
+                <version>${liquibase.version}</version>
             </dependency>
             <!-- data base -->
         </dependencies>
@@ -242,8 +257,60 @@
             <artifactId>logback-classic</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- logger -->
+        <!-- database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
     </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.12.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>true</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>true</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M4</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <build>
         <pluginManagement>
@@ -251,12 +318,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>3.1.2</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-assembly-plugin</artifactId>
-                    <version>3.1.1</version>
+                    <version>3.2.0</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -273,10 +340,51 @@
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>2.22.2</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.liquibase</groupId>
+                    <artifactId>liquibase-maven-plugin</artifactId>
+                    <version>${liquibase.version}</version>
+                    <configuration>
+                        <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
+            <!-- reporting -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.8.2</version>
+                <configuration>
+                    <!--<outputDirectory>${root.basedir}/target/site/${project.name}</outputDirectory>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${root.basedir}/target/site/${project.name}">
+                                    <fileset dir="${basedir}/target/site">
+                                        <include name="**/*"/>
+                                        <!--<exclude name="java-ee-201912"/>-->
+                                    </fileset>
+                                </copy>
+                                <delete dir="${root.basedir}/target/site/java-ee-201912" failonerror="false"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

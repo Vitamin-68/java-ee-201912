@@ -27,5 +27,84 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+        </dependency>
     </dependencies>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>dev</value>
+                </property>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <profile.id>dev</profile.id>
+                <profile.data.root>${project.build.outputDirectory}/${profile.id}</profile.data.root>
+                <profile.data.changeLog>${profile.data.root}</profile.data.changeLog>
+                <profile.data.db>${profile.data.root}/db</profile.data.db>
+                <profile.data.connection.driver>org.h2.Driver</profile.data.connection.driver>
+                <profile.data.connection.user>sa</profile.data.connection.user>
+                <profile.data.connection.password/>
+                <profile.data.connection.url>
+                    jdbc:h2:file:${profile.data.db}/main;AUTO_SERVER=TRUE;DB_CLOSE_ON_EXIT=FALSE;
+                </profile.data.connection.url>
+                <profile.changeLogFile>${profile.data.changeLog}/db/changelog-master.xml</profile.changeLogFile>
+                <profile.verbose>true</profile.verbose>
+                <profile.logging>debug</profile.logging>
+            </properties>
+
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>prod</value>
+                </property>
+            </activation>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <version>3.8.4</version>
+                <configuration>
+                    <changeLogFile>${profile.changeLogFile}</changeLogFile>
+                    <driver>${profile.data.connection.driver}</driver>
+                    <url>${profile.data.connection.url}</url>
+                    <username>${profile.data.connection.user}</username>
+                    <password>${profile.data.connection.password}</password>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                    <dataDir>${project.build.outputDirectory}/${profile.id}/db</dataDir>
+                    <verbose>${profile.verbose}</verbose>
+                    <logging>${profile.logging}</logging>
+                    <propertyFileWillOverride>true</propertyFileWillOverride>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
