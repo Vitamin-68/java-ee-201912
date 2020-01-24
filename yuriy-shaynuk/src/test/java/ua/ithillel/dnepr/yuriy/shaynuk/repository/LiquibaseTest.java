@@ -5,13 +5,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
-import ua.ithillel.dnepr.common.utils.H2Server;
 import ua.ithillel.dnepr.common.utils.NetUtils;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc.CqrsRepositoryImp;
 
-import java.io.IOException;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -19,7 +14,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 @Slf4j
 class LiquibaseTest {
@@ -31,8 +25,8 @@ class LiquibaseTest {
     static void setup() throws SQLException {
         String repoRootPath = Paths.get("./target/classes/dev.db/", TEST_DB_NAME).toAbsolutePath().toString();
         log.info("Database path: {}", repoRootPath);
-        H2Server h2Server = new H2Server(PORT);
-        h2Server.start();
+//        H2Server h2Server = new H2Server(PORT);
+//        h2Server.start();
         try {
             Class.forName("org.h2.Driver");
         } catch (ClassNotFoundException e) {
