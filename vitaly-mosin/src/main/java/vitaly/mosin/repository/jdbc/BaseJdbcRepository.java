@@ -175,9 +175,5 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
         } catch (SQLException e) {
             throw new IllegalStateException("Failed to create table", e);
         }
-//        mapTableFromCsv(entity);
-    }
-
-    private void mapTableFromCsv(EntityType entity) {
     }
 }

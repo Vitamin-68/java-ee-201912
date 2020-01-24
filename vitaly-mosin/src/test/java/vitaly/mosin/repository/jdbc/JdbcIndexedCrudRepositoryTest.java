@@ -93,10 +93,12 @@ class JdbcIndexedCrudRepositoryTest {
         crudRepository = new JdbcIndexedCrudRepository(connection, City.class);
         Optional<List<City>> result = crudRepository.findAll();
         crudRepository = new JdbcIndexedCrudRepository(connection, Country.class);
-        Optional<List<City>> result2 = crudRepository.findAll();
+        Optional<List<Country>> result2 = crudRepository.findAll();
         crudRepository = new JdbcIndexedCrudRepository(connection, Region.class);
-        Optional<List<City>> result3 = crudRepository.findAll();
+        Optional<List<Region>> result3 = crudRepository.findAll();
         assertTrue(result.isPresent());
+        assertTrue(!result2.isPresent());
+        assertTrue(!result3.isPresent());
     }
 
     @Test
