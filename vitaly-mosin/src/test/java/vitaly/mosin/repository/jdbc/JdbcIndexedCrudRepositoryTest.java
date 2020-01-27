@@ -2,7 +2,6 @@ package vitaly.mosin.repository.jdbc;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -49,23 +47,11 @@ class JdbcIndexedCrudRepositoryTest {
                 log.error("Failed create directory", e);
             }
         }
-        try {
-            h2Server.start();
-        } catch (
-                SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @AfterAll
-    static void initClose() {
-        h2Server.stop();
     }
 
     @SneakyThrows
     @BeforeEach
     void setUp() {
-
         String TEST_DB_NAME = "test_db";
         String repoRootPath = PATH_TEST_DB + TEST_DB_NAME;
         try {
@@ -74,9 +60,7 @@ class JdbcIndexedCrudRepositoryTest {
         } catch (IOException e) {
             log.error("Failed to copy files", e);
         }
-        Class.forName("org.h2.Driver");
-        connection = DriverManager.getConnection(
-                String.format("jdbc:h2:tcp://%s:%s/%s", NetUtils.getHostName(), PORT, repoRootPath));
+        connection = h2Server.getConnection(repoRootPath);
     }
 
     @AfterEach
@@ -86,19 +70,22 @@ class JdbcIndexedCrudRepositoryTest {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        h2Server.stop();
     }
 
     @Test
     void findAll() {
         crudRepository = new JdbcIndexedCrudRepository(connection, City.class);
-        Optional<List<City>> result = crudRepository.findAll();
+        Optional<List<City>> resultCity = crudRepository.findAll();
+        assertEquals(10969, resultCity.get().size());
+
         crudRepository = new JdbcIndexedCrudRepository(connection, Country.class);
-        Optional<List<Country>> result2 = crudRepository.findAll();
+        Optional<List<Country>> resultCountry = crudRepository.findAll();
+        assertEquals(106, resultCountry.get().size());
+
         crudRepository = new JdbcIndexedCrudRepository(connection, Region.class);
-        Optional<List<Region>> result3 = crudRepository.findAll();
-        assertTrue(result.isPresent());
-        assertTrue(!result2.isPresent());
-        assertTrue(!result3.isPresent());
+        Optional<List<Region>> resultRegion = crudRepository.findAll();
+        assertEquals(922, resultRegion.get().size());
     }
 
     @Test
@@ -139,14 +126,6 @@ class JdbcIndexedCrudRepositoryTest {
     }
 
     @Test
-    void addIndex() {
-    }
-
-    @Test
-    void addIndexes() {
-    }
-
-    @Test
     void create() {
         crudRepository = new JdbcIndexedCrudRepository(connection, newCity.getClass());
         Optional<List<City>> sizeDbBeforeCreate = crudRepository.findAll();
@@ -172,5 +151,4 @@ class JdbcIndexedCrudRepositoryTest {
         Optional<List<City>> sizeDbAfterDelete = crudRepository.findAll();
         assertEquals(sizeDbBeforeDelete.get().size() - sizeDbAfterDelete.get().size(), 1);
     }
-
 }
