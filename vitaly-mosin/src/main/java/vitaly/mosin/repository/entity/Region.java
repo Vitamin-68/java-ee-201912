@@ -19,7 +19,6 @@ public class Region extends AbstractEntity<Integer> {
     public Region(Integer id, Integer countryId, String name) {
         this.id = id;
         this.countryId = countryId;
-        this.cityId = cityId;
         this.name = name;
     }
 }
