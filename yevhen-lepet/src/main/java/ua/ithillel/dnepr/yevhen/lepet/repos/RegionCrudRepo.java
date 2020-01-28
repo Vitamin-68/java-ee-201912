@@ -25,10 +25,10 @@ import java.util.Optional;
 public class RegionCrudRepo implements CrudRepository<Region, Integer> {
     private final String filePath;
     private final char delimiter;
-    private final String REGION_ID = "region_id";
-    private final String COUNTRY_ID = "country_id";
-    private final String CITY_ID = "city_id";
-    private final String NAME = "name";
+    private static final String REGION_ID = "region_id";
+    private static final String COUNTRY_ID = "country_id";
+    private static final String CITY_ID = "city_id";
+    private static final String NAME = "name";
 
     public RegionCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
@@ -39,11 +39,10 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
     public Optional<List<Region>> findAll() {
         Optional<List<Region>> result = Optional.empty();
         final List<Region> regions = new ArrayList<>();
-        try {
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withDelimiter(delimiter)
-                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
+        try (CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(delimiter)
+                .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))))) {
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 convertRegion(csvRecord);
                 Region region = new Region();
@@ -55,8 +54,6 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
         }
         return result;
     }
-
-
 
     @Override
     public Optional<Region> findById(Integer id) {
@@ -95,6 +92,8 @@ public class RegionCrudRepo implements CrudRepository<Region, Integer> {
                         }
                     }
                     result = Optional.of(searchRegion);
+                } else {
+                    log.error("Искомое поле не найдено");
                 }
             }
         } catch (Exception e) {

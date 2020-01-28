@@ -25,10 +25,10 @@ import java.util.Optional;
 public class CityCrudRepo implements CrudRepository<City, Integer> {
     private final String filePath;
     private final char delimiter;
-    private final String CITY_ID = "city_id";
-    private final String COUNTRY_ID = "country_id";
-    private final String REGION_ID = "region_id";
-    private final String NAME = "name";
+    private static final String CITY_ID = "city_id";
+    private static final String COUNTRY_ID = "country_id";
+    private static final String REGION_ID = "region_id";
+    private static final String NAME = "name";
 
     public CityCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
@@ -39,11 +39,10 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
     public Optional<List<City>> findAll() {
         Optional<List<City>> result = Optional.empty();
         final List<City> cities = new ArrayList<>();
-        try {
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withDelimiter(delimiter)
-                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
+        try (CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(delimiter)
+                .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))))) {
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 convetCity(csvRecord);
                 City city = new City();
@@ -59,11 +58,10 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
     @Override
     public Optional<City> findById(Integer id) {
         Optional<City> result = Optional.empty();
-        try {
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withDelimiter(delimiter)
-                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
+        try (CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(delimiter)
+                .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))))) {
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 if (Integer.parseInt(csvRecord.get(CITY_ID)) == id) {
                     result = Optional.of(convetCity(csvRecord));
@@ -78,11 +76,10 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
     @Override
     public Optional<List<City>> findByField(String fieldName, Object value) {
         Optional<List<City>> result = Optional.empty();
-        try {
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withDelimiter(delimiter)
-                    .parse(new FileReader(filePath));
+        try (CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(delimiter)
+                .parse(new FileReader(filePath))) {
             Map<String, Integer> header = csvParser.getHeaderMap();
             List<City> searchCity = new ArrayList<>();
             if (header.get(fieldName) != null) {
@@ -93,6 +90,8 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
                         }
                     }
                     result = Optional.of(searchCity);
+                } else {
+                    log.error("Искомое поле не найдено");
                 }
             }
         } catch (Exception e) {
@@ -103,28 +102,24 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
 
     @Override
     public City create(City entity) {
-        if (findById(entity.getId()).isEmpty()) {
-            final List<City> cities = findAll().get();
-            cities.add(entity);
-            try {
-                CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
-                        .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
-                        .withDelimiter(delimiter)
-                        .withQuoteMode(QuoteMode.ALL));
-                for (City city : cities) {
-                    csvPrinter.printRecord(city.getId(),
-                            city.getCountry_id(),
-                            city.getRegion_id(),
-                            city.getName());
-                    csvPrinter.flush();
-                    csvPrinter.close();
-                }
-                return entity;
-            } catch (IOException e) {
-                log.error("Exception CSV " + e);
+        Optional<City> test = findById(entity.getId());
+        if (test.isPresent()) return test.get();
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
+                .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
+                .withDelimiter(delimiter)
+                .withQuoteMode(QuoteMode.ALL))) {
+            for (City city : findAll().get()) {
+                csvPrinter.printRecord(city.getId(),
+                        city.getCountry_id(),
+                        city.getRegion_id(),
+                        city.getName());
+                csvPrinter.flush();
+                csvPrinter.close();
             }
+        } catch (IOException e) {
+            log.error("Exception CSV " + e);
         }
-        return null;
+        return entity;
     }
 
     @Override
@@ -165,10 +160,9 @@ public class CityCrudRepo implements CrudRepository<City, Integer> {
     }
 
     private void addCSVPrinter(List<City> cities) {
-        try {
-            CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
-                    .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
-                    .withDelimiter(delimiter));
+        try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
+                .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
+                .withDelimiter(delimiter))) {
             for (City someCity : cities) {
                 csvPrinter.printRecord(someCity.getId(),
                         someCity.getCountry_id(),

@@ -25,9 +25,9 @@ import java.util.Optional;
 public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     private final String filePath;
     private final char delimiter;
-    private final String COUNTRY_ID = "country_id";
-    private final String CITY_ID = "city_id";
-    private final String NAME = "name";
+    private static final String COUNTRY_ID = "country_id";
+    private static final String CITY_ID = "city_id";
+    private static final String NAME = "name";
 
     public CountryCrudRepo(String filePath, char delimiter) {
         this.filePath = filePath;
@@ -38,11 +38,10 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
     public Optional<List<Country>> findAll() {
         Optional<List<Country>> result = Optional.empty();
         final List<Country> countries = new ArrayList<>();
-        try {
-            CSVParser csvParser = CSVFormat.DEFAULT
-                    .withFirstRecordAsHeader()
-                    .withDelimiter(delimiter)
-                    .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))));
+        try (CSVParser csvParser = CSVFormat.DEFAULT
+                .withFirstRecordAsHeader()
+                .withDelimiter(delimiter)
+                .parse(new InputStreamReader(Files.newInputStream(Paths.get(filePath))))){
             for (CSVRecord csvRecord : csvParser.getRecords()) {
                 convertCountry(csvRecord);
                 Country country = new Country();
@@ -92,6 +91,8 @@ public class CountryCrudRepo implements CrudRepository<Country, Integer> {
                         }
                     }
                     result = Optional.of(searchCountry);
+                } else {
+                    log.error("Искомое поле не найдено");
                 }
             }
         } catch (Exception e) {
