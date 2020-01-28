@@ -1,0 +1,43 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="create_table_cities_if_not_exists" author="Yuriy Shaynuk">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="cities"/>
+            </not>
+        </preConditions>
+        <createTable tableName="cities">
+            <column name="id" type="INTEGER" autoIncrement="false">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="country_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="truncate_cities" author="Yuriy Shaynuk">
+        <delete tableName="cities"/>
+    </changeSet>
+
+    <changeSet id="insert_data_into_cities_table" author="Yuriy Shaynuk">
+        <loadData tableName="cities" file="city.csv" separator=";">
+            <column name="id" header="city_id" type="NUMERIC"/>
+            <column name="country_id" header="country_id" type="NUMERIC"/>
+            <column name="region_id" header="region_id" type="NUMERIC"/>
+            <column name="name" header="name" type="STRING"/>
+        </loadData>
+    </changeSet>
+</databaseChangeLog>
