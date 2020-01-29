@@ -33,7 +33,7 @@
     </changeSet>
 
     <changeSet id="insert_data_into_city_table" author="Vitaly Mosin">
-        <loadData tableName="city" file="city.csv" separator=";">
+        <loadData tableName="city" file="./src/main/resources/city.csv" separator=";">
             <column name="id" header="city_id" type="NUMERIC"/>
             <column name="country_id" header="country_id" type="NUMERIC"/>
             <column name="region_id" header="region_id" type="NUMERIC"/>
