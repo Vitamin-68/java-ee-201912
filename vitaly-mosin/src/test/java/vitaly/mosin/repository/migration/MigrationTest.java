@@ -22,8 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class MigrationTest {
     private static final String PATH_TEST_DB = "./target/classes/dev/db/";
     private static final String DB_NAME = "mainRepoVM";
-    private static final String QUERY_DATA_TYPE = "SELECT data_type FROM information_schema.columns " +
-            "WHERE table_name = 'CITY'";
+    private static final String QUERY_SELECT_ALL = "SELECT * FROM CITY";
     private static final int NUMBER_OF_RECORDS_CITY_CSV = 10969;
     private static final int NUMBER_OF_RECORDS_COUNTRY_CSV = 106;
     private static final int NUMBER_OF_RECORDS_REGION_CSV = 922;
@@ -64,7 +63,7 @@ public class MigrationTest {
         //Проверка changeSet id="add_new_column_to_table_city"
         int columnCountTableCity, newColumn;
         String newColumnName = "new_id";
-        try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM CITY")) {
+        try (PreparedStatement statement = connection.prepareStatement(QUERY_SELECT_ALL)) {
             ResultSet resultSet = statement.executeQuery();
             columnCountTableCity = resultSet.getMetaData().getColumnCount();
 
