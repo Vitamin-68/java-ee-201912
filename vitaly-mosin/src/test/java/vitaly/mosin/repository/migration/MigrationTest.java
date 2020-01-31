@@ -29,15 +29,14 @@ public class MigrationTest {
     private static final int KUBAN_PART_OF_UKRAINE = 9908;
     private static final int REGION_KRASNODARSKY_KRAI = 4052;
     private Connection connection;
-    private static H2Server h2Server = new H2Server();
+    private static final H2Server H2SERVER = new H2Server();
     private JdbcIndexedCrudRepository crudRepository;
-
 
     @Test
     private void migrationResult() {
         try {
             String repoRootPath = PATH_TEST_DB + DB_NAME;
-            connection = h2Server.getConnection(repoRootPath);
+            connection = H2SERVER.getConnection(repoRootPath);
         } catch (SQLException e1) {
             e1.printStackTrace();
         }

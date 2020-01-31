@@ -8,9 +8,7 @@
 
     <changeSet id="add_test_column_to_table_city" author="Vitaly Mosin">
         <preConditions onFail="HALT">
-            <!--<not>-->
             <tableExists tableName="city"/>
-            <!--</not>-->
         </preConditions>
         <addColumn tableName="city">
             <column name="test_column" type="varchar(255)"/>
@@ -50,8 +48,8 @@
 
     <changeSet id="return_Kuban_to_Ukraine_table_city" author="Vitaly Mosin">
         <update tableName="city">
-            <column name = "country_id" value="9908"/>
-            <where> region_id = '4052' </where>
+            <column name="country_id" value="9908"/>
+            <where>region_id = '4052'</where>
         </update>
     </changeSet>
 
