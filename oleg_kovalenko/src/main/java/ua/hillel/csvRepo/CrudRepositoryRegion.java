@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.*;
 import ua.hillel.entity.Region;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -26,8 +25,9 @@ public class CrudRepositoryRegion implements CrudRepository<Region, Integer> {
 
     @Override
     public Optional<List<Region>> findAll() {
-        log.info("Count of records {}", readCsv().size());
-        return Optional.of(readCsv());
+        List<Region> regions = readCsv();
+        log.info("Count of records {}", regions.size());
+        return Optional.of(regions);
     }
 
     @Override
@@ -104,7 +104,7 @@ public class CrudRepositoryRegion implements CrudRepository<Region, Integer> {
             }
         }
         writeCsv(regions);
-        log.info("{} updated", regions);
+        log.info("{} updated", entity.getCityId());
         return entity;
     }
 
