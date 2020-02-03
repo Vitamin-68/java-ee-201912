@@ -1,8 +1,8 @@
 package ua.ithillel.dnepr.eugenekovalov;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.eugenekovalov.repository.crud.CrudRepoImpl;
 import ua.ithillel.dnepr.eugenekovalov.repository.entity.City;
@@ -18,16 +18,22 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class CityCrudRepoTest {
 
-    Path pathToOrigin = Paths.get("src/main/resources/city.csv");
-    Path pathToWorkingCopy = Paths.get("src/test/resources/tmp.csv");
+    static Path pathToOrigin = Paths.get("src/main/resources/city.csv");
+    static Path pathToWorkingCopy = Paths.get("src/test/resources/tmpCity.csv");
 
     CrudRepoImpl<City, Integer> cityIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, City.class);
 
     @SneakyThrows
-    @BeforeEach
-    void prepare() {
-        Files.deleteIfExists(pathToWorkingCopy);
+    @BeforeAll
+    static void prepare() {
+        clean();
         Files.copy(pathToOrigin, pathToWorkingCopy);
+    }
+
+    @SneakyThrows
+    @AfterAll
+    static void clean() {
+        Files.deleteIfExists(pathToWorkingCopy);
     }
 
     @Test
@@ -82,7 +88,7 @@ public class CityCrudRepoTest {
 
     @Test
     void updateCity() {
-        Integer cityId = 10504604;
+        Integer cityId = 4321;
 
         City city = new City();
         city.setId(cityId);
@@ -100,7 +106,7 @@ public class CityCrudRepoTest {
 
     @Test
     void deleteCity() {
-        Integer cityId = 10504604;
+        Integer cityId = 4326;
 
         assertTrue(cityIntegerCrudRepo.findById(cityId).isPresent());
         cityIntegerCrudRepo.delete(cityId);
