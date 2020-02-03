@@ -26,13 +26,8 @@ public class CityCrudRepoTest {
     @SneakyThrows
     @BeforeEach
     void prepare() {
-        Files.copy(pathToOrigin, pathToWorkingCopy);
-    }
-
-    @SneakyThrows
-    @AfterEach
-    void clean() {
         Files.deleteIfExists(pathToWorkingCopy);
+        Files.copy(pathToOrigin, pathToWorkingCopy);
     }
 
     @Test
