@@ -9,55 +9,55 @@ import ua.ithillel.dnepr.eugenekovalov.repository.entity.Country;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CountryCrudRepoTest {
-
-    static Path pathToOrigin = Paths.get("src/main/resources/country.csv");
-    static Path pathToWorkingCopy = Paths.get("src/test/resources/tmpCountry.csv");
-
-    CrudRepoImpl<Country, Integer> countryCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Country.class);
+    static Path pathToWorkingCopy = null;
+    static CrudRepoImpl<Country, Integer> countryIntegerCrudRepo;
 
     @SneakyThrows
     @BeforeAll
     static void prepare() {
-        clean();
-        Files.copy(pathToOrigin, pathToWorkingCopy);
+        pathToWorkingCopy = Files.createTempFile("tmpCountryK", ".csv");
+        countryIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Country.class);
+
+        countryIntegerCrudRepo.create(createCountry(1,  1, "Dunwich"));
+        countryIntegerCrudRepo.create(createCountry(2, 6, "Dunwich"));
+        countryIntegerCrudRepo.create(createCountry(423, 7, "Darn"));
+        countryIntegerCrudRepo.create(createCountry(777, 24, "Maluoka"));
     }
 
     @SneakyThrows
     @AfterAll
     static void clean() {
-        Files.deleteIfExists(pathToWorkingCopy);
+        if (pathToWorkingCopy != null) {
+            Files.deleteIfExists(pathToWorkingCopy);
+        }
     }
 
     @Test
     void findAll() {
-        assertNotNull(countryCrudRepo.findAll());
+        assertNotNull(countryIntegerCrudRepo.findAll());
     }
 
     @Test
     void findByIdPositive() {
-        Integer countryId = 3661568;
-        Optional<Country> country = countryCrudRepo.findById(countryId);
+        Optional<Country> country = countryIntegerCrudRepo.findById(423);
         Country result = country.get();
 
-        assertEquals(result.getId(), countryId);
+        assertEquals(result.getId(), 423);
     }
 
     @Test
     void findByIdNegative() {
-        Integer countryId = 3661568;
-        Optional<Country> country = countryCrudRepo.findById(countryId);
+        Optional<Country> country = countryIntegerCrudRepo.findById(423);
         Country result = country.get();
 
         assertNotEquals(result.getId(), 33231);
@@ -66,46 +66,49 @@ public class CountryCrudRepoTest {
     @Test
     void findByField() {
         String field = "name";
-        String value = "Малайзия";
-        Optional<List<Country>> countries = countryCrudRepo.findByField(field, value);
+        String value = "Dunwich";
+        Optional<List<Country>> countries = countryIntegerCrudRepo.findByField(field, value);
 
-        assertEquals(1, countries.get().size());
+        assertEquals(2, countries.get().size());
     }
 
     @Test
-    void addCountry() {
-        Country country = new Country();
+    void addCity() {
         int id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
-        country.setId(id);
-        country.setCity_id(23);
-        country.setName("Impl");
 
-        countryCrudRepo.create(country);
+        countryIntegerCrudRepo.create(createCountry(id, 10, "Malcolm"));
 
-        assertEquals(countryCrudRepo.findById(id).get().getName(), country.getName());
+        Optional<Country> expOpt = countryIntegerCrudRepo.findById(id);
+        Country actual =  countryIntegerCrudRepo.findById(id).get();
+        Country expected = expOpt.get();
+
+        assertEquals(expected.getName(), actual.getName());
     }
 
     @Test
-    void updateCountry() {
-        Integer countryId = 1007;
+    void updateCity() {
+        Country country = countryIntegerCrudRepo.findById(423).get();
+        country.setName("San-Diego");
+        countryIntegerCrudRepo.update(country);
 
+        assertTrue(countryIntegerCrudRepo.findById(423).get().getName().equals("San-Diego"));
+    }
+
+    @Test
+    void deleteCity() {
+        Integer countryId = 777;
+
+        assertTrue(countryIntegerCrudRepo.findById(countryId).isPresent());
+        countryIntegerCrudRepo.delete(countryId);
+
+        assertTrue(countryIntegerCrudRepo.findById(countryId).isEmpty());
+    }
+
+    private static Country createCountry(int id, int cityId, String name) {
         Country country = new Country();
-        country.setId(countryId);
-        country.setCity_id(23);
-        country.setName("Impl");
-
-        countryCrudRepo.update(country);
-
-        assertTrue(countryCrudRepo.findById(countryId).get().getName().equals("Impl"));
-    }
-
-    @Test
-    void deleteCountry() {
-        Integer countryId = 425;
-
-        assertTrue(countryCrudRepo.findById(countryId).isPresent());
-        countryCrudRepo.delete(countryId);
-
-        assertFalse(countryCrudRepo.findById(countryId).isPresent());
+        country.setId(id);
+        country.setCity_id(cityId);
+        country.setName(name);
+        return country;
     }
 }
