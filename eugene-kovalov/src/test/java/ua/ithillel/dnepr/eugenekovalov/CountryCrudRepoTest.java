@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ua.ithillel.dnepr.eugenekovalov.repository.CountryCrudRepo;
+import ua.ithillel.dnepr.eugenekovalov.repository.crud.CrudRepoImpl;
 import ua.ithillel.dnepr.eugenekovalov.repository.entity.Country;
 
 import java.nio.file.Files;
@@ -14,14 +14,18 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CountryCrudRepoTest {
 
     Path pathToOrigin = Paths.get("src/main/resources/country.csv");
     Path pathToWorkingCopy = Paths.get("src/main/resources/tmp.csv");
 
-    CountryCrudRepo countryCrudRepo = new CountryCrudRepo(pathToWorkingCopy, ';');
+    CrudRepoImpl<Country, Integer> countryCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Country.class);
 
     @SneakyThrows
     @BeforeEach
@@ -42,18 +46,18 @@ public class CountryCrudRepoTest {
 
     @Test
     void findByIdPositive() {
-        Integer CountryId = 3661568;
-        Optional<Country> Country = countryCrudRepo.findById(CountryId);
-        Country result = Country.get();
+        Integer countryId = 3661568;
+        Optional<Country> country = countryCrudRepo.findById(countryId);
+        Country result = country.get();
 
-        assertEquals(result.getId(), CountryId);
+        assertEquals(result.getId(), countryId);
     }
 
     @Test
     void findByIdNegative() {
-        Integer CountryId = 3661568;
-        Optional<Country> Country = countryCrudRepo.findById(CountryId);
-        Country result = Country.get();
+        Integer countryId = 3661568;
+        Optional<Country> country = countryCrudRepo.findById(countryId);
+        Country result = country.get();
 
         assertNotEquals(result.getId(), 33231);
     }
@@ -72,7 +76,7 @@ public class CountryCrudRepoTest {
         Country country = new Country();
         int id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
         country.setId(id);
-        country.setCityId(23);
+        country.setCity_id(23);
         country.setName("Impl");
 
         countryCrudRepo.create(country);
@@ -86,7 +90,7 @@ public class CountryCrudRepoTest {
 
         Country country = new Country();
         country.setId(countryId);
-        country.setCityId(23);
+        country.setCity_id(23);
         country.setName("Impl");
 
         countryCrudRepo.update(country);
