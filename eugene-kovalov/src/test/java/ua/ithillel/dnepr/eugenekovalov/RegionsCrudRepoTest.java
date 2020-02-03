@@ -19,20 +19,15 @@ import static org.junit.jupiter.api.Assertions.*;
 public class RegionsCrudRepoTest {
 
     Path pathToOrigin = Paths.get("src/main/resources/region.csv");
-    Path pathToWorkingCopy = Paths.get("src/main/resources/tmp.csv");
+    Path pathToWorkingCopy = Paths.get("src/test/resources/tmp.csv");
 
     CrudRepoImpl<Region, Integer> regionIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Region.class);
 
     @SneakyThrows
     @BeforeEach
     void prepare() {
-        Files.copy(pathToOrigin, pathToWorkingCopy);
-    }
-
-    @SneakyThrows
-    @AfterEach
-    void clean() {
         Files.deleteIfExists(pathToWorkingCopy);
+        Files.copy(pathToOrigin, pathToWorkingCopy);
     }
 
     @Test
