@@ -1,8 +1,8 @@
 package ua.ithillel.dnepr.eugenekovalov;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.eugenekovalov.repository.crud.CrudRepoImpl;
 import ua.ithillel.dnepr.eugenekovalov.repository.entity.Country;
@@ -22,16 +22,22 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CountryCrudRepoTest {
 
-    Path pathToOrigin = Paths.get("src/main/resources/country.csv");
-    Path pathToWorkingCopy = Paths.get("src/test/resources/tmp.csv");
+    static Path pathToOrigin = Paths.get("src/main/resources/country.csv");
+    static Path pathToWorkingCopy = Paths.get("src/test/resources/tmpCountry.csv");
 
     CrudRepoImpl<Country, Integer> countryCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Country.class);
 
     @SneakyThrows
-    @BeforeEach
-    void prepare() {
-        Files.deleteIfExists(pathToWorkingCopy);
+    @BeforeAll
+    static void prepare() {
+        clean();
         Files.copy(pathToOrigin, pathToWorkingCopy);
+    }
+
+    @SneakyThrows
+    @AfterAll
+    static void clean() {
+        Files.deleteIfExists(pathToWorkingCopy);
     }
 
     @Test
@@ -81,7 +87,7 @@ public class CountryCrudRepoTest {
 
     @Test
     void updateCountry() {
-        Integer countryId = 3661568;
+        Integer countryId = 1007;
 
         Country country = new Country();
         country.setId(countryId);
@@ -95,7 +101,7 @@ public class CountryCrudRepoTest {
 
     @Test
     void deleteCountry() {
-        Integer countryId = 3661568;
+        Integer countryId = 425;
 
         assertTrue(countryCrudRepo.findById(countryId).isPresent());
         countryCrudRepo.delete(countryId);

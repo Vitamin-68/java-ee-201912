@@ -1,8 +1,8 @@
 package ua.ithillel.dnepr.eugenekovalov;
 
 import lombok.SneakyThrows;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.eugenekovalov.repository.crud.CrudRepoImpl;
 import ua.ithillel.dnepr.eugenekovalov.repository.entity.Region;
@@ -14,20 +14,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegionsCrudRepoTest {
 
-    Path pathToOrigin = Paths.get("src/main/resources/region.csv");
-    Path pathToWorkingCopy = Paths.get("src/test/resources/tmp.csv");
+    static Path pathToOrigin = Paths.get("src/main/resources/region.csv");
+    static Path pathToWorkingCopy = Paths.get("src/test/resources/tmpRegion.csv");
 
     CrudRepoImpl<Region, Integer> regionIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Region.class);
 
     @SneakyThrows
-    @BeforeEach
-    void prepare() {
-        Files.deleteIfExists(pathToWorkingCopy);
+    @BeforeAll
+    static void prepare() {
+        clean();
         Files.copy(pathToOrigin, pathToWorkingCopy);
+    }
+
+    @SneakyThrows
+    @AfterAll
+    static void clean() {
+        Files.deleteIfExists(pathToWorkingCopy);
     }
 
     @Test
@@ -78,7 +88,7 @@ public class RegionsCrudRepoTest {
 
     @Test
     void updateRegion() {
-        Integer regionId = 277657;
+        Integer regionId = 3223;
 
         Region region = new Region();
         region.setId(regionId);
@@ -93,7 +103,7 @@ public class RegionsCrudRepoTest {
 
     @Test
     void deleteRegion() {
-        Integer regionId = 277657;
+        Integer regionId = 3407;
 
         assertTrue(regionIntegerCrudRepo.findById(regionId).isPresent());
         regionIntegerCrudRepo.delete(regionId);
