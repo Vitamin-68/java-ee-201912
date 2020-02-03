@@ -2,11 +2,13 @@ package ua.hillel.csvRepo;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.csv.*;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import ua.hillel.entity.City;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.Writer;
@@ -26,8 +28,9 @@ public class CrudRepositoryCity implements CrudRepository<City, Integer> {
 
     @Override
     public Optional<List<City>> findAll() {
-        log.info("Count of records {}", readCsv().size());
-        return Optional.of(readCsv());
+        List<City> cities = readCsv();
+        log.info("Count of records {}", cities.size());
+        return Optional.of(cities);
     }
 
     @Override
