@@ -4,7 +4,7 @@ import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ua.ithillel.dnepr.eugenekovalov.repository.CityCrudRepo;
+import ua.ithillel.dnepr.eugenekovalov.repository.crud.CrudRepoImpl;
 import ua.ithillel.dnepr.eugenekovalov.repository.entity.City;
 
 import java.nio.file.Files;
@@ -19,9 +19,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CityCrudRepoTest {
 
     Path pathToOrigin = Paths.get("src/main/resources/city.csv");
-    Path pathToWorkingCopy = Paths.get("src/main/resources/tmp.csv");
+    Path pathToWorkingCopy = Paths.get("src/test/resources/tmp.csv");
 
-    CityCrudRepo cityCrudRepo = new CityCrudRepo(pathToWorkingCopy, ';');
+    CrudRepoImpl<City, Integer> cityIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, City.class);
 
     @SneakyThrows
     @BeforeEach
@@ -37,13 +37,13 @@ public class CityCrudRepoTest {
 
     @Test
     void findAll() {
-        assertNotNull(cityCrudRepo.findAll());
+        assertNotNull(cityIntegerCrudRepo.findAll());
     }
 
     @Test
     void findByIdPositive() {
         Integer cityId = 10504604;
-        Optional<City> city = cityCrudRepo.findById(cityId);
+        Optional<City> city = cityIntegerCrudRepo.findById(cityId);
         City result = city.get();
 
         assertEquals(result.getId(), cityId);
@@ -52,7 +52,7 @@ public class CityCrudRepoTest {
     @Test
     void findByIdNegative() {
         Integer cityId = 10504604;
-        Optional<City> city = cityCrudRepo.findById(cityId);
+        Optional<City> city = cityIntegerCrudRepo.findById(cityId);
         City result = city.get();
 
         assertNotEquals(result.getId(), 33231);
@@ -62,7 +62,7 @@ public class CityCrudRepoTest {
     void findByField() {
         String field = "name";
         String value = "Байконур";
-        Optional<List<City>> cities = cityCrudRepo.findByField(field, value);
+        Optional<List<City>> cities = cityIntegerCrudRepo.findByField(field, value);
 
         assertEquals(2, cities.get().size());
     }
@@ -72,13 +72,17 @@ public class CityCrudRepoTest {
         City city = new City();
         int id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
         city.setId(id);
-        city.setCountryId(23);
-        city.setRegionId(123);
+
+        city.setCountry_id(23);
+        city.setRegion_id(123);
         city.setName("Impl");
 
-        cityCrudRepo.create(city);
+        cityIntegerCrudRepo.create(city);
 
-        assertEquals(cityCrudRepo.findById(id).get().getName(), city.getName());
+        Optional<City> expOpt = cityIntegerCrudRepo.findById(id);
+        City expected = expOpt.get();
+
+        assertEquals(expected.getName(), city.getName());
     }
 
     @Test
@@ -87,22 +91,25 @@ public class CityCrudRepoTest {
 
         City city = new City();
         city.setId(cityId);
-        city.setCountryId(23);
-        city.setRegionId(123);
+        city.setCountry_id(23);
+        city.setRegion_id(123);
         city.setName("Impl");
 
-        cityCrudRepo.update(city);
+        cityIntegerCrudRepo.update(city);
 
-        assertTrue(cityCrudRepo.findById(cityId).get().getName().equals("Impl"));
+        Optional<City> expOpt = cityIntegerCrudRepo.findById(cityId);
+        City expected = expOpt.get();
+
+        assertTrue(expected.getName().equals("Impl"));
     }
 
     @Test
     void deleteCity() {
         Integer cityId = 10504604;
 
-        assertTrue(cityCrudRepo.findById(cityId).isPresent());
-        cityCrudRepo.delete(cityId);
+        assertTrue(cityIntegerCrudRepo.findById(cityId).isPresent());
+        cityIntegerCrudRepo.delete(cityId);
 
-        assertFalse(cityCrudRepo.findById(cityId).isPresent());
+        assertTrue(cityIntegerCrudRepo.findById(cityId).isEmpty());
     }
 }
