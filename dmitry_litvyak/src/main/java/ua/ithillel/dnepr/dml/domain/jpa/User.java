@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.dml.domain;
+package ua.ithillel.dnepr.dml.domain.jpa;
 
 import lombok.Data;
 
@@ -14,7 +14,7 @@ public class User {
 
     @Id
     @GeneratedValue
-    private Integer id;
+    private Long id;
 
     private String fName;
 

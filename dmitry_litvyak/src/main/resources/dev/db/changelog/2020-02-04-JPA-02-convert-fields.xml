@@ -1,0 +1,42 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="convert_fields_table_city" author="Dmitry Litvyak" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="city"/>
+                <columnExists tableName="city" columnName="country_id"/>
+                <columnExists tableName="city" columnName="region_id"/>
+            </and>
+        </preConditions>
+        <modifyDataType tableName="city" columnName="region_id" newDataType="BIGINT"/>
+        <modifyDataType tableName="city" columnName="country_id" newDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet id="convert_fields_table_country" author="Dmitry Litvyak" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="country"/>
+                <columnExists tableName="country" columnName="city_id"/>
+            </and>
+        </preConditions>
+        <modifyDataType tableName="country" columnName="country_id" newDataType="BIGINT"/>
+    </changeSet>
+
+    <changeSet id="convert_fields_table_region" author="Dmitry Litvyak" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <tableExists tableName="region"/>
+                <columnExists tableName="region" columnName="country_id"/>
+                <columnExists tableName="region" columnName="city_id"/>
+            </and>
+        </preConditions>
+        <modifyDataType tableName="region" columnName="city_id" newDataType="BIGINT"/>
+        <modifyDataType tableName="region" columnName="country_id" newDataType="BIGINT"/>
+    </changeSet>
+</databaseChangeLog>

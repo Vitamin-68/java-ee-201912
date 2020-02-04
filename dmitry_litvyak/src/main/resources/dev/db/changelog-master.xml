@@ -12,5 +12,8 @@
     <include file="changelog/2020-01-21-02-data-load.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-21-city-country_id-manipulation.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-01-21-log-column-manipulation.xml" relativeToChangelogFile="true"/>
+    <include file="2020-02-04-JPA-01-create-table-user.xml" relativeToChangelogFile="true"/>
+    <include file="2020-02-04-JPA-02-convert-fields.xml" relativeToChangelogFile="true"/>
+    <include file="2020-02-04-JPA-03-add-constraints.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
