@@ -18,9 +18,11 @@
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <root.basedir>${user.dir}</root.basedir>
         <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
         <liquibase.version>3.8.4</liquibase.version>
+        <hibernate.version>5.2.10.Final</hibernate.version>
     </properties>
 
     <modules>
@@ -36,8 +38,8 @@
         <module>yuriy-shaynuk</module>
         <module>oleg_kovalenko</module>
         <module>vitaly-mosin</module>
+        <module>yevhen-lepet</module>
     </modules>
-
     <dependencyManagement>
         <dependencies>
             <!-- testing -->
@@ -116,6 +118,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.10.7</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>3.2.4</version>
@@ -163,7 +171,13 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            <!-- logger -->
+            <!-- other -->
+            <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>2.8.0</version>
+            </dependency>
             <dependency>
                 <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-csv -->
                 <groupId>org.apache.commons</groupId>
@@ -199,6 +213,16 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
             <!-- data base -->
         </dependencies>
     </dependencyManagement>
@@ -229,6 +253,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -263,6 +292,54 @@
             <artifactId>h2</artifactId>
         </dependency>
     </dependencies>
+
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.0.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>3.12.0</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jxr-plugin</artifactId>
+                <version>3.0.0</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>true</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.1.1</version>
+                <reportSets>
+                    <reportSet>
+                        <id>aggregate</id>
+                        <inherited>true</inherited>
+                        <reports>
+                            <report>aggregate</report>
+                        </reports>
+                    </reportSet>
+                </reportSets>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>3.0.0-M4</version>
+            </plugin>
+        </plugins>
+    </reporting>
 
     <build>
         <pluginManagement>
@@ -304,6 +381,39 @@
         </pluginManagement>
 
         <plugins>
+            <!-- reporting -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.8.2</version>
+                <configuration>
+                    <!--<outputDirectory>${root.basedir}/target/site/${project.name}</outputDirectory>-->
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <phase>site</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy todir="${root.basedir}/target/site/${project.name}">
+                                    <fileset dir="${basedir}/target/site">
+                                        <include name="**/*"/>
+                                        <!--<exclude name="java-ee-201912"/>-->
+                                    </fileset>
+                                </copy>
+                                <delete dir="${root.basedir}/target/site/java-ee-201912" failonerror="false"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
