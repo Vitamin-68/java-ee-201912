@@ -14,6 +14,7 @@
                 <columnExists tableName="city" columnName="region_id"/>
             </and>
         </preConditions>
+        <modifyDataType tableName="city" columnName="id" newDataType="BIGINT"/>
         <modifyDataType tableName="city" columnName="region_id" newDataType="BIGINT"/>
         <modifyDataType tableName="city" columnName="country_id" newDataType="BIGINT"/>
     </changeSet>
@@ -25,7 +26,8 @@
                 <columnExists tableName="country" columnName="city_id"/>
             </and>
         </preConditions>
-        <modifyDataType tableName="country" columnName="country_id" newDataType="BIGINT"/>
+        <modifyDataType tableName="country" columnName="city_id" newDataType="BIGINT"/>
+        <modifyDataType tableName="country" columnName="id" newDataType="BIGINT"/>
     </changeSet>
 
     <changeSet id="convert_fields_table_region" author="Dmitry Litvyak" runAlways="true">
@@ -38,5 +40,6 @@
         </preConditions>
         <modifyDataType tableName="region" columnName="city_id" newDataType="BIGINT"/>
         <modifyDataType tableName="region" columnName="country_id" newDataType="BIGINT"/>
+        <modifyDataType tableName="region" columnName="id" newDataType="BIGINT"/>
     </changeSet>
 </databaseChangeLog>
