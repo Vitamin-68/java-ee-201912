@@ -9,35 +9,37 @@ import ua.ithillel.dnepr.eugenekovalov.repository.entity.Region;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RegionsCrudRepoTest {
-
-    static Path pathToOrigin = Paths.get("src/main/resources/region.csv");
-    static Path pathToWorkingCopy = Paths.get("src/test/resources/tmpRegion.csv");
-
-    CrudRepoImpl<Region, Integer> regionIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Region.class);
+    static Path pathToWorkingCopy = null;
+    static CrudRepoImpl<Region, Integer> regionIntegerCrudRepo;
 
     @SneakyThrows
     @BeforeAll
     static void prepare() {
-        clean();
-        Files.copy(pathToOrigin, pathToWorkingCopy);
+        pathToWorkingCopy = Files.createTempFile("tmpRegionK", ".csv");
+        regionIntegerCrudRepo = new CrudRepoImpl<>(pathToWorkingCopy, Region.class);
+
+        regionIntegerCrudRepo.create(createRegion(1, 1, 5, "Dunwich"));
+        regionIntegerCrudRepo.create(createRegion(2, 6, 2, "Dunwich"));
+        regionIntegerCrudRepo.create(createRegion(423, 7, 6, "Darn"));
+        regionIntegerCrudRepo.create(createRegion(777, 24, 8, "Maluoka"));
     }
 
     @SneakyThrows
     @AfterAll
     static void clean() {
-        Files.deleteIfExists(pathToWorkingCopy);
+        if (pathToWorkingCopy != null) {
+            Files.deleteIfExists(pathToWorkingCopy);
+        }
     }
 
     @Test
@@ -47,17 +49,15 @@ public class RegionsCrudRepoTest {
 
     @Test
     void findByIdPositive() {
-        Integer regionId = 277657;
-        Optional<Region> region = regionIntegerCrudRepo.findById(regionId);
+        Optional<Region> region = regionIntegerCrudRepo.findById(423);
         Region result = region.get();
 
-        assertEquals(result.getId(), regionId);
+        assertEquals(result.getId(), 423);
     }
 
     @Test
     void findByIdNegative() {
-        Integer regionId = 277657;
-        Optional<Region> region = regionIntegerCrudRepo.findById(regionId);
+        Optional<Region> region = regionIntegerCrudRepo.findById(423);
         Region result = region.get();
 
         assertNotEquals(result.getId(), 33231);
@@ -66,48 +66,50 @@ public class RegionsCrudRepoTest {
     @Test
     void findByField() {
         String field = "name";
-        String value = "Великобритания";
+        String value = "Dunwich";
         Optional<List<Region>> regions = regionIntegerCrudRepo.findByField(field, value);
 
-        assertEquals(1, regions.get().size());
+        assertEquals(2, regions.get().size());
     }
 
     @Test
-    void addRegion() {
-        Region region = new Region();
+    void addCity() {
         int id = ThreadLocalRandom.current().nextInt(Integer.MAX_VALUE);
-        region.setId(id);
-        region.setCountry_id(23);
-        region.setCity_id(123);
-        region.setName("Impl");
 
-        regionIntegerCrudRepo.create(region);
+        regionIntegerCrudRepo.create(createRegion(id, 4,10, "Malcolm"));
 
-        assertEquals(regionIntegerCrudRepo.findById(id).get().getName(), region.getName());
+        Optional<Region> expOpt = regionIntegerCrudRepo.findById(id);
+        Region actual = regionIntegerCrudRepo.findById(id).get();
+        Region expected = expOpt.get();
+
+        assertEquals(expected.getName(), actual.getName());
     }
 
     @Test
-    void updateRegion() {
-        Integer regionId = 3223;
-
-        Region region = new Region();
-        region.setId(regionId);
-        region.setCountry_id(23);
-        region.setCity_id(123);
-        region.setName("Impl");
-
+    void updateCity() {
+        Region region = regionIntegerCrudRepo.findById(423).get();
+        region.setName("San-Diego");
         regionIntegerCrudRepo.update(region);
 
-        assertTrue(regionIntegerCrudRepo.findById(regionId).get().getName().equals("Impl"));
+        assertTrue(regionIntegerCrudRepo.findById(423).get().getName().equals("San-Diego"));
     }
 
     @Test
-    void deleteRegion() {
-        Integer regionId = 3407;
+    void deleteCity() {
+        Integer regionId = 777;
 
         assertTrue(regionIntegerCrudRepo.findById(regionId).isPresent());
         regionIntegerCrudRepo.delete(regionId);
 
-        assertFalse(regionIntegerCrudRepo.findById(regionId).isPresent());
+        assertTrue(regionIntegerCrudRepo.findById(regionId).isEmpty());
+    }
+
+    private static Region createRegion(int id, int countryId, int cityId, String name) {
+        Region region = new Region();
+        region.setId(id);
+        region.setCountry_id(countryId);
+        region.setCity_id(cityId);
+        region.setName(name);
+        return region;
     }
 }
