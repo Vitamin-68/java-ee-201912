@@ -38,7 +38,6 @@ public class CountryCrudRepoTest {
     @AfterAll
     static void clean() {
         if (pathToWorkingCopy != null) {
-            Files.deleteIfExists(pathToWorkingCopy);
             pathToWorkingCopy.toFile().deleteOnExit();
         }
     }
