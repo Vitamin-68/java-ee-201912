@@ -39,7 +39,8 @@ public class CityCrudRepoTest {
     @AfterAll
     static void clean() {
         if (pathToWorkingCopy != null) {
-            Files.deleteIfExists(pathToWorkingCopy);
+            Files.delete(pathToWorkingCopy);
+            pathToWorkingCopy.toFile().deleteOnExit();
         }
     }
 
