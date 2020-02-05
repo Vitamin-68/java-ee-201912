@@ -15,6 +15,8 @@
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.connection.url" value="jdbc:h2:file:./target/data"/>
+            <property name="hibernate.connection.user" value="sa"/>
+            <property name="hibernate.connection.password" value=""/>
         </properties>
     </persistence-unit>
 </persistence>
