@@ -6,4 +6,30 @@
                    http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
 
+    <changeSet id="add-constraints-and-foreign-keys-city" author="Dmitry Litvyak">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="city"/>
+        </preConditions>
+        <addPrimaryKey tableName="city" columnNames="id"/>
+        <addForeignKeyConstraint baseTableName="city" baseColumnNames="country_id" constraintName="city_country_id_fk"
+                                 referencedTableName="country"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="city" baseColumnNames="region_id" constraintName="city_region_id_fk"
+                                 referencedTableName="region"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add-constraints-and-foreign-keys-region" author="Dmitry Litvyak">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="region"/>
+        </preConditions>
+        <addPrimaryKey tableName="region" columnNames="id"/>
+    </changeSet>
+
+    <changeSet id="add-constraints-and-foreign-keys-country" author="Dmitry Litvyak">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="country"/>
+        </preConditions>
+        <addPrimaryKey tableName="country" columnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

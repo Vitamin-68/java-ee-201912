@@ -13,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -26,11 +27,11 @@ public class Region {
     Long Id;
 
     @ManyToOne
-    @JoinColumn(name = "id")
-    private Long country_id;
+    @JoinColumn(name = "country")
+    private Country country;
 
-    @OneToMany(mappedBy = "id")
-    private Long city_id;
+    @OneToMany(mappedBy = "city")
+    private Collection<City> city;
 
     private String name;
 }

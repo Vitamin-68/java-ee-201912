@@ -5,7 +5,11 @@
     <persistence-unit name="persistence-unit-dml">
         <description>Настройка учебного проекта</description>
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <jta-data-source>jdbc:h2:file:./dev/db/main</jta-data-source>
+        <!--<jta-data-source>jdbc:h2:file:./dev/db/main</jta-data-source>-->
+        <class>ua.ithillel.dnepr.dml.domain.jpa.City</class>
+        <class>ua.ithillel.dnepr.dml.domain.jpa.Region</class>
+        <class>ua.ithillel.dnepr.dml.domain.jpa.Country</class>
+        <class>ua.ithillel.dnepr.dml.domain.jpa.User</class>
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
             <!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./data;DB_CLOSE_DELAY=-1;MVCC=TRUE" />-->

@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.Collection;
 
 @Getter
 @Setter
@@ -23,8 +24,8 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @OneToMany(mappedBy = "country_id", fetch = FetchType.LAZY)
-    private Long city_id;
+    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
+    private Collection<City> city;
 
     private String name;
 }

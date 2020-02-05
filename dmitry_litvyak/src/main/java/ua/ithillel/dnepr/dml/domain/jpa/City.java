@@ -25,11 +25,12 @@ public class City {
     Long Id;
 
     @ManyToOne(optional = false , cascade = CascadeType.DETACH)
-    @JoinColumn(name = "id")
-    private Long country_id;
+    @JoinColumn(name = "city_id")
+    private Country country;
 
     @ManyToOne(optional = false, cascade = CascadeType.DETACH)
-    private Long region_id;
+    @JoinColumn(name = "city_id")
+    private Region region;
 
     private String name;
 }

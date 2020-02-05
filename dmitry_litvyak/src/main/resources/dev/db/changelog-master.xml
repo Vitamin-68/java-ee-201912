@@ -15,5 +15,4 @@
     <include file="changelog/2020-02-04-JPA-01-create-table-user.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-04-JPA-02-convert-fields.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-04-JPA-03-add-constraints.xml" relativeToChangelogFile="true"/>
-
 </databaseChangeLog>
