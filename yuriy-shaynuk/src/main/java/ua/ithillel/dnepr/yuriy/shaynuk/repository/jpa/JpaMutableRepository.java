@@ -2,7 +2,6 @@ package ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa;
 
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 

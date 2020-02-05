@@ -5,10 +5,15 @@ import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,9 +21,14 @@ import javax.persistence.Table;
 @Table(name = "region")
 public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
     @Id
-    @GeneratedValue
+    @Column(unique = true, nullable = false)
     private Integer id;
-    private Integer countryId;
-    private Integer cityId;
+
+    @ManyToMany
+    private List<Country> country;
+
+    @OneToOne(mappedBy="region")
+    private City city;
+
     private String name;
 }

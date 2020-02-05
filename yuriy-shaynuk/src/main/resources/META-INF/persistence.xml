@@ -4,12 +4,14 @@
              version="2.0">
     <persistence-unit name="persistence-unit">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <!--        <class>ua.ithillel.dnepr.roman.gizatulin.jpa.entity.User</class>-->
+
         <properties>
-            <!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />-->
-            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./data;DB_CLOSE_DELAY=-1;MVCC=TRUE" />-->
-            <!--            <property name="javax.persistence.jdbc.user" value="sa" />-->
-            <!--            <property name="javax.persistence.jdbc.password" value="" />-->
+<!--            <property name="hibernate.hbm2ddl.auto" value="update"/>-->
+<!--            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>-->
+<!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver"/>-->
+<!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./target/data"/>-->
+<!--            <property name="javax.persistence.jdbc.user" value="sa"/>-->
+<!--            <property name="javax.persistence.jdbc.password" value="" />-->
 
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="update"/>

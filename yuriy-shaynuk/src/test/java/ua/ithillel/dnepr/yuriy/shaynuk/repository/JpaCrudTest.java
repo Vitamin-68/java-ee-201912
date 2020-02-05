@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.JpaCrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.City;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.Country;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.Region;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -19,42 +21,57 @@ import java.util.Optional;
 class JpaCrudTest {
     private static EntityManager entityManager;
     private static EntityManagerFactory entityManagerFactory;
-    private static CrudRepository<City, Integer> jpaCrudRepository;
+    private static CrudRepository<City, Integer> jpaCityRepository;
+//    private static CrudRepository<Country, Integer> jpaCountryRepository;
+//    private static CrudRepository<Region, Integer> jpaRegionRepository;
 
     @BeforeAll
     static void setUp() {
         entityManagerFactory = Persistence.createEntityManagerFactory("persistence-unit");
         entityManager = entityManagerFactory.createEntityManager();
-        jpaCrudRepository = new JpaCrudRepository<>(entityManager, City.class);
+
+       jpaCityRepository = new JpaCrudRepository<>(entityManager, City.class);
+//        jpaCountryRepository = new JpaCrudRepository<>(entityManager, Country.class);
+//        jpaRegionRepository = new JpaCrudRepository<>(entityManager, Region.class);
     }
 
     @Test
     void findAll() {
-        Optional<List<City>> cities = jpaCrudRepository.findAll();
+        Optional<List<City>> cities = jpaCityRepository.findAll();
         Assertions.assertFalse(cities.get().isEmpty());
     }
 
     @Test
     void findById() {
-        Optional<City> test = jpaCrudRepository.findById(999);
+        Optional<City> test = jpaCityRepository.findById(999);
         Assertions.assertFalse(test.isEmpty());
     }
 
     @Test
     void findByField() {
-        Optional<List<City>> test = jpaCrudRepository.findByField("name", "testName");
+        Optional<List<City>> test = jpaCityRepository.findByField("name", "testName");
         Assertions.assertFalse(test.isEmpty());
     }
 
     @Test
     void create() {
+        Country testCountry = new Country();
+        testCountry.setId(111);
+        testCountry.setName("testCountry");
+        //jpaCountryRepository.create(testCountry);
+
+        Region testRegion = new Region();
+        testRegion.setId(11);
+        testRegion.setName("testRegion");
+        //jpaRegionRepository.create(testRegion);
+
         City testCity = new City();
         testCity.setName("testName");
-        testCity.setCountryId(111);
-        testCity.setRegionId(222);
+        testCity.setCountry(testCountry);
+        testCity.setRegion(testRegion);
         testCity.setId(9999);
-        jpaCrudRepository.create(testCity);
-        Optional<City> test3 = jpaCrudRepository.findById(9999);
+        jpaCityRepository.create(testCity);
+        Optional<City> test3 = jpaCityRepository.findById(9999);
         Assertions.assertFalse(test3.isEmpty());
     }
 
@@ -62,24 +79,24 @@ class JpaCrudTest {
     void delete() {
         City testCity = new City();
         testCity.setName("deleteCity");
-        testCity.setCountryId(11);
-        testCity.setRegionId(22);
+        //testCity.setCountryId(11);
+       // testCity.setRegionId(22);
         testCity.setId(333);
-        jpaCrudRepository.create(testCity);
+        jpaCityRepository.create(testCity);
 
-        City test = jpaCrudRepository.delete(333);
-        Assertions.assertNotNull(jpaCrudRepository.findById(333));
+        City test = jpaCityRepository.delete(333);
+        Assertions.assertNotNull(jpaCityRepository.findById(333));
     }
 
     @Test
     void update() {
         City testCity = new City();
         testCity.setName("Москва");
-        testCity.setCountryId(3159);
-        testCity.setRegionId(4312);
+        //testCity.setCountryId(3159);
+        //testCity.setRegionId(4312);
         testCity.setId(9999);
 
-        City test = jpaCrudRepository.update(testCity);
+        City test = jpaCityRepository.update(testCity);
         Assertions.assertNotNull(test);
     }
 
