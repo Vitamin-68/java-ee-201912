@@ -1,12 +1,8 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -32,13 +28,13 @@ public class JpaImmutableRepository<EntityType extends AbstractEntity<IdType>, I
 
     @Override
     public Optional<EntityType> findById(IdType id) {
-        return Optional.of(entityManager.getReference(clazz, id));
+         return Optional.ofNullable(entityManager.find(clazz, id));
     }
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        CriteriaQuery<EntityType> criteria = entityManager.getCriteriaBuilder().createQuery(clazz);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<EntityType> criteria = cb.createQuery(clazz);
         Root<EntityType> entityTypeRoot = criteria.from(clazz);
         criteria.where(cb.equal(entityTypeRoot.get(fieldName), value));
         List<EntityType> listEntity = entityManager.createQuery(criteria).getResultList();

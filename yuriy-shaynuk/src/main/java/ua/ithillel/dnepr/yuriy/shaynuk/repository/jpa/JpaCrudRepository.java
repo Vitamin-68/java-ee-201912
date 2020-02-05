@@ -27,7 +27,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 //        List<EntityType> ListOfEmailDomains = entityManager.createQuery(criteria).getResultList();
 
         immutableRepository = new JpaImmutableRepository<>(entityManager,clazz);
-        mutableRepository = new JpaMutableRepository<>(entityManager);
+        mutableRepository = new JpaMutableRepository<>(entityManager,clazz);
     }
 
     @Override

@@ -11,8 +11,9 @@ public class JpaMutableRepository<EntityType extends AbstractEntity<IdType>, IdT
         implements MutableRepository<EntityType, IdType> {
     private EntityTransaction transaction;
 
-    public JpaMutableRepository(EntityManager entityManager) {
+    public JpaMutableRepository(EntityManager entityManager, Class<EntityType> clazz) {
         super.entityManager = entityManager;
+        super.clazz = clazz;
         transaction = entityManager.getTransaction();
     }
 
@@ -26,11 +27,20 @@ public class JpaMutableRepository<EntityType extends AbstractEntity<IdType>, IdT
 
     @Override
     public EntityType update(EntityType entity) {
-        return null;
+        transaction.begin();
+        entityManager.merge(entity);
+        transaction.commit();
+        return entity;
     }
 
     @Override
     public EntityType delete(IdType id) {
-        return null;
+        EntityType entity = entityManager.find(clazz, id);
+        if(entity != null) {
+            transaction.begin();
+            entityManager.remove(entity);
+            transaction.commit();
+        }
+        return entity;
     }
 }
