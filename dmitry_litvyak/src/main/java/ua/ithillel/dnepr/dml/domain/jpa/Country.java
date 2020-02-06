@@ -3,7 +3,9 @@ package ua.ithillel.dnepr.dml.domain.jpa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -18,11 +20,12 @@ import java.util.Collection;
 @NoArgsConstructor
 @Entity
 @Table(name = "country")
-public class Country {
+public class Country extends AbstractEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long id;
+    @Column(name = "id")
+    Long lId;
 
     private String name;
 

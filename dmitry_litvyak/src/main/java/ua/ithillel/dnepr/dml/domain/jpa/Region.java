@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -20,11 +22,12 @@ import java.util.Collection;
 @NoArgsConstructor
 @Entity
 @Table(name = "region")
-public class Region {
+public class Region extends AbstractEntity<Integer>{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    Long Id;
+    @Column(name = "id")
+    Long lId;
 
     private String name;
 

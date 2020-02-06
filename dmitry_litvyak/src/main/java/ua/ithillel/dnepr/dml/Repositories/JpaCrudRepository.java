@@ -1,34 +1,32 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
+import ua.ithillel.dnepr.common.persistence.Root;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+import javax.persistence.EntityTransaction;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import java.io.Closeable;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
-        implements MutableRepository<EntityType, IdType>, ImmutableRepository<EntityType, IdType>, Closeable {
+        implements MutableRepository<EntityType, IdType>, ImmutableRepository<EntityType, IdType> {
 
-    private static final String PERSISTENT_UNIT = "persistence-unit-dml";
-    private final EntityManagerFactory entityFactory;
+
     private final EntityManager entityManager;
     private final Class<? extends EntityType> clazz;
 
-    public JpaCrudRepository(Class<? extends EntityType> clazz) {
+    public JpaCrudRepository(EntityManager entityManager, Class<? extends EntityType> clazz) {
+        this.entityManager = entityManager;
         this.clazz = clazz;
-        this.entityFactory = Persistence.createEntityManagerFactory(PERSISTENT_UNIT);
-        this.entityManager = this.entityFactory.createEntityManager();
+
     }
 
     @Override
@@ -54,9 +52,10 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         Optional<List<EntityType>> result = Optional.empty();
-        CriteriaQuery<EntityType> criteria = (CriteriaQuery<EntityType>) entityManager.getCriteriaBuilder();
-        TypedQuery<EntityType> query = entityManager.createQuery(criteria);
-        List<EntityType> list = query.getResultList();
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<? extends EntityType> criteria = criteriaBuilder.createQuery(clazz);
+        TypedQuery<? extends EntityType> query = entityManager.createQuery(criteria);
+        List<EntityType> list = (List<EntityType>) query.getResultList();
         if (!list.isEmpty()) {
             result = Optional.of(list);
         }
@@ -65,15 +64,17 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType create(EntityType entity) {
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
         entityManager.persist(entity);
+        transaction.commit();
         entityManager.flush();
         return entity;
     }
 
     @Override
     public EntityType update(EntityType entity) {
-        entityManager.persist(entity);
-        entityManager.flush();
+        create(entity);
         return entity;
     }
 
@@ -86,10 +87,4 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
         return result.orElse(null);
     }
 
-
-    @Override
-    public void close() throws IOException {
-        entityManager.close();
-        entityFactory.close();
-    }
 }

@@ -3,8 +3,10 @@ package ua.ithillel.dnepr.dml.domain.jpa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -18,15 +20,16 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @Entity
 @Table(name ="city")
-public class City {
+public class City extends AbstractEntity<Integer> {
 
     @Id
     @GeneratedValue( strategy = GenerationType.AUTO)
-    Long Id;
+    @Column(name = "id")
+    Long lId;
 
     private String name;
 
-    @ManyToOne(optional = false ,cascade = CascadeType.DETACH)
+    @ManyToOne
     @JoinColumn(name = "region_id")
     private Region region;
 
