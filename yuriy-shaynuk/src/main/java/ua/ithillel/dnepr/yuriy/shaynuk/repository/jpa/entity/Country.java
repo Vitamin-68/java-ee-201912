@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +27,9 @@ public class Country extends AbstractEntity<Integer> implements BaseEntity<Integ
 
     @OneToOne(mappedBy="country")
     private City city;
+
+    @ManyToMany(mappedBy="country")
+    private List<Region> regions;
 
     private String name;
 }
