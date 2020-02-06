@@ -5,11 +5,15 @@ import lombok.Setter;
 import lombok.ToString;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 @Getter
 @Setter
 @ToString
+@Entity
 public class City extends AbstractEntity<Integer> {
-
+    @Id
     private Integer id;
     private Integer countryId;
     private Integer regionId;
