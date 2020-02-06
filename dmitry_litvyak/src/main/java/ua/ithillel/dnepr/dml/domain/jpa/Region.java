@@ -26,12 +26,12 @@ public class Region {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long Id;
 
-    @ManyToOne
-    @JoinColumn(name = "country")
-    private Country country;
+    private String name;
 
-    @OneToMany(mappedBy = "city")
+    @OneToMany(mappedBy = "region")
     private Collection<City> city;
 
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
 }

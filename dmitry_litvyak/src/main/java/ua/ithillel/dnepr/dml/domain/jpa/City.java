@@ -24,13 +24,13 @@ public class City {
     @GeneratedValue( strategy = GenerationType.AUTO)
     Long Id;
 
-    @ManyToOne(optional = false , cascade = CascadeType.DETACH)
-    @JoinColumn(name = "city_id")
-    private Country country;
+    private String name;
 
-    @ManyToOne(optional = false, cascade = CascadeType.DETACH)
-    @JoinColumn(name = "city_id")
+    @ManyToOne(optional = false ,cascade = CascadeType.DETACH)
+    @JoinColumn(name = "region_id")
     private Region region;
 
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    private Country country;
 }

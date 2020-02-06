@@ -24,8 +24,11 @@ public class Country {
     @GeneratedValue(strategy = GenerationType.AUTO)
     Long id;
 
-    @OneToMany(mappedBy = "country", fetch = FetchType.LAZY)
-    private Collection<City> city;
-
     private String name;
+
+    @OneToMany(mappedBy = "country")
+    private Collection<Region> region;
+
+    @OneToMany(mappedBy = "country")
+    private Collection<City> city;
 }
