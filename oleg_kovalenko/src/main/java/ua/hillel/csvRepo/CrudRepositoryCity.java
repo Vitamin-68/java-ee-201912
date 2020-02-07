@@ -107,7 +107,7 @@ public class CrudRepositoryCity implements CrudRepository<City, Integer> {
             }
         }
         writeCsv(cities);
-        log.info("{} updated", cities);
+        log.info("{} updated", entity.getCityId());
         return entity;
     }
 
@@ -119,7 +119,7 @@ public class CrudRepositoryCity implements CrudRepository<City, Integer> {
 
         if (city.getCityId() == id) {
             writeCsv(cities);
-            log.info("deleted {}", city);
+            log.info("deleted {}", city.getCityId());
         } else {
             log.info("can't find id {}", id);
         }

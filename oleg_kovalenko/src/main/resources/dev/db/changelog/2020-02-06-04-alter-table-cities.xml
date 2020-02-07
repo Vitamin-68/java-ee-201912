@@ -1,0 +1,54 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet author="Oleg Kovalenko" id="alter_table">
+        <modifyDataType catalogName="main"
+                        columnName="country_id"
+                        newDataType="float"
+                        schemaName="public"
+                        tableName="city"/>
+    </changeSet>
+
+    <changeSet author="Oleg Kovalenko" id="renameColumn-example">
+        <renameColumn catalogName="main"
+                      columnDataType="bigint"
+                      newColumnName="country_id_1"
+                      oldColumnName="country_id"
+                      remarks="A String"
+                      schemaName="public"
+                      tableName="city"/>
+    </changeSet>
+
+    <changeSet author="Oleg Kovalenko" id="dropColumn-example">
+        <dropColumn catalogName="main"
+                    columnName="region_id"
+                    schemaName="public"
+                    tableName="city">
+            <column name="region_id" type="int"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet author="Oleg Kovalenko" id="addColumn-example">
+        <addColumn catalogName="main"
+                    columnName="region_id_1"
+                    schemaName="public"
+                    tableName="city">
+            <column name="region_id_1" type="int"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="insert_data_into_log_sql" author="Dmitry Litvyak">
+        <preConditions>
+            <tableExists tableName="CITY"/>
+        </preConditions>
+        <sql>
+            UPDATE PUBLIC.CITY
+               SET REGION_ID_1 = 980
+        </sql>
+    </changeSet>
+</databaseChangeLog>
