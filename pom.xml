@@ -118,6 +118,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.10.7</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>3.2.4</version>
@@ -247,6 +253,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
