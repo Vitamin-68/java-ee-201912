@@ -42,7 +42,7 @@
         </addColumn>
     </changeSet>
 
-    <changeSet id="insert_data_into_log_sql" author="Dmitry Litvyak">
+    <changeSet id="insert_data_into_log_sql" author="Oleg Kovalenko">
         <preConditions>
             <tableExists tableName="CITY"/>
         </preConditions>
