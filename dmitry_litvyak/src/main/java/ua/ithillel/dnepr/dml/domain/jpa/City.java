@@ -23,13 +23,17 @@ import javax.persistence.Table;
 public class City extends AbstractEntity<Integer> {
 
     @Id
-    @GeneratedValue( strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    Long lId;
+    Integer Id;
+    public void setId(Integer id){
+        this.Id = id;
+        super.setId(id);
+    }
 
     private String name;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "region_id")
     private Region region;
 

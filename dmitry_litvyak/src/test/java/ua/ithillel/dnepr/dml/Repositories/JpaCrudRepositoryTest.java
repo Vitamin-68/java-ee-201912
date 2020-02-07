@@ -7,13 +7,14 @@ import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.dml.domain.jpa.City;
 import ua.ithillel.dnepr.dml.domain.jpa.Country;
 import ua.ithillel.dnepr.dml.domain.jpa.Region;
+import ua.ithillel.dnepr.dml.domain.jpa.User;
 
 import javax.persistence.EntityManager;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -45,6 +46,7 @@ class JpaCrudRepositoryTest {
             config.addAnnotatedClass(testClass);
             config.addAnnotatedClass(Country.class);
             config.addAnnotatedClass(Region.class);
+            config.addAnnotatedClass(User.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
             sessionFactory = config.buildSessionFactory(serviceRegistry);
         }
@@ -67,30 +69,50 @@ class JpaCrudRepositoryTest {
 
     @Test
     void findById() {
-        Optional<City> tmpCity = jpaCrudRepository.findById(Long.valueOf(4331));
+        Optional<City> tmpCity = jpaCrudRepository.findById(4331);
         assertTrue(tmpCity.isPresent());
-        assertEquals(tmpCity.get().getName(),"Вождь Пролетариата");
+        assertEquals(tmpCity.get().getName(), "Вождь Пролетариата");
     }
 
     @Test
-    @Disabled
     void findByField() {
-        Optional<City> tmpCity = jpaCrudRepository.findByField("name","Лобня");
+        Optional<City> tmpCity = jpaCrudRepository.findByField("name", "Лобня");
         assertTrue(tmpCity.isPresent());
     }
 
     @Test
-    void createUpdateDelete() {
-        Long lId = Long.valueOf(99999);
-        City tmpCity = new City();
-        tmpCity.setName("Bandershtadt");
-        tmpCity.setLId(lId);
-        jpaCrudRepository.update(tmpCity);
-        Optional<City> optTmpCity = jpaCrudRepository.findById(lId);
-        assertTrue(optTmpCity.isPresent());
-        jpaCrudRepository.delete(tmpCity);
-        optTmpCity = jpaCrudRepository.findById(lId);
-        assertTrue(optTmpCity.isEmpty());
+    void createDelete() {
+        JpaCrudRepository userRepo = new JpaCrudRepository(entityManager, User.class);
+        User user = new User();
+        user.setId(1);
+        user.setFName("Jhon");
+        user.setLName("Dow");
+        userRepo.create(user);
+//        Integer lId = 99998;
+//        City tmpCity = new City();
+//        tmpCity.setName("Bandershtadt");
+//        tmpCity.setId(lId);
+//        jpaCrudRepository.create(tmpCity);
+//        Optional<City> optTmpCity = jpaCrudRepository.findById(lId);
+//        assertTrue(optTmpCity.isPresent());
+//        jpaCrudRepository.delete(tmpCity);
+//        optTmpCity = jpaCrudRepository.findById(lId);
+//        assertTrue(optTmpCity.isEmpty());
+    }
+
+    @Test
+    void update() {
+        Optional<City> optTmpCity = jpaCrudRepository.findById(4331);
+        if (optTmpCity.isPresent()) {
+            City tmpCity = optTmpCity.get();
+            String oldName = tmpCity.getName();
+            tmpCity.setName(tmpCity.getName() + " UPDATED");
+            jpaCrudRepository.update(tmpCity);
+            City newTmpCity = (City) jpaCrudRepository.findById(4331).get();
+            assertTrue(Objects.equals(tmpCity.getName(), newTmpCity.getName()));
+            tmpCity.setName(oldName);
+            jpaCrudRepository.update(tmpCity);
+        }
     }
 
 }

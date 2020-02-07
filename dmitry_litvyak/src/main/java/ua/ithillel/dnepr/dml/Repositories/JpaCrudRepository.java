@@ -1,15 +1,13 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
-import ua.ithillel.dnepr.common.persistence.Root;
+import org.hibernate.Session;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import java.io.Serializable;
 import java.util.List;
@@ -22,11 +20,12 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     private final EntityManager entityManager;
     private final Class<? extends EntityType> clazz;
+    private EntityTransaction transaction;
 
     public JpaCrudRepository(EntityManager entityManager, Class<? extends EntityType> clazz) {
         this.entityManager = entityManager;
         this.clazz = clazz;
-
+        this.transaction = entityManager.getTransaction();
     }
 
     @Override
@@ -52,10 +51,9 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         Optional<List<EntityType>> result = Optional.empty();
-        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<? extends EntityType> criteria = criteriaBuilder.createQuery(clazz);
-        TypedQuery<? extends EntityType> query = entityManager.createQuery(criteria);
-        List<EntityType> list = (List<EntityType>) query.getResultList();
+        CriteriaQuery<EntityType> criteria = (CriteriaQuery<EntityType>) entityManager.getCriteriaBuilder().createQuery(clazz);
+        criteria.select(criteria.from(clazz));
+        List<EntityType> list = entityManager.createQuery(criteria).getResultList();
         if (!list.isEmpty()) {
             result = Optional.of(list);
         }
@@ -64,17 +62,17 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType create(EntityType entity) {
-        EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.persist(entity);
         transaction.commit();
-        entityManager.flush();
         return entity;
     }
 
     @Override
     public EntityType update(EntityType entity) {
-        create(entity);
+        transaction.begin();
+        entityManager.merge(entity);
+        transaction.commit();
         return entity;
     }
 
@@ -82,7 +80,9 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     public EntityType delete(IdType id) {
         Optional<EntityType> result = this.findById(id);
         if (!result.isEmpty()) {
-            entityManager.detach(result.get());
+            transaction.begin();
+            entityManager.remove(result.get());
+            transaction.commit();
         }
         return result.orElse(null);
     }
