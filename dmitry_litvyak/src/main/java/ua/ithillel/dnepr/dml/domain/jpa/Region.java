@@ -3,7 +3,9 @@ package ua.ithillel.dnepr.dml.domain.jpa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -16,7 +18,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @Getter
@@ -24,20 +25,22 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "region")
-public class Region extends AbstractEntity<Integer>{
+public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
+    @Column(name = "id", updatable = false, nullable = false)
     Integer Id;
-    public void setId(Integer id){
+
+    public void setId(Integer id) {
         this.Id = id;
         super.setId(id);
     }
 
     private String name;
 
-    @OneToMany(mappedBy = "region",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<City> city = new ArrayList<City>();
 
     @ManyToOne

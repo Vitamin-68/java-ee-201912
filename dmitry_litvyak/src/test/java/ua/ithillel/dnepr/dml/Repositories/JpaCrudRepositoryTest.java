@@ -42,9 +42,13 @@ class JpaCrudRepositoryTest {
             settings.put(Environment.URL, "jdbc:h2:file:\\" + DATABASE_NAME);
             settings.put(Environment.USER, "sa");
             settings.put(Environment.PASS, "");
+            settings.put(Environment.DRIVER,"org.h2.Driver");
+            settings.put(Environment.SHOW_SQL,true);
+            settings.put(Environment.HBM2DDL_AUTO,"validate");
+            settings.put(Environment.DIALECT,"org.hibernate.dialect.H2Dialect");
             config.setProperties(settings);
-            config.addAnnotatedClass(testClass);
             config.addAnnotatedClass(Country.class);
+            config.addAnnotatedClass(City.class);
             config.addAnnotatedClass(Region.class);
             config.addAnnotatedClass(User.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();

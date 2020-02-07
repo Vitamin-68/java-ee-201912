@@ -3,12 +3,12 @@ package ua.ithillel.dnepr.dml.domain.jpa;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,23 +22,25 @@ import java.util.Collection;
 @NoArgsConstructor
 @Entity
 @Table(name = "country")
-public class Country extends AbstractEntity<Integer> {
+public class Country extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
+    @GenericGenerator(name = "native", strategy = "native")
+    @Column(name = "id", updatable = false, nullable = false)
     Integer Id;
-    public void setId(Integer id){
+
+    public void setId(Integer id) {
         this.Id = id;
         super.setId(id);
     }
 
     private String name;
 
-    @OneToMany(mappedBy = "country",orphanRemoval = true)
+    @OneToMany(mappedBy = "country", orphanRemoval = true)
     private Collection<Region> region = new ArrayList<Region>();
 
-    @OneToMany(mappedBy = "country",orphanRemoval = true)
+    @OneToMany(mappedBy = "country", orphanRemoval = true)
     private Collection<City> city = new ArrayList<City>();
 
 
