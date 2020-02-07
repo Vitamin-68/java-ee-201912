@@ -17,7 +17,7 @@ import javax.persistence.Table;
 public class User extends AbstractEntity<Integer> {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
     private Integer Id;
 

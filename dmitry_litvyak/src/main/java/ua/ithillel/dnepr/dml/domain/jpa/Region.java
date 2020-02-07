@@ -27,7 +27,7 @@ import java.util.List;
 public class Region extends AbstractEntity<Integer>{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "id")
     Integer Id;
     public void setId(Integer id){
