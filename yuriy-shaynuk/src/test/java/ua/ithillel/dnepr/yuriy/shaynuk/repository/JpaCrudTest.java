@@ -22,17 +22,12 @@ class JpaCrudTest {
     private static EntityManager entityManager;
     private static EntityManagerFactory entityManagerFactory;
     private static CrudRepository<City, Integer> jpaCityRepository;
-//    private static CrudRepository<Country, Integer> jpaCountryRepository;
-//    private static CrudRepository<Region, Integer> jpaRegionRepository;
 
     @BeforeAll
     static void setUp() {
-        entityManagerFactory = Persistence.createEntityManagerFactory("persistence-unit");
-        entityManager = entityManagerFactory.createEntityManager();
-
+       entityManagerFactory = Persistence.createEntityManagerFactory("persistence-unit");
+       entityManager = entityManagerFactory.createEntityManager();
        jpaCityRepository = new JpaCrudRepository<>(entityManager, City.class);
-//        jpaCountryRepository = new JpaCrudRepository<>(entityManager, Country.class);
-//        jpaRegionRepository = new JpaCrudRepository<>(entityManager, Region.class);
     }
 
     @Test
@@ -43,7 +38,7 @@ class JpaCrudTest {
 
     @Test
     void findById() {
-        Optional<City> test = jpaCityRepository.findById(999);
+        Optional<City> test = jpaCityRepository.findById(9999);
         Assertions.assertFalse(test.isEmpty());
     }
 
@@ -55,22 +50,13 @@ class JpaCrudTest {
 
     @Test
     void create() {
-        Country testCountry = new Country();
-        testCountry.setId(111);
-        testCountry.setName("testCountry");
-        //jpaCountryRepository.create(testCountry);
-
-        Region testRegion = new Region();
-        testRegion.setId(11);
-        testRegion.setName("testRegion");
-        //jpaRegionRepository.create(testRegion);
-
         City testCity = new City();
         testCity.setName("testName");
-        testCity.setCountry(testCountry);
-        testCity.setRegion(testRegion);
+        testCity.setCountry(getTestCountry(111));
+        testCity.setRegion(getTestRegion(11));
         testCity.setId(9999);
         jpaCityRepository.create(testCity);
+
         Optional<City> test3 = jpaCityRepository.findById(9999);
         Assertions.assertFalse(test3.isEmpty());
     }
@@ -79,8 +65,8 @@ class JpaCrudTest {
     void delete() {
         City testCity = new City();
         testCity.setName("deleteCity");
-        //testCity.setCountryId(11);
-       // testCity.setRegionId(22);
+        testCity.setCountry(getTestCountry(222));
+        testCity.setRegion(getTestRegion(22));
         testCity.setId(333);
         jpaCityRepository.create(testCity);
 
@@ -92,8 +78,8 @@ class JpaCrudTest {
     void update() {
         City testCity = new City();
         testCity.setName("Москва");
-        //testCity.setCountryId(3159);
-        //testCity.setRegionId(4312);
+        testCity.setCountry(getTestCountry(333));
+        testCity.setRegion(getTestRegion(33));
         testCity.setId(9999);
 
         City test = jpaCityRepository.update(testCity);
@@ -104,5 +90,19 @@ class JpaCrudTest {
     static void close(){
         entityManager.close();
         entityManagerFactory.close();
+    }
+
+    private Country getTestCountry(int id){
+        Country testCountry = new Country();
+        testCountry.setId(id);
+        testCountry.setName("testCountry"+id);
+        return testCountry;
+    }
+
+    private Region getTestRegion(int id){
+        Region testRegion = new Region();
+        testRegion.setId(id);
+        testRegion.setName("testRegion"+id);
+        return testRegion;
     }
 }
