@@ -1,7 +1,6 @@
 package ua.ithillel.dnepr.dml.Repositories;
 
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Session;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
