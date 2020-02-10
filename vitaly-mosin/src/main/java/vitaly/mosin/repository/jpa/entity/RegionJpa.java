@@ -1,22 +1,28 @@
-package vitaly.mosin.repository.entity;
+package vitaly.mosin.repository.jpa.entity;
 
 import lombok.Getter;
 import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 @Getter
 @Setter
-public class Region extends AbstractEntity<Integer> {
-
+@Entity
+@Table(name = "region")
+public class RegionJpa extends AbstractEntity<Integer> {
+    @Id
     private Integer id;
     private Integer countryId;
     private Integer cityId;
     private String name;
 
-    public Region() {
+    public RegionJpa() {
     }
 
-    public Region(Integer id, Integer countryId, String name) {
+    public RegionJpa(Integer id, Integer countryId, String name) {
         this.id = id;
         this.countryId = countryId;
         this.name = name;
