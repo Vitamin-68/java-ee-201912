@@ -46,9 +46,10 @@ class JpaCrudRepositoryTest {
             settings.put(Environment.SHOW_SQL,true);
             settings.put(Environment.HBM2DDL_AUTO,"validate");
             settings.put(Environment.DIALECT,"org.hibernate.dialect.H2Dialect");
+            //settings.put(Environment.)
             config.setProperties(settings);
+            config.addAnnotatedClass(testClass);
             config.addAnnotatedClass(Country.class);
-            config.addAnnotatedClass(City.class);
             config.addAnnotatedClass(Region.class);
             config.addAnnotatedClass(User.class);
             ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder().applySettings(config.getProperties()).build();
