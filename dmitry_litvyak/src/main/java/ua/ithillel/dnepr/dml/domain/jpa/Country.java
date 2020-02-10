@@ -25,23 +25,16 @@ import java.util.Collection;
 public class Country extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "id", updatable = false, nullable = false)
-    Integer Id;
-
-    public void setId(Integer id) {
-        this.Id = id;
-        super.setId(id);
-    }
+    @Column(unique = true,nullable = false)
+    Integer id;
 
     private String name;
 
-    @OneToMany(mappedBy = "country", orphanRemoval = true)
-    private Collection<Region> region = new ArrayList<Region>();
+    @OneToMany(mappedBy = "country")
+    private Collection<Region> region;
 
-    @OneToMany(mappedBy = "country", orphanRemoval = true)
-    private Collection<City> city = new ArrayList<City>();
+    @OneToMany(mappedBy = "country")
+    private Collection<City> city;
 
 
 }

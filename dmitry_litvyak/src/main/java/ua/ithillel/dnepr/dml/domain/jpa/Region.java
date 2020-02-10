@@ -28,15 +28,8 @@ import java.util.List;
 public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
-    @GenericGenerator(name = "native", strategy = "native")
-    @Column(name = "id", updatable = false, nullable = false)
-    Integer Id;
-
-    public void setId(Integer id) {
-        this.Id = id;
-        super.setId(id);
-    }
+    @Column(unique = true,nullable = false)
+    Integer id;
 
     private String name;
 

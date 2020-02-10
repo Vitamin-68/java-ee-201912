@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.dml.domain.jpa.City;
-import ua.ithillel.dnepr.dml.domain.jpa.User;
+import ua.ithillel.dnepr.dml.domain.jpa.Country;
+import ua.ithillel.dnepr.dml.domain.jpa.Region;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
-import javax.persistence.EntityTransaction;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -52,23 +52,23 @@ class JpaCrudRepositoryTest {
 
     @Test
     void createDelete() {
-        JpaCrudRepository userRepo = new JpaCrudRepository(entityManager, User.class);
-        User user = new User();
-        user.setId(1);
-        user.setFName("Jhon");
-        user.setLName("Dow");
-        jpaCrudRepository.create(user);
-        //userRepo.create(user);
-//        Integer lId = 99998;
-//        City tmpCity = new City();
-//        tmpCity.setName("Bandershtadt");
-//        tmpCity.setId(lId);
-//        jpaCrudRepository.create(tmpCity);
-//        Optional<City> optTmpCity = jpaCrudRepository.findById(lId);
-//        assertTrue(optTmpCity.isPresent());
-//        jpaCrudRepository.delete(tmpCity);
-//        optTmpCity = jpaCrudRepository.findById(lId);
-//        assertTrue(optTmpCity.isEmpty());
+
+        Integer lId = 99998;
+        City tmpCity = new City();
+        tmpCity.setName("Bandershtadt");
+        tmpCity.setId(lId);
+        Region region = new Region();
+        region.setId(lId);
+        tmpCity.setRegion(region);
+        Country country = new Country();
+        country.setId(lId);
+        tmpCity.setCountry(country);
+        jpaCrudRepository.create(tmpCity);
+        Optional<City> optTmpCity = jpaCrudRepository.findById(lId);
+        assertTrue(optTmpCity.isPresent());
+        jpaCrudRepository.delete(tmpCity);
+        optTmpCity = jpaCrudRepository.findById(lId);
+        assertTrue(optTmpCity.isEmpty());
     }
 
     @Test
