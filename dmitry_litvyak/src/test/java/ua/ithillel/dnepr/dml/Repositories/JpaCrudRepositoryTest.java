@@ -41,7 +41,7 @@ class JpaCrudRepositoryTest {
     void findById() {
         Optional<City> tmpCity = jpaCrudRepository.findById(4331);
         assertTrue(tmpCity.isPresent());
-        assertEquals(tmpCity.get().getName(), "Вождь Пролетариата");
+        assertEquals("Вождь Пролетариата", tmpCity.get().getName());
     }
 
     @Test
@@ -62,13 +62,18 @@ class JpaCrudRepositoryTest {
         tmpCity.setRegion(region);
         Country country = new Country();
         country.setId(lId);
+        entityManager.persist(country);
+        entityManager.persist(region);
         tmpCity.setCountry(country);
+        tmpCity.setId(lId);
         jpaCrudRepository.create(tmpCity);
         Optional<City> optTmpCity = jpaCrudRepository.findById(lId);
         assertTrue(optTmpCity.isPresent());
-        jpaCrudRepository.delete(tmpCity);
+        jpaCrudRepository.delete(lId);
         optTmpCity = jpaCrudRepository.findById(lId);
         assertTrue(optTmpCity.isEmpty());
+        entityManager.remove(country);
+        entityManager.remove(region);
     }
 
     @Test

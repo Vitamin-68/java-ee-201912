@@ -25,7 +25,7 @@ import java.util.Collection;
 public class Country extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @Column(unique = true,nullable = false)
+    @Column(unique = true)
     Integer id;
 
     private String name;

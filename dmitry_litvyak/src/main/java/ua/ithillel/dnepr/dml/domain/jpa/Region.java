@@ -28,12 +28,12 @@ import java.util.List;
 public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @Column(unique = true,nullable = false)
+    @Column(unique = true)
     Integer id;
 
     private String name;
 
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "region")
     private List<City> city = new ArrayList<City>();
 
     @ManyToOne

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 public class User extends AbstractEntity<Integer> implements BaseEntity<Integer> {
 
     @Id
-    @Column(unique = true,nullable = false)
+    @Column(unique = true)
     private Integer id;
 
     private String fName;

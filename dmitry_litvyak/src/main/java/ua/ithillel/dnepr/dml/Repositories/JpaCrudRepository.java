@@ -61,17 +61,17 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType create(EntityType entity) {
-        transaction.begin();
+        //transaction.begin();
         entityManager.persist(entity);
-        transaction.commit();
+        //transaction.commit();
         return entity;
     }
 
     @Override
     public EntityType update(EntityType entity) {
-        transaction.begin();
+        //transaction.begin();
         entityManager.merge(entity);
-        transaction.commit();
+        //transaction.commit();
         return entity;
     }
 
@@ -79,9 +79,9 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     public EntityType delete(IdType id) {
         Optional<EntityType> result = this.findById(id);
         if (!result.isEmpty()) {
-            transaction.begin();
+           // transaction.begin();
             entityManager.remove(result.get());
-            transaction.commit();
+            //transaction.commit();
         }
         return result.orElse(null);
     }
