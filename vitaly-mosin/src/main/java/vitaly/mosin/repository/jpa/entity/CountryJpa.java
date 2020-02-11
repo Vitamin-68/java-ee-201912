@@ -8,6 +8,7 @@ import vitaly.mosin.repository.entity.City;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -23,8 +24,11 @@ public class CountryJpa extends AbstractEntity<Integer> {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL)
-    private List<City> citiesJpa;
+    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CityJpa> citiesJpa;
+
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RegionJpa> regionsJpa;
 
     private String name;
 
