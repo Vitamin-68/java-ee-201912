@@ -87,6 +87,7 @@
                 <maven.test.skip>true</maven.test.skip>
             </properties>
         </profile>
+
         <profile>
             <!-- Development settings, -Denv=dev -->
             <id>dev</id>
@@ -97,6 +98,8 @@
                 </property>
                 <activeByDefault>true</activeByDefault>
             </activation>
+
+
             <properties>
                 <profile.id>dev</profile.id>
                 <profile.data.db.root>${profile.id}/db</profile.data.db.root>
@@ -112,6 +115,7 @@
                 <profile.verbose>true</profile.verbose>
                 <profile.logging>debug</profile.logging>
             </properties>
+
         </profile>
     </profiles>
 </project>

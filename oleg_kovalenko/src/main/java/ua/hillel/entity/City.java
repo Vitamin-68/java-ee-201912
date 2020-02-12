@@ -3,6 +3,7 @@ package ua.hillel.entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.Column;
@@ -13,6 +14,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "City")
 public class City extends AbstractEntity<Integer> {
