@@ -35,11 +35,4 @@ public class CityJpa extends AbstractEntity<Integer> {
 
     public CityJpa() {
     }
-
-//    public CityJpa(Integer id, Integer countryId, Integer regionId, String name) {
-//        this.id = id;
-//        this.countryId = countryId;
-//        this.regionId = regionId;
-//        this.name = name;
-//    }
 }

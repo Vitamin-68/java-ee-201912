@@ -25,18 +25,13 @@ public class CountryJpa extends AbstractEntity<Integer> {
     private Integer id;
 
     @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CityJpa> citiesJpa;
+    private List<CityJpa> cities;
 
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<RegionJpa> regionsJpa;
+    @OneToMany(mappedBy = "country", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<RegionJpa> regions;
 
     private String name;
 
     public CountryJpa() {
     }
-
-//    public CountryJpa(Integer id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
 }

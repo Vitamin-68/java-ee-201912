@@ -28,17 +28,11 @@ public class RegionJpa extends AbstractEntity<Integer> {
     @JoinColumn(name = "country_id")
     private CountryJpa country;
 
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CityJpa> citiesJpa;
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<CityJpa> cities;
 
     private String name;
 
     public RegionJpa() {
     }
-
-//    public RegionJpa(Integer id, Integer countryId, String name) {
-//        this.id = id;
-//        this.countryId = countryId;
-//        this.name = name;
-//    }
 }
