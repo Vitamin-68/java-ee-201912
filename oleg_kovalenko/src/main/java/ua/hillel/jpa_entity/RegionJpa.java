@@ -3,22 +3,29 @@ package ua.hillel.jpa_entity;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 @Entity
 @Table(name = "Region")
 public class RegionJpa extends AbstractEntity<Integer> {
     private int countryId;
     private int cityId;
     private String name;
+
+    @OneToOne(mappedBy = "country_id", cascade = CascadeType.ALL)
+    private CountryJpa countryJpa;
+
+    @ManyToMany(mappedBy = "Region")
+    private Set<CountryJpa> countries = new HashSet<>();
 
     @Override
     @Id
@@ -32,17 +39,9 @@ public class RegionJpa extends AbstractEntity<Integer> {
         return countryId;
     }
 
-    public void setCountryId(int countryId) {
-        this.countryId = countryId;
-    }
-
     @Column(name = "city_id")
     public int getCityId() {
         return cityId;
-    }
-
-    public void setCityId(int cityId) {
-        this.cityId = cityId;
     }
 
     @Column(name = "name")
@@ -50,9 +49,6 @@ public class RegionJpa extends AbstractEntity<Integer> {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
 
     @Override
     public String toString() {

@@ -12,6 +12,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaDelete;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.util.List;
@@ -33,9 +34,11 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
         EntityTransaction transaction = manager.getTransaction();
         Class<?> clazz = RegionJpa.class;
         JpaRepo cityJpa = new JpaRepo(clazz, manager, transaction);
-        System.out.println(cityJpa.findById(4312));
-//        cityJpa.findByField("city_id",4400);
-
+//        System.out.println(cityJpa.findById(4312));
+//        cityJpa.findByField("region_id",4400);
+        System.out.println(cityJpa.findByField("id", 3673));
+//        cityJpa.delete(3673);
+//        System.out.println(cityJpa.findByField("id", 3673));
 //        System.out.println(cityJpa.findByField("city_Id", 4400));
     }
 
@@ -54,28 +57,41 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         CriteriaBuilder cb = manager.getCriteriaBuilder();
-        CriteriaQuery<EntityType> entity = cb.createQuery(clazz);
-        Root<EntityType> root = entity.from(clazz);
-        entity.select(root);
-//        entity.where(entity.equals(root.get(fieldName),"cc"));
-        manager.createQuery(entity).getResultList().forEach(System.out::println);
-
-
-        return Optional.empty();
+        CriteriaQuery<EntityType> createria = cb.createQuery(clazz);
+        Root<EntityType> root = createria.from(clazz);
+        createria.where(
+                cb.equal(root.get(fieldName), value)
+        );
+        List<EntityType> types = manager.createQuery(createria).getResultList();
+        return Optional.of(types);
     }
 
     @Override
     public EntityType create(EntityType entity) {
-        return null;
+        transaction.begin();
+        manager.persist(entity);
+        transaction.commit();
+        return entity;
     }
 
     @Override
     public EntityType update(EntityType entity) {
-        return null;
+        transaction.begin();
+        manager.merge(entity);
+        transaction.commit();
+        return entity;
     }
 
     @Override
     public EntityType delete(Integer id) {
-        return null;
+        CriteriaBuilder cb = manager.getCriteriaBuilder();
+        CriteriaDelete<EntityType> criteriaDelete = cb.createCriteriaDelete(clazz);
+        Root<EntityType> root = criteriaDelete.from(clazz);
+        criteriaDelete.where(cb.equal(root.get("id"), id));
+        Optional<EntityType> entityType = findById(id);
+        transaction.begin();
+        manager.createQuery(criteriaDelete).executeUpdate();
+        transaction.commit();
+        return entityType.get();
     }
 }
