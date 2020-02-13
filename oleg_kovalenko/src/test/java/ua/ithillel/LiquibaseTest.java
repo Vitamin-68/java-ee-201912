@@ -70,26 +70,26 @@ public class LiquibaseTest {
         assertEquals(922, countQuery("select count(*) from REGION"));
     }
 
-    @Test
-    void updateCityTest() {
-        assertEquals(1, countQuery("select count(*) from CITY where country_id_1 = 33333"));
-    }
-
-    @Test
-    void modifyColumn() {
-        assertEquals(1, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'COUNTRY_ID_1'"));
-    }
-
-    @Test
-    void dropColumn() {
-        assertEquals(0, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'REGION_ID'"));
-    }
-
-    @Test
-    void addColumn() {
-        assertEquals(1, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
-                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'REGION_ID_1'"));
-    }
+//    @Test
+//    void updateCityTest() {
+//        assertEquals(1, countQuery("select count(*) from CITY where country_id_1 = 33333"));
+//    }
+//
+//    @Test
+//    void modifyColumn() {
+//        assertEquals(1, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
+//                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'COUNTRY_ID_1'"));
+//    }
+//
+//    @Test
+//    void dropColumn() {
+//        assertEquals(0, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
+//                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'REGION_ID'"));
+//    }
+//
+//    @Test
+//    void addColumn() {
+//        assertEquals(1, countQuery("SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS " +
+//                "WHERE TABLE_NAME = 'CITY' AND COLUMN_NAME = 'REGION_ID_1'"));
+//    }
 }
