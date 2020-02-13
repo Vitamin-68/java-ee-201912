@@ -1,6 +1,7 @@
 package vitaly.mosin.repository.jpa;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,12 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
 
     @BeforeEach
     void setUp() {
-//        entityManager = entityManagerFactory.createEntityManager();
-//        transaction = entityManager.getTransaction();
     }
 
     @AfterEach
     void tearDown() {
 //        entityManager.close();
+//        entityManagerFactory.close();
     }
 
     @Test
@@ -80,28 +80,49 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
         Optional<List<CityJpa>> result;
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
         // поиск по имени
-        result = jpaCrudRepository.findByField("name", "Киев");
+        result = jpaCrudRepository.findByField("name", "'Киев'");
         for (CityJpa city : result.get()) {
             assertEquals("Киев", city.getName());
         }
 
         //поиск по региону
-        result = jpaCrudRepository.findByField("region_id", 5);
+        result = jpaCrudRepository.findByField("region", 5);
         assertEquals(10, result.get().size());
         for (CityJpa city : result.get()) {
             assertEquals("Виктория", city.getRegion().getName());
             assertEquals("Австралия", city.getCountry().getName());
         }
-        //поиск по стране
-        result = jpaCrudRepository.findByField("country_id", 4);
+        //поиск по стране, id Австралии = 4
+        result = jpaCrudRepository.findByField("country", 4);
         assertEquals(50, result.get().size());
         for (CityJpa city : result.get()) {
             assertEquals("Австралия", city.getCountry().getName());
         }
+
+        //неверное имя
+        result = jpaCrudRepository.findByField("name", "'Киев123'");
+        assertEquals(Optional.empty(), result);
     }
 
     @Test
     void create() {
+        Integer testId = 987654321;
+        CityJpa testCity = makeNewCity(testId);
+        jpaCrudRepository.create(testCity);
+//        assertEquals(testId, jpaCrudRepository.create(testCity).getId());
+    }
+
+    CityJpa makeNewCity(Integer testId) {
+        CountryJpa testCountry = new CountryJpa();
+        RegionJpa testRegion = new RegionJpa();
+        CityJpa testCity = new CityJpa();
+        testCountry.setId(testId);
+        testRegion.setId(testId);
+        testCity.setId(testId);
+        testCity.setCountry(testCountry);
+        testCity.setRegion(testRegion);
+        testCity.setName("Test City");
+        return testCity;
     }
 
     @Test

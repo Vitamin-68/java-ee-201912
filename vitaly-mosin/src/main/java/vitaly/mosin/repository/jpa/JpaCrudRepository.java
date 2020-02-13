@@ -25,6 +25,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     private final EntityTransaction transaction;
     private static final String QUERY_SELECT_ALL = "SELECT e FROM %s e";
     private static final String QUERY_SELECT_BY_ID = "SELECT e FROM %s e WHERE e.id = %s";
+    private static final String QUERY_SELECT_BY_FIELD = "SELECT e FROM %s e WHERE e.%s = %s";
 
     public JpaCrudRepository(Class<? extends EntityType> clazz, EntityManagerFactory entityManagerFactory) {
         this.clazz = clazz;
@@ -35,7 +36,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     @Override
     public Optional<List<EntityType>> findAll() {
         transaction.begin();
-        String queryString = String.format(QUERY_SELECT_ALL, clazz.getName());
+        String queryString = String.format(QUERY_SELECT_ALL, clazz.getSimpleName());
         final List<EntityType> result = entityManager.createQuery(queryString).getResultList();
         transaction.commit();
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
@@ -46,7 +47,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     public Optional<EntityType> findById(IdType id) {
         EntityType result = null;
         transaction.begin();
-        String queryString = String.format(QUERY_SELECT_BY_ID, clazz.getName(), id.toString());
+        String queryString = String.format(QUERY_SELECT_BY_ID, clazz.getSimpleName(), id);
         try {
             result = (EntityType) entityManager.createQuery(queryString).getSingleResult();
         } catch (NoResultException e) {
@@ -59,12 +60,27 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
-        return Optional.empty();
+        transaction.begin();
+        String queryString = String.format(QUERY_SELECT_BY_FIELD, clazz.getSimpleName(), fieldName, value);
+        final List<EntityType> result = entityManager.createQuery(queryString).getResultList();
+        transaction.commit();
+        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
     @Override
     public EntityType create(EntityType entity) {
-        return null;
+        if (isEntityExists(entity)) {
+            log.error("Entity already exists");
+            throw new IllegalArgumentException();
+        }
+        transaction.begin();
+        entityManager.persist(entity);
+        transaction.commit();
+        return entity;
+    }
+
+    private boolean isEntityExists(EntityType entity) {
+        return findById(entity.getId()).isPresent();
     }
 
     @Override
