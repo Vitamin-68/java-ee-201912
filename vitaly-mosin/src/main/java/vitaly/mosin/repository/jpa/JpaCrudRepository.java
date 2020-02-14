@@ -73,9 +73,9 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
             log.error("Entity already exists");
             throw new IllegalArgumentException();
         }
-        transaction.begin();
+//        transaction.begin();
         entityManager.persist(entity);
-        transaction.commit();
+//        transaction.commit();
         return entity;
     }
 
