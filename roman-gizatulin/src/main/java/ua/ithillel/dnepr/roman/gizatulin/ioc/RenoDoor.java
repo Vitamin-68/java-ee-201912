@@ -6,9 +6,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class RenoEngine implements Engine {
-    @Override
-    public String dirDirDir(String oil) {
-        return "Reno dirDirDir " + oil;
+public class RenoDoor implements Door {
+    private boolean open = false;
+
+    public boolean isOpen() {
+        return open;
+    }
+
+    public void setOpen(boolean open) {
+        this.open = open;
     }
 }

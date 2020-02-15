@@ -224,6 +224,12 @@
                 <version>${hibernate.version}</version>
             </dependency>
             <!-- data base -->
+            <!-- spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>5.2.3.RELEASE</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
