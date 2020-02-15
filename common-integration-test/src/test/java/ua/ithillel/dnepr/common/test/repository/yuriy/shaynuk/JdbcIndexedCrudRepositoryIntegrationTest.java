@@ -26,10 +26,10 @@ import static ua.ithillel.dnepr.common.test.repository.CrudRepositoryIntegration
 
 @Slf4j
 class JdbcIndexedCrudRepositoryIntegrationTest {
-    private static final int PORT = NetUtils.getFreePort();
+    //private static final int PORT = NetUtils.getFreePort();
     private static final String TEST_DB_NAME = "test_sqlite.db";
 
-    private static H2Server h2Server;
+    //private static H2Server h2Server;
     private static CqrsCrudRepository<TestEntity, Integer> cqrsRepository;
     private static CrudRepository<TestEntity, Integer> csvCrudRepository;
 
@@ -42,8 +42,8 @@ class JdbcIndexedCrudRepositoryIntegrationTest {
                 TEST_DB_NAME
         ).toString();
         log.debug(repoRootPath);
-        h2Server = new H2Server(PORT);
-        h2Server.start();
+//        h2Server = new H2Server(PORT);
+//        h2Server.start();
         Class.forName("org.sqlite.JDBC");
         Connection connection = DriverManager.getConnection("jdbc:sqlite:".concat(repoRootPath));
         File dataFile = Utils.createTempFile("test.csv");
@@ -53,10 +53,10 @@ class JdbcIndexedCrudRepositoryIntegrationTest {
         cqrsRepository = new CqrsRepositoryImp<>(connection, TestEntity.class, csvCrudRepository);
     }
 
-    @AfterEach
-    void tearDown() {
-        h2Server.stop();
-    }
+//    @AfterEach
+//    void tearDown() {
+//        h2Server.stop();
+//    }
 
     @Test
     void createOneNewEntity() {
