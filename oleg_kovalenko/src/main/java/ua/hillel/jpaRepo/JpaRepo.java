@@ -3,6 +3,7 @@ package ua.hillel.jpaRepo;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import ua.hillel.jpa_entity.CityJpa;
 import ua.hillel.jpa_entity.RegionJpa;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
@@ -32,11 +33,11 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("persistence-config");
         EntityManager manager = factory.createEntityManager();
         EntityTransaction transaction = manager.getTransaction();
-        Class<?> clazz = RegionJpa.class;
+        Class<?> clazz = CityJpa.class;
         JpaRepo cityJpa = new JpaRepo(clazz, manager, transaction);
 //        System.out.println(cityJpa.findById(4312));
 //        cityJpa.findByField("region_id",4400);
-        System.out.println(cityJpa.findByField("id", 3673));
+        System.out.println(cityJpa.findByField("id", 4400));
 //        cityJpa.delete(3673);
 //        System.out.println(cityJpa.findByField("id", 3673));
 //        System.out.println(cityJpa.findByField("city_Id", 4400));
