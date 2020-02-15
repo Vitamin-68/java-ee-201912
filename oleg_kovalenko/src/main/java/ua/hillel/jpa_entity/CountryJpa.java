@@ -26,10 +26,10 @@ public class CountryJpa extends AbstractEntity<Integer> {
     private String name;
 
     @OneToMany(mappedBy = "country")
-    private Collection<RegionJpa> region;
+    private List<RegionJpa> region;
 
     @OneToMany(mappedBy = "country")
-    private Collection<CityJpa> city;
+    private List<CityJpa> city;
 
 
 }
