@@ -85,11 +85,19 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType update(EntityType entity) {
-        return null;
+        transaction.begin();
+        entityManager.find(entity.getClass(), entity.getId());
+        entityManager.merge(entity);
+        transaction.commit();
+        return entity;
     }
 
     @Override
     public EntityType delete(IdType id) {
-        return null;
+        transaction.begin();
+        EntityType entity = findById(id).get();
+        entityManager.remove(entity);
+        transaction.commit();
+        return entity;
     }
 }

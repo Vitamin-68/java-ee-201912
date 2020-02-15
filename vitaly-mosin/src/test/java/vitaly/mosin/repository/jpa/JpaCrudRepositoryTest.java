@@ -79,31 +79,31 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
 
     @Test
     void findByField() {
-//        Optional<List<CityJpa>> result;
-//        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
-//        // поиск по имени
-//        result = jpaCrudRepository.findByField("name", "'Киев'");
-//        for (CityJpa city : result.get()) {
-//            assertEquals("Киев", city.getName());
-//        }
-//
-//        //поиск по региону
-//        result = jpaCrudRepository.findByField("region", 5);
-//        assertEquals(10, result.get().size());
-//        for (CityJpa city : result.get()) {
-//            assertEquals("Виктория", city.getRegion().getName());
-//            assertEquals("Австралия", city.getCountry().getName());
-//        }
-//        //поиск по стране, id Австралии = 4
-//        result = jpaCrudRepository.findByField("country", 4);
-//        assertEquals(50, result.get().size());
-//        for (CityJpa city : result.get()) {
-//            assertEquals("Австралия", city.getCountry().getName());
-//        }
-//
-//        //неверное имя
-//        result = jpaCrudRepository.findByField("name", "'Киев123'");
-//        assertEquals(Optional.empty(), result);
+        Optional<List<CityJpa>> result;
+        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+        // поиск по имени
+        result = jpaCrudRepository.findByField("name", "'Киев'");
+        for (CityJpa city : result.get()) {
+            assertEquals("Киев", city.getName());
+        }
+
+        //поиск по региону
+        result = jpaCrudRepository.findByField("region", 5);
+        assertEquals(10, result.get().size());
+        for (CityJpa city : result.get()) {
+            assertEquals("Виктория", city.getRegion().getName());
+            assertEquals("Австралия", city.getCountry().getName());
+        }
+        //поиск по стране, id Австралии = 4
+        result = jpaCrudRepository.findByField("country", 4);
+        assertEquals(50, result.get().size());
+        for (CityJpa city : result.get()) {
+            assertEquals("Австралия", city.getCountry().getName());
+        }
+
+        //неверное имя
+        result = jpaCrudRepository.findByField("name", "'Киев123'");
+        assertEquals(Optional.empty(), result);
     }
 
     @Test
