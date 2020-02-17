@@ -22,7 +22,6 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     private final Class<? extends EntityType> clazz;
     private final EntityManager entityManager;
-    private final EntityTransaction transaction;
     private static final String QUERY_SELECT_ALL = "SELECT e FROM %s e";
     private static final String QUERY_SELECT_BY_ID = "SELECT e FROM %s e WHERE e.id = %s";
     private static final String QUERY_SELECT_BY_FIELD = "SELECT e FROM %s e WHERE e.%s = %s";
@@ -30,11 +29,12 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     public JpaCrudRepository(Class<? extends EntityType> clazz, EntityManagerFactory entityManagerFactory) {
         this.clazz = clazz;
         this.entityManager = entityManagerFactory.createEntityManager();
-        this.transaction = entityManager.getTransaction();
+
     }
 
     @Override
     public Optional<List<EntityType>> findAll() {
+        EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         String queryString = String.format(QUERY_SELECT_ALL, clazz.getSimpleName());
         final List<EntityType> result = entityManager.createQuery(queryString).getResultList();
@@ -46,6 +46,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     @Override
     public Optional<EntityType> findById(IdType id) {
         EntityType result = null;
+        EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         String queryString = String.format(QUERY_SELECT_BY_ID, clazz.getSimpleName(), id);
         try {
@@ -60,6 +61,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
+        EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         String queryString = String.format(QUERY_SELECT_BY_FIELD, clazz.getSimpleName(), fieldName, value);
         final List<EntityType> result = entityManager.createQuery(queryString).getResultList();
@@ -85,6 +87,7 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType update(EntityType entity) {
+        EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         entityManager.find(entity.getClass(), entity.getId());
         entityManager.merge(entity);
@@ -94,8 +97,9 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
 
     @Override
     public EntityType delete(IdType id) {
-        transaction.begin();
+        EntityTransaction transaction = entityManager.getTransaction();
         EntityType entity = findById(id).get();
+        transaction.begin();
         entityManager.remove(entity);
         transaction.commit();
         return entity;

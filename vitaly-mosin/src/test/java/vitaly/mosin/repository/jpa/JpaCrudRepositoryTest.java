@@ -26,8 +26,9 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
 
     final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("persistence-unit");
-    private EntityManager entityManager = entityManagerFactory.createEntityManager();;
-    private EntityTransaction transaction = entityManager.getTransaction();
+    private EntityManager entityManager = entityManagerFactory.createEntityManager();
+    ;
+    private EntityTransaction transaction;
     private JpaCrudRepository jpaCrudRepository;
 
     @BeforeEach
@@ -109,31 +110,29 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
     @Test
     void create() {
         Integer testId = 87654321;
-        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
-//        transaction.begin();
-        CityJpa testCity = makeNewCity(testId);
-//        transaction.commit();
-        jpaCrudRepository.create(testCity);
-        assertEquals(testId, jpaCrudRepository.create(testCity).getId());
+//        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+//        CityJpa testCity = makeNewCity(testId);
+
+        transaction = entityManager.getTransaction();
+        transaction.begin();
+        CityJpa testCity = new CityJpa();
+        testCity.setId(testId);
+        testCity.setCountry(entityManager.find(CountryJpa.class, 4));
+        testCity.setRegion(entityManager.find(RegionJpa.class, 5));
+        testCity.setName("Test City");
+        entityManager.persist(testCity);
+        transaction.commit();
+
+//        jpaCrudRepository.create(testCity);
+//        assertEquals(testId, jpaCrudRepository.create(testCity).getId());
     }
 
     CityJpa makeNewCity(Integer testId) {
-        CountryJpa testCountry = new CountryJpa();
-        RegionJpa testRegion = new RegionJpa();
         CityJpa testCity = new CityJpa();
-
-        testCountry.setId(testId);
-        testCountry.setName("Test country");
-        testRegion.setId(testId);
-        testRegion.setCountry(testCountry);
         testCity.setId(testId);
-        testCity.setCountry(testCountry);
-        testCity.setRegion(testRegion);
+        testCity.setCountry(entityManager.find(CountryJpa.class, 4));
+        testCity.setRegion(entityManager.find(RegionJpa.class, 5));
         testCity.setName("Test City");
-//        transaction.begin();
-        entityManager.persist(testCountry);
-        entityManager.persist(testRegion);
-//        transaction.commit();
         return testCity;
     }
 
@@ -143,5 +142,19 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
 
     @Test
     void delete() {
+        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+
+//        CountryJpa testCountry = new CountryJpa();
+//        RegionJpa testRegion = new RegionJpa();
+//        CityJpa testCity = new CityJpa();
+//
+//        testCountry.setId(4);
+//        testRegion.setId(5);
+
+//        testCity.setName("Бендиго");
+//        testCity.setRegion(testRegion);
+//        testCity.setCountry(testCountry);
+        jpaCrudRepository.delete(7);
+
     }
 }
