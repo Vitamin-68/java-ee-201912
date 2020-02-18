@@ -1,6 +1,7 @@
 package ua.ithillel;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,7 +22,6 @@ public class JpaTest {
     private static EntityTransaction transaction;
     private static JpaRepo cityJpa;
 
-
     @BeforeAll
     public static void init() {
         factory = Persistence.createEntityManagerFactory("persistence-config-for-test");
@@ -29,6 +29,12 @@ public class JpaTest {
         transaction = manager.getTransaction();
         Class<?> clazz = CityJpa.class;
         cityJpa = new JpaRepo(clazz, manager, transaction);
+        cityJpa.create(new CityJpa(122348, 3159, 4312, "Some city"));
+    }
+
+    @AfterAll
+    public static void clear() {
+        cityJpa.delete(122347);
     }
 
     @Test
@@ -54,12 +60,12 @@ public class JpaTest {
 
     @Test
     void updateTest() {
-        Assertions.assertNotNull(cityJpa.update(new CityJpa(122347, 3159, 4312, "Велыкки Вуйкы")));
+        Assertions.assertNotNull(cityJpa.update(new CityJpa(4400, 3159, 4312, "Велыкки Вуйкы")));
     }
 
     @Test
     void deleteTest() {
-        cityJpa.delete(122347);
-        Assertions.assertNotNull(cityJpa.findById(122347).isPresent());
+        cityJpa.delete(122348);
+        Assertions.assertNotNull(cityJpa.findById(122348).isPresent());
     }
 }
