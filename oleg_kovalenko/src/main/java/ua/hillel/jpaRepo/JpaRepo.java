@@ -4,7 +4,6 @@ package ua.hillel.jpaRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.jpa_entity.CityJpa;
-import ua.hillel.jpa_entity.RegionJpa;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 

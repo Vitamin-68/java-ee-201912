@@ -1,33 +1,47 @@
+/**
+ * @author Oleg Kovalenko
+ */
+
+
 package ua.hillel.jpa_entity;
 
 import lombok.*;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "Region")
 public class RegionJpa extends AbstractEntity<Integer> {
 
     @Id
     @Column(name = "region_id", unique = true)
-    Integer id;
+    private Integer id;
 
+    @Column(name = "country_id")
+    private int countryId;
+
+    @Column(name = "city_id")
+    private int cityId;
+
+    @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "region")
-    private List<CityJpa> city;
-
-    @ManyToOne
-    @JoinColumn(name = "country_id")
-    private CountryJpa country;
-
+    @Override
+    public String toString() {
+        return "RegionJpa{" +
+                "id=" + id +
+                ", countryId=" + countryId +
+                ", cityId=" + cityId +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

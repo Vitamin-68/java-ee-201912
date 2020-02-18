@@ -1,10 +1,7 @@
 package ua.hillel.jpa_entity;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.*;
@@ -12,7 +9,8 @@ import javax.persistence.*;
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "City")
 public class CityJpa extends AbstractEntity<Integer> {
@@ -21,13 +19,29 @@ public class CityJpa extends AbstractEntity<Integer> {
     @Column(name = "city_id", unique = true)
     Integer id;
 
+    @Column(name = "country_id")
+    private int countryId;
+
+    @Column(name = "region_id")
+    private int regionId;
+
+    @Column(name = "name")
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "region_id")
-    private RegionJpa region;
 
-    @ManyToOne
-    @JoinColumn(name = "country_id")
+
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "country_id", nullable = false, insertable = false, updatable = false)
     private CountryJpa country;
+
+    @Override
+    public String toString() {
+        return "CityJpa{" +
+                "id=" + id +
+                ", countryId=" + countryId +
+                ", regionId=" + regionId +
+                ", name='" + name + '\'' +
+                ", country=" + country +
+                '}';
+    }
 }
