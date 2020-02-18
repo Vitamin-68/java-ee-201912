@@ -5,18 +5,22 @@
     <persistence-unit name="persistence-config">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <properties>
-
-            <!--            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />-->
-            <!--            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./data;DB_CLOSE_DELAY=-1;MVCC=TRUE" />-->
-                        <property name="javax.persistence.jdbc.user" value="sa" />
-            <!--            <property name="javax.persistence.jdbc.password" value="" />-->
-
             <property name="hibernate.hbm2ddl.auto" value="update"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.user" value="sa"/>
             <property name="hibernate.connection.url"
                       value="jdbc:h2:file:./oleg_kovalenko/target/classes/dev/db/main"/>
         </properties>
     </persistence-unit>
-</persistence>
 
-<!--        value="jdbc:h2:file:./oleg_kovalenko/src/main/resources/data/data"-->
+    <persistence-unit name="persistence-config-for-test">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.user" value="sa"/>
+            <property name="hibernate.connection.url"
+                      value="jdbc:h2:file:./target/classes/dev/db/main"/>
+        </properties>
+    </persistence-unit>
+</persistence>

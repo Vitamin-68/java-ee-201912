@@ -4,6 +4,8 @@ package ua.hillel.jpaRepo;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ua.hillel.jpa_entity.CityJpa;
+import ua.hillel.jpa_entity.CountryJpa;
+import ua.hillel.jpa_entity.RegionJpa;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
@@ -34,23 +36,32 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
         EntityTransaction transaction = manager.getTransaction();
         Class<?> clazz = CityJpa.class;
         JpaRepo cityJpa = new JpaRepo(clazz, manager, transaction);
-//        System.out.println(cityJpa.findById(4312));
-//        cityJpa.findByField("region_id",4400);
-        System.out.println(cityJpa.findByField("id", 4400));
-//        cityJpa.delete(3673);
-//        System.out.println(cityJpa.findByField("id", 3673));
-//        System.out.println(cityJpa.findByField("city_Id", 4400));
+//        cityJpa.delete(122346);
+//        cityJpa.create(new CityJpa(122346, 3159, 4312, "ddd"));
+//        System.out.println(cityJpa.findById(4400));
+
+        Optional<CityJpa> city = cityJpa.findByField("id", 44799);
+        System.out.println(city);
     }
 
     @Override
     public Optional<List<EntityType>> findAll() {
         List<EntityType> result = manager.createQuery("from " + clazz.getSimpleName(), clazz).getResultList();
+        if (result.isEmpty()) {
+            log.warn("is empty");
+            throw new NullPointerException();
+        }
+        log.info("count {}", result.size());
         return Optional.of(result);
     }
 
     @Override
     public Optional<EntityType> findById(Integer id) {
         EntityType entity = manager.find(clazz, id);
+        if (entity == null) {
+            log.warn("Object is empty");
+            throw new NullPointerException("Object is empty");
+        }
         return Optional.of(entity);
     }
 
@@ -70,6 +81,7 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
     public EntityType create(EntityType entity) {
         transaction.begin();
         manager.persist(entity);
+        log.info("created {}", entity.getId());
         transaction.commit();
         return entity;
     }
@@ -79,6 +91,7 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
         transaction.begin();
         manager.merge(entity);
         transaction.commit();
+        log.info("updated {}", entity.getId());
         return entity;
     }
 
@@ -92,6 +105,7 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
         transaction.begin();
         manager.createQuery(criteriaDelete).executeUpdate();
         transaction.commit();
+        log.info("deleted {}", id);
         return entityType.get();
     }
 }

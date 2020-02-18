@@ -1,6 +1,9 @@
 package ua.hillel.jpa_entity;
 
-import lombok.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
 import javax.persistence.*;
@@ -8,7 +11,6 @@ import java.util.List;
 
 
 @EqualsAndHashCode(callSuper = true)
-@AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
@@ -26,8 +28,14 @@ public class CountryJpa extends AbstractEntity<Integer> {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "country", fetch = FetchType.EAGER)
-    private List<CityJpa> cities;
+    @OneToMany(mappedBy = "country")
+    private List<RegionJpa> region;
+
+    public CountryJpa(Integer id, int cityId, String name) {
+        this.id = id;
+        this.cityId = cityId;
+        this.name = name;
+    }
 
     @Override
     public String toString() {
