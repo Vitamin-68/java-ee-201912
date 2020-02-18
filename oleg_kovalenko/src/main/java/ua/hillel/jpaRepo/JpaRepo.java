@@ -30,20 +30,6 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
     private EntityTransaction transaction;
 
 
-    public static void main(String[] args) {
-        EntityManagerFactory factory = Persistence.createEntityManagerFactory("persistence-config");
-        EntityManager manager = factory.createEntityManager();
-        EntityTransaction transaction = manager.getTransaction();
-        Class<?> clazz = CityJpa.class;
-        JpaRepo cityJpa = new JpaRepo(clazz, manager, transaction);
-//        cityJpa.delete(122346);
-//        cityJpa.create(new CityJpa(122346, 3159, 4312, "ddd"));
-//        System.out.println(cityJpa.findById(4400));
-
-        Optional<CityJpa> city = cityJpa.findByField("id", 44799);
-        System.out.println(city);
-    }
-
     @Override
     public Optional<List<EntityType>> findAll() {
         List<EntityType> result = manager.createQuery("from " + clazz.getSimpleName(), clazz).getResultList();
