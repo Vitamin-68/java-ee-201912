@@ -69,27 +69,28 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
+    @SneakyThrows
     @Override
     public EntityType create(EntityType entity) {
         if (isEntityExists(entity)) {
             log.error("Entity already exists");
-            throw new IllegalArgumentException();
+            throw new MyRepoException(ExceptionResponseCode.ENTITY_ALREADY_EXIST, "Entity already exist");
         }
-//        transaction.begin();
-        entityManager.persist(entity);
-//        transaction.commit();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+        entityManager.merge(entity);
+        transaction.commit();
         return entity;
     }
 
     private boolean isEntityExists(EntityType entity) {
-        return findById(entity.getId()).isPresent();
+        return (entityManager.find(entity.getClass(), entity.getId()) != null);
     }
 
     @Override
     public EntityType update(EntityType entity) {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
-        entityManager.find(entity.getClass(), entity.getId());
         entityManager.merge(entity);
         transaction.commit();
         return entity;

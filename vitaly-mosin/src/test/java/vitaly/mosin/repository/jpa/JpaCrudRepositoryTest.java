@@ -1,12 +1,10 @@
 package vitaly.mosin.repository.jpa;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import vitaly.mosin.repository.entity.City;
+import vitaly.mosin.repository.exceptions.MyRepoException;
 import vitaly.mosin.repository.jpa.entity.CityJpa;
 import vitaly.mosin.repository.jpa.entity.CountryJpa;
 import vitaly.mosin.repository.jpa.entity.RegionJpa;
@@ -15,19 +13,19 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import java.io.Serializable;
+import javax.persistence.metamodel.EntityType;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
-class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType extends Serializable> {
+class JpaCrudRepositoryTest {
 
     final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("persistence-unit");
     private EntityManager entityManager = entityManagerFactory.createEntityManager();
-    ;
     private EntityTransaction transaction;
     private JpaCrudRepository jpaCrudRepository;
 
@@ -64,18 +62,21 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
         Optional<CityJpa> resultCity;
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
         resultCity = jpaCrudRepository.findById(10184);
-        assertEquals("Киев", resultCity.get().getName());
-        assertEquals("Украина", resultCity.get().getCountry().getName());
-        assertEquals("Киевская обл.", resultCity.get().getRegion().getName());
+        if (resultCity.isPresent()) {
+            assertEquals("Киев", resultCity.get().getName());
+            assertEquals("Украина", resultCity.get().getCountry().getName());
+            assertEquals("Киевская обл.", resultCity.get().getRegion().getName());
+        }
 
         //поиск несуществующего города
         resultCity = jpaCrudRepository.findById(-1);
         assertEquals(Optional.empty(), resultCity);
 
-        Optional<CountryJpa> resultCountry;
         jpaCrudRepository = new JpaCrudRepository(CountryJpa.class, entityManagerFactory);
-        resultCountry = jpaCrudRepository.findById(4);
-        assertEquals("Австралия", resultCountry.get().getName());
+        Optional<CountryJpa> resultCountry = jpaCrudRepository.findById(4);
+        if (resultCountry.isPresent()) {
+            assertEquals("Австралия", resultCountry.get().getName());
+        }
     }
 
     @Test
@@ -84,22 +85,29 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
         // поиск по имени
         result = jpaCrudRepository.findByField("name", "'Киев'");
-        for (CityJpa city : result.get()) {
-            assertEquals("Киев", city.getName());
+        if (result.isPresent()) {
+            for (CityJpa city : result.get()) {
+                assertEquals("Киев", city.getName());
+            }
         }
 
         //поиск по региону
         result = jpaCrudRepository.findByField("region", 5);
-        assertEquals(10, result.get().size());
-        for (CityJpa city : result.get()) {
-            assertEquals("Виктория", city.getRegion().getName());
-            assertEquals("Австралия", city.getCountry().getName());
+        if (result.isPresent()) {
+            assertEquals(10, result.get().size());
+            for (CityJpa city : result.get()) {
+                assertEquals("Виктория", city.getRegion().getName());
+                assertEquals("Австралия", city.getCountry().getName());
+            }
         }
+
         //поиск по стране, id Австралии = 4
         result = jpaCrudRepository.findByField("country", 4);
-        assertEquals(50, result.get().size());
-        for (CityJpa city : result.get()) {
-            assertEquals("Австралия", city.getCountry().getName());
+        if (result.isPresent()) {
+            assertEquals(50, result.get().size());
+            for (CityJpa city : result.get()) {
+                assertEquals("Австралия", city.getCountry().getName());
+            }
         }
 
         //неверное имя
@@ -109,35 +117,54 @@ class JpaCrudRepositoryTest<EntityType extends AbstractEntity<IdType>, IdType ex
 
     @Test
     void create() {
-        Integer testId = 87654321;
-//        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
-//        CityJpa testCity = makeNewCity(testId);
+        int testId = 87654321;
+        int counId = 4;
+        int regId = 5;
+        String testName = "Test City";
 
-        transaction = entityManager.getTransaction();
-        transaction.begin();
-        CityJpa testCity = new CityJpa();
-        testCity.setId(testId);
-        testCity.setCountry(entityManager.find(CountryJpa.class, 4));
-        testCity.setRegion(entityManager.find(RegionJpa.class, 5));
-        testCity.setName("Test City");
-        entityManager.persist(testCity);
-        transaction.commit();
+        Optional<List<EntityType>> quantityRecordsBeforeCreate, quantityRecordsAfterCreate;
+        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+        CityJpa testCity = makeTestCity(testId, regId, counId, testName);
+        quantityRecordsBeforeCreate = jpaCrudRepository.findAll();
+        quantityRecordsBeforeCreate.get().size();
+        jpaCrudRepository.create(testCity);
+        Optional<CityJpa> result = jpaCrudRepository.findById(testId);
+        quantityRecordsAfterCreate = jpaCrudRepository.findAll();
 
-//        jpaCrudRepository.create(testCity);
-//        assertEquals(testId, jpaCrudRepository.create(testCity).getId());
+        result.ifPresent(cityJpa -> assertEquals("Test City", cityJpa.getName()));
+        assertEquals(1,
+                quantityRecordsAfterCreate.get().size() - quantityRecordsBeforeCreate.get().size());
+
+        //try create already existing object with same id
+        assertThrows(MyRepoException.class, () -> jpaCrudRepository.create(testCity));
     }
 
-    CityJpa makeNewCity(Integer testId) {
+    CityJpa makeTestCity(int cityId, int regionId, int countryId, String name){
         CityJpa testCity = new CityJpa();
-        testCity.setId(testId);
-        testCity.setCountry(entityManager.find(CountryJpa.class, 4));
-        testCity.setRegion(entityManager.find(RegionJpa.class, 5));
-        testCity.setName("Test City");
+        testCity.setId(cityId);
+        testCity.setRegion(entityManager.find(RegionJpa.class, regionId));
+        testCity.setCountry(entityManager.find(CountryJpa.class, countryId));
+        testCity.setName(name);
         return testCity;
     }
 
+
     @Test
     void update() {
+        int testId = 9977;
+        int cntryId = 9908;
+        int regId = 9964;
+        String testName = "Дніпро is the best";
+
+        jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+        CityJpa testCity = makeTestCity(testId, regId, cntryId, testName);
+        jpaCrudRepository.update(testCity);
+        Optional<CityJpa> result = jpaCrudRepository.findById(testId);
+        result.ifPresent(cityJpa -> assertEquals("Дніпро is the best", cityJpa.getName()));
+
+        //rollback
+        testCity.setName("Днепропетровск");
+        jpaCrudRepository.update(testCity);
     }
 
     @Test
