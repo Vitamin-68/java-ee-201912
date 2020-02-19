@@ -42,7 +42,6 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
         return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
 
-    @SneakyThrows
     @Override
     public Optional<EntityType> findById(IdType id) {
         EntityType result = null;

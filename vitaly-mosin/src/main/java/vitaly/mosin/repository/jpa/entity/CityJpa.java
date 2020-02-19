@@ -23,11 +23,11 @@ public class CityJpa extends AbstractEntity<Integer> {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "country_id")
     private CountryJpa country;
 
-    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "region_id")
     private RegionJpa region;
 

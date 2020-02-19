@@ -62,6 +62,8 @@ class JpaCrudRepositoryTest {
         Optional<CityJpa> resultCity;
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
         resultCity = jpaCrudRepository.findById(10184);
+
+        //поиск в City
         if (resultCity.isPresent()) {
             assertEquals("Киев", resultCity.get().getName());
             assertEquals("Украина", resultCity.get().getCountry().getName());
@@ -72,6 +74,7 @@ class JpaCrudRepositoryTest {
         resultCity = jpaCrudRepository.findById(-1);
         assertEquals(Optional.empty(), resultCity);
 
+        //поиск в Country
         jpaCrudRepository = new JpaCrudRepository(CountryJpa.class, entityManagerFactory);
         Optional<CountryJpa> resultCountry = jpaCrudRepository.findById(4);
         if (resultCountry.isPresent()) {
@@ -126,7 +129,6 @@ class JpaCrudRepositoryTest {
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
         CityJpa testCity = makeTestCity(testId, regId, counId, testName);
         quantityRecordsBeforeCreate = jpaCrudRepository.findAll();
-        quantityRecordsBeforeCreate.get().size();
         jpaCrudRepository.create(testCity);
         Optional<CityJpa> result = jpaCrudRepository.findById(testId);
         quantityRecordsAfterCreate = jpaCrudRepository.findAll();
@@ -170,18 +172,12 @@ class JpaCrudRepositoryTest {
     @Test
     void delete() {
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+        Optional<List<EntityType>> quantityRecordsBeforeDelete, quantityRecordsAfterDelete;
 
-//        CountryJpa testCountry = new CountryJpa();
-//        RegionJpa testRegion = new RegionJpa();
-//        CityJpa testCity = new CityJpa();
-//
-//        testCountry.setId(4);
-//        testRegion.setId(5);
-
-//        testCity.setName("Бендиго");
-//        testCity.setRegion(testRegion);
-//        testCity.setCountry(testCountry);
+        quantityRecordsBeforeDelete = jpaCrudRepository.findAll();
         jpaCrudRepository.delete(7);
-
+        quantityRecordsAfterDelete = jpaCrudRepository.findAll();
+        assertEquals(1,
+                quantityRecordsBeforeDelete.get().size() - quantityRecordsAfterDelete.get().size());
     }
 }
