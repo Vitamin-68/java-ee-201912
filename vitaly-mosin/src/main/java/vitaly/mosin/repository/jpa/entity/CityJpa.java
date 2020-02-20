@@ -5,9 +5,9 @@ import lombok.Setter;
 import lombok.ToString;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -23,12 +23,12 @@ public class CityJpa extends AbstractEntity<Integer> {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "country_id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "country_id", nullable = false)
     private CountryJpa country;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "region_id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false)
     private RegionJpa region;
 
     private String name;

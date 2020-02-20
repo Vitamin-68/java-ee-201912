@@ -29,7 +29,6 @@ public class JpaCrudRepository<EntityType extends AbstractEntity<IdType>, IdType
     public JpaCrudRepository(Class<? extends EntityType> clazz, EntityManagerFactory entityManagerFactory) {
         this.clazz = clazz;
         this.entityManager = entityManagerFactory.createEntityManager();
-
     }
 
     @Override

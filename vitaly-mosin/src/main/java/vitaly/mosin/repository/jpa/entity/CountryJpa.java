@@ -3,14 +3,12 @@ package vitaly.mosin.repository.jpa.entity;
 import lombok.Getter;
 import lombok.Setter;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import vitaly.mosin.repository.entity.City;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.List;

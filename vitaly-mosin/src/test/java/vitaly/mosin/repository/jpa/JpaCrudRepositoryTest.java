@@ -1,8 +1,8 @@
 package vitaly.mosin.repository.jpa;
 
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import vitaly.mosin.repository.exceptions.MyRepoException;
 import vitaly.mosin.repository.jpa.entity.CityJpa;
@@ -11,34 +11,45 @@ import vitaly.mosin.repository.jpa.entity.RegionJpa;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 import javax.persistence.metamodel.EntityType;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 class JpaCrudRepositoryTest {
 
-    final EntityManagerFactory entityManagerFactory =
+    static final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("persistence-unit");
-    private EntityManager entityManager = entityManagerFactory.createEntityManager();
-    private EntityTransaction transaction;
+    private static final String DB_PATH_TMP = "./target/classes/dev/db/";
+    private static final String DB_PATH_RESOURCE = "./src/main/resources/dev/db/";
+    private static final String DB_FILE = "mainRepoVM.mv.db";
     private JpaCrudRepository jpaCrudRepository;
 
-    @BeforeEach
-    void setUp() {
-//        entityManager = entityManagerFactory.createEntityManager();
-//        transaction = entityManager.getTransaction();
+    @BeforeAll
+    static void setUp() {
+//        File folder = new File(DB_PATH_TMP);
+//        if (!folder.exists()) {
+//            folder.mkdir();
+//        }
+//        try {
+//            Files.copy(new File(DB_PATH_RESOURCE + DB_FILE).toPath(),
+//                    new File(DB_PATH_TMP + DB_FILE).toPath(), REPLACE_EXISTING);
+//        } catch (IOException e) {
+//            log.error("Failed to copy files", e);
+//        }
     }
 
-    @AfterEach
-    void tearDown() {
-//        entityManager.close();
-//        entityManagerFactory.close();
+    @AfterAll
+    static void tearDown() {
+        entityManagerFactory.close();
     }
 
     @Test
@@ -139,17 +150,21 @@ class JpaCrudRepositoryTest {
 
         //try create already existing object with same id
         assertThrows(MyRepoException.class, () -> jpaCrudRepository.create(testCity));
+
+        //rollback - delete testCity
+        jpaCrudRepository.delete(testId);
     }
 
-    CityJpa makeTestCity(int cityId, int regionId, int countryId, String name){
+    CityJpa makeTestCity(int cityId, int regionId, int countryId, String name) {
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
         CityJpa testCity = new CityJpa();
         testCity.setId(cityId);
         testCity.setRegion(entityManager.find(RegionJpa.class, regionId));
         testCity.setCountry(entityManager.find(CountryJpa.class, countryId));
         testCity.setName(name);
+        entityManager.close();
         return testCity;
     }
-
 
     @Test
     void update() {
@@ -164,14 +179,16 @@ class JpaCrudRepositoryTest {
         Optional<CityJpa> result = jpaCrudRepository.findById(testId);
         result.ifPresent(cityJpa -> assertEquals("Дніпро is the best", cityJpa.getName()));
 
-        //rollback
+        //rollback - set old name
         testCity.setName("Днепропетровск");
         jpaCrudRepository.update(testCity);
     }
 
     @Test
     void delete() {
+        Optional<CityJpa> resultCity;
         jpaCrudRepository = new JpaCrudRepository(CityJpa.class, entityManagerFactory);
+        resultCity = jpaCrudRepository.findById(7);
         Optional<List<EntityType>> quantityRecordsBeforeDelete, quantityRecordsAfterDelete;
 
         quantityRecordsBeforeDelete = jpaCrudRepository.findAll();
@@ -179,5 +196,8 @@ class JpaCrudRepositoryTest {
         quantityRecordsAfterDelete = jpaCrudRepository.findAll();
         assertEquals(1,
                 quantityRecordsBeforeDelete.get().size() - quantityRecordsAfterDelete.get().size());
+
+        //rollback - restore deleted city
+        jpaCrudRepository.create(resultCity.get());
     }
 }

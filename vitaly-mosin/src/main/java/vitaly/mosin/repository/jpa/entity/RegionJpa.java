@@ -24,7 +24,7 @@ public class RegionJpa extends AbstractEntity<Integer> {
     @Column(name = "id", unique = true, nullable = false)
     private Integer id;
 
-    @ManyToOne(optional = false) //, cascade = CascadeType.ALL)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "country_id")
     private CountryJpa country;
 
