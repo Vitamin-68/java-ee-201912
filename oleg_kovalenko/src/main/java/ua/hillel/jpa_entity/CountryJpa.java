@@ -43,10 +43,7 @@ public class CountryJpa extends AbstractEntity<Integer> {
 
     @Override
     public String toString() {
-        return "CountryJpa{" +
-                "id=" + id +
-                ", cityId=" + cityId +
-                ", name='" + name + '\'' +
-                '}';
+        return String.format("CountryJpa: country_id %d, city_id %d, name %s",
+                id, cityId, name);
     }
 }

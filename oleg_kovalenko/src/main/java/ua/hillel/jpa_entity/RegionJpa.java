@@ -56,14 +56,10 @@ public class RegionJpa extends AbstractEntity<Integer> {
         this.name = name;
     }
 
+
     @Override
     public String toString() {
-        return "RegionJpa{" +
-                "id=" + id +
-                ", countryId=" + countryId +
-                ", cityId=" + cityId +
-                ", name='" + name + '\'' +
-                ", country=" + country +
-                '}';
+        return String.format("RegionJpa: region_id %d, country_id %d, city_id %d, name %s, country_name %s",
+                id, countryId, cityId, name, country.getName());
     }
 }

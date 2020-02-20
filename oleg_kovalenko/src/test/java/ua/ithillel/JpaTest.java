@@ -13,7 +13,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
 
-
 @Slf4j
 public class JpaTest {
 
@@ -48,8 +47,23 @@ public class JpaTest {
     }
 
     @Test
-    void findByFieldTest() {
+    void findByFieldIdTest() {
         Assertions.assertTrue(cityJpa.findByField("id", 4400).isPresent());
+    }
+
+    @Test
+    void findByFieldCountryIdTest() {
+        Assertions.assertTrue(cityJpa.findByField("countryId", 3159).isPresent());
+    }
+
+    @Test
+    void findByFieldRegionIdTest() {
+        Assertions.assertTrue(cityJpa.findByField("regionId", 4312).isPresent());
+    }
+
+    @Test
+    void findByFieldNameTest() {
+        Assertions.assertTrue(cityJpa.findByField("name", "Москва").isPresent());
     }
 
     @Test

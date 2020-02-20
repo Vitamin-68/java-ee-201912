@@ -48,14 +48,10 @@ public class CityJpa extends AbstractEntity<Integer> {
     @JoinColumn(name = "region_id", nullable = false, insertable = false, updatable = false)
     private RegionJpa region;
 
+
     @Override
     public String toString() {
-        return "CityJpa{" +
-                "id=" + id +
-                ", countryId=" + countryId +
-                ", regionId=" + regionId +
-                ", name='" + name + '\'' +
-                ", country=" + region +
-                '}';
+        return String.format("CityJpa: city_id %d, country_id %d, region_id %d, name %s, countru %s",
+                id, countryId, regionId, name, region.getName());
     }
 }
