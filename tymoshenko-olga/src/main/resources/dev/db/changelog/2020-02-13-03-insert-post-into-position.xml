@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-13-05-insert-post-into-position" author="Olga Tymoshenko">
+        <insert tableName="Position">
+            <column name="Post" value="Saler"/>
+        </insert>
+        <insert tableName="Position" schemaName="public">
+            <column name="Post" value="Manager"/>
+        </insert>
+        <insert tableName="Position" schemaName="public">
+            <column name="Post" value="Driver"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
