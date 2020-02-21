@@ -24,6 +24,15 @@
             <version>1.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -53,11 +62,6 @@
                     <execution>
                         <phase>process-resources</phase>
                         <configuration>
-                            <!--<changeLogFile>${profile.changeLogFile}</changeLogFile>-->
-                            <!--<driver>db.driver</driver>-->
-                            <!--<url>db.connection.string</url>-->
-                            <!--<username>sa</username>-->
-                            <!--<password/>-->
                         </configuration>
                         <goals>
                             <goal>update</goal>
@@ -75,6 +79,7 @@
                 <maven.test.skip>true</maven.test.skip>
             </properties>
         </profile>
+
         <profile>
             <!-- Development settings, -Denv=dev -->
             <id>dev</id>
@@ -85,6 +90,8 @@
                 </property>
                 <activeByDefault>true</activeByDefault>
             </activation>
+
+
             <properties>
                 <profile.id>dev</profile.id>
                 <profile.data.db.root>${profile.id}/db</profile.data.db.root>
@@ -100,6 +107,7 @@
                 <profile.verbose>true</profile.verbose>
                 <profile.logging>debug</profile.logging>
             </properties>
+
         </profile>
     </profiles>
 </project>
