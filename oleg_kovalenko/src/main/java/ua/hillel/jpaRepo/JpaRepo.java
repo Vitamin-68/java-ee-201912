@@ -29,7 +29,6 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
     public Optional<List<EntityType>> findAll() {
         List<EntityType> result = manager.createQuery("from " + clazz.getSimpleName(), clazz).getResultList();
         if (result.isEmpty()) {
-            log.warn("is empty");
             throw new NullPointerException();
         }
         log.info("count {}", result.size());
@@ -40,7 +39,6 @@ public class JpaRepo<EntityType extends AbstractEntity<Integer>>
     public Optional<EntityType> findById(Integer id) {
         EntityType entity = manager.find(clazz, id);
         if (entity == null) {
-            log.warn("Object is empty");
             throw new NullPointerException("Object is empty");
         }
         return Optional.of(entity);
