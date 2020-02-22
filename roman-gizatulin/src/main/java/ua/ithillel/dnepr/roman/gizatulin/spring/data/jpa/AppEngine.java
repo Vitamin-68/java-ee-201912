@@ -12,10 +12,8 @@ import ua.ithillel.dnepr.roman.gizatulin.spring.data.jpa.repository.CountryRepos
 import ua.ithillel.dnepr.roman.gizatulin.spring.data.jpa.repository.RegionRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -58,6 +56,14 @@ public class AppEngine {
         regionRepository
                 .findAll(PageRequest.of(1, 3, Sort.by("name")))
                 .forEach(region -> log.info(region.toString()));
+
+
+        countryRepository.findByNameEndingWithAndIdLessThan("_5", 7)
+                .ifPresent(countries -> {
+                    List<String> collect = countries.stream()
+                            .map(Country::getName)
+                            .collect(Collectors.toList());
+                });
     }
 
     private List<Country> createCountries() {
