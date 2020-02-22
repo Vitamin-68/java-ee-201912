@@ -2,6 +2,7 @@ package ua.ithillel.dnepr.roman.gizatulin.rmi;
 
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.common.utils.NetUtils;
+import ua.ithillel.dnepr.common.utils.RmiUtils;
 
 @Slf4j
 public class ProgramServer {

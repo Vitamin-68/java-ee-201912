@@ -1,4 +1,4 @@
-package ua.ithillel.dnepr.roman.gizatulin.rmi;
+package ua.ithillel.dnepr.common.utils;
 
 import lombok.experimental.UtilityClass;
 
