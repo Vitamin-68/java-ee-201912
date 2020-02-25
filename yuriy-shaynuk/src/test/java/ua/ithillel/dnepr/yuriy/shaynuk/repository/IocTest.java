@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.yuriy.shaynuk.ioc.Program;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.Utils;
+
+import java.nio.file.Paths;
 
 @Slf4j
 public class IocTest {
@@ -17,7 +20,9 @@ public class IocTest {
 
     @Test
     void start(){
-        Program.main(new String[]{"csv", "G:\\IdeaProjects\\common\\target\\classes\\region.csv", "csv", "d:\\test\\test.csv", "city"});
+        String inputPath = Utils.createTempFile("city.csv").toString();
+        String outputPath = Utils.createTempFile("test.db").toString();
+        Program.main(new String[]{"csv", inputPath, "jdbc", outputPath, "city"});
         Assertions.assertTrue(true);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,17 +20,20 @@ import java.util.Optional;
 
 @Slf4j
 public class TransferData{
-    private CrudRepository<?, Integer> inputRepository;
-    private CrudRepository<?, Integer> outputRepository;
+    private CrudRepository<BaseEntity<Integer>, Integer> inputRepository;
+    private CrudRepository<BaseEntity<Integer>, Integer> outputRepository;
 
     @Autowired
-    public TransferData(@Qualifier("input") CrudRepository<?, Integer> inputRepository, @Qualifier("output") CrudRepository<?, Integer> outputRepository) {
+    public TransferData(@Qualifier("input") CrudRepository<BaseEntity<Integer>, Integer> inputRepository, @Qualifier("output") CrudRepository<BaseEntity<Integer>, Integer> outputRepository) {
         this.inputRepository = inputRepository;
         this.outputRepository = outputRepository;
     }
 
     public void start() {
-        Optional<? extends List<?>> inputList = inputRepository.findAll();
-        Optional<? extends List<?>> outputList = outputRepository.findAll();
+        //Optional<List<BaseEntity<Integer>>> inputList = inputRepository.findAll();
+        Optional<BaseEntity<Integer>> inputList = inputRepository.findById(4400);
+        inputList.ifPresent(entity -> outputRepository.create(entity));
+        log.warn("test");
+        //
     }
 }
