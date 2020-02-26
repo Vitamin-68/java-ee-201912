@@ -6,6 +6,8 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import vitaly.mosin.repository.entity.City;
 import vitaly.mosin.repository.exceptions.ExceptionResponseCode;
@@ -28,11 +30,13 @@ import static vitaly.mosin.repository.Constants.REGION_ID;
 
 
 @Slf4j
+@Repository
 public class CityCrudRepository implements CrudRepository<City, Integer>, MyUtils {
 
     private final String filePath;
     private final String[] cityCsvHeader = {CITY_ID, COUNTRY_ID, REGION_ID, HEAD_NAME};
 
+    @Autowired
     public CityCrudRepository(String filePath) {
         this.filePath = filePath;
     }
