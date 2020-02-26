@@ -27,8 +27,8 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
     public static final String COUNTRY_ID = "country_id";
     public static final String CITY_ID = "city_id";
     public static final String NAME = "name";
-    private final String filePath;
-    private final char delimiter;
+    private String filePath;
+    private char delimiter;
 
     public RegionRepository(String filePath) {
         this.delimiter = ';';
@@ -38,6 +38,16 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
     public RegionRepository(String filePath, char delim) {
         this.delimiter = delim;
         this.filePath = filePath;
+    }
+
+    public RegionRepository(){}
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -130,8 +140,11 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
                     .withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            for (Region locRegion : findAll().get()) {
-                csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getCity_id(), locRegion.getName());
+            Optional<List<Region>> allRegions = findAll();
+            if (allRegions.isPresent()) {
+                for (Region locRegion : allRegions.get()) {
+                    csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getCity_id(), locRegion.getName());
+                }
             }
             csvPrinter.printRecord(entity.getId(), entity.getCountry_id(), entity.getCity_id(), entity.getName());
             csvPrinter.flush();
