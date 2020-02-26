@@ -28,15 +28,9 @@ public class Program {
         }else{
             inputType = getType(args[0]);
             inputPath = args[1];
-//            if(inputType.equals(TYPE_CSV)){
-//                createFileIfNotExist(inputPath);
-//            }
             outputType = getType(args[2]);
             outputPath = args[3];
-//            if(outputType.equals(TYPE_CSV)){
-//                createFileIfNotExist(outputPath);
-//            }
-            classString =args[4];
+            classString = args[4];
         }
         log.debug(args.toString());
 
@@ -48,7 +42,7 @@ public class Program {
     }
 
     private static String getType(String str){
-        String result = null;
+        String result;
         switch (str.toLowerCase()){
             case "csv": result = TYPE_CSV; break;
             case "jdbc": result = TYPE_JDBC; break;
@@ -57,8 +51,8 @@ public class Program {
         return result;
     }
 
-    public static Class getClazz(String repoType) {
-        Class result = null;
+    public static Class getClazz() {
+        Class result;
         switch (classString.toLowerCase()){
             case "city":
                 result = ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City.class;
@@ -69,6 +63,7 @@ public class Program {
             case "country":
                 result = ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Country.class;
                 break;
+            default: throw new NullPointerException("unknown class: "+classString);
         }
         return result;
     }
@@ -86,32 +81,4 @@ public class Program {
         }
         return connection;
     }
-
-    //    public static Class getClazz(String repoType){
-//        Class result = null;
-//        if(repoType.equals(TYPE_CSV)){
-//            switch (classString.toLowerCase()){
-//                case "city": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City.class; break;
-//                case "region": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Region.class; break;
-//                case "country": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Country.class; break;
-//            }
-//        }else if(repoType.equals(TYPE_JDBC)){
-//            switch (classString.toLowerCase()){
-//                case "city": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.City.class; break;
-//                case "region": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.Region.class; break;
-//                case "country": result = ua.ithillel.dnepr.yuriy.shaynuk.repository.jpa.entity.Country.class; break;
-//            }
-//        }
-//        return result;
-//    }
- //   private static void createFileIfNotExist(String path){
-       // Utils.createTempFile(path);
-//        File yourFile = new File(path);
-//        try {
-//            yourFile.getParentFile().mkdirs();
-//            yourFile.createNewFile();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

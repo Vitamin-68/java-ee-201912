@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
-import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -30,10 +29,7 @@ public class TransferData{
     }
 
     public void start() {
-        //Optional<List<BaseEntity<Integer>>> inputList = inputRepository.findAll();
         Optional<BaseEntity<Integer>> inputList = inputRepository.findById(4400);
         inputList.ifPresent(entity -> outputRepository.create(entity));
-        log.warn("test");
-        //
     }
 }

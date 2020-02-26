@@ -36,9 +36,9 @@ public class RepositoryFactory {
     private CrudRepository<BaseEntity<Integer>, Integer> getRepository(String repoType, String path){
         CrudRepository<BaseEntity<Integer>, Integer> result = null;
         switch (repoType){
-            case TYPE_CSV:  result = new CrudRepositoryImp<>(path, Program.getClazz(TYPE_CSV)); break;
+            case TYPE_CSV:  result = new CrudRepositoryImp<>(path, Program.getClazz()); break;
             case TYPE_JDBC:
-                result = new JdbcCrudRepositoryImpl<>(Program.startServer(path), Program.getClazz(TYPE_JDBC));
+                result = new JdbcCrudRepositoryImpl<>(Program.startServer(path), Program.getClazz());
                 break;
         }
         return result;
