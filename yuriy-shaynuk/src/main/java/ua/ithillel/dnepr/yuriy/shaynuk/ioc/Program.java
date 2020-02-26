@@ -12,6 +12,7 @@ import java.sql.SQLException;
 @Slf4j
 public class Program {
     private static H2Server h2Server;
+
     public static final String TYPE_CSV = "csv";
     public static final String TYPE_JDBC = "jdbc";
 
