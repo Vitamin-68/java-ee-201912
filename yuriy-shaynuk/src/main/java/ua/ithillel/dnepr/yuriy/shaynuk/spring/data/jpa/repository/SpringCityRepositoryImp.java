@@ -1,53 +1,32 @@
 package ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
+import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.City;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Slf4j
-@Configuration
-public class SpringCityRepositoryImp implements CrudRepository<City, Integer> {
-    private CityCrudRepository crudRepository;
+@Component
+public class SpringCityRepositoryImp extends BaseSpringRepositoryImp<City,Integer> {
+    private CityCrudRepository cityCrudRepository;
 
-    public SpringCityRepositoryImp(CityCrudRepository crudRepository) {
-        this.crudRepository = crudRepository;
-    }
-
-    @Override
-    public Optional<List<City>> findAll() {
-        return Optional.of(StreamSupport.stream(crudRepository.findAll().spliterator(), false)
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Optional<City> findById(Integer id) {
-        return crudRepository.findById(id);
+    public SpringCityRepositoryImp(CityCrudRepository cityCrudRepository) {
+        this.cityCrudRepository = cityCrudRepository;
+        super.crudRepository = cityCrudRepository;
     }
 
     @Override
     public Optional<List<City>> findByField(String fieldName, Object value) {
-        return Optional.empty();
-    }
+        Optional<List<City>> cityList = Optional.empty();
 
-    @Override
-    public City create(City entity) {
-        return crudRepository.save(entity);
-    }
+        switch (fieldName){
+            case "name": cityList = cityCrudRepository.findByName(value); break;
+            case "countryId": cityList = cityCrudRepository.findByCountryId(value); break;
+            case "regionId": cityList = cityCrudRepository.findByRegionId(value); break;
+        }
 
-    @Override
-    public City update(City entity) {
-        return null;
-    }
-
-    @Override
-    public City delete(Integer id) {
-        return null;
+        return cityList;
     }
 }

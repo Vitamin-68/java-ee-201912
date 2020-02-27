@@ -19,7 +19,6 @@ import javax.persistence.Table;
 @Table(name = "region")
 public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
     private Integer countryId;
     private Integer cityId;
