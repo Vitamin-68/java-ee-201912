@@ -47,7 +47,7 @@ public class Program {
         switch (str.toLowerCase()){
             case "csv": result = TYPE_CSV; break;
             case "jdbc": result = TYPE_JDBC; break;
-            default: throw new NullPointerException("unknown repo type: "+str);
+            default: throw new IllegalArgumentException("unknown repo type: "+str);
         }
         return result;
     }
