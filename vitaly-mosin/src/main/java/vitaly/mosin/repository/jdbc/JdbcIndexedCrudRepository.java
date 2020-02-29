@@ -1,6 +1,10 @@
 package vitaly.mosin.repository.jdbc;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.common.repository.ImmutableRepository;
 import ua.ithillel.dnepr.common.repository.IndexedCrudRepository;
 import ua.ithillel.dnepr.common.repository.MutableRepository;
@@ -15,6 +19,8 @@ import java.util.Optional;
 import java.util.Set;
 
 @Slf4j
+@Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements IndexedCrudRepository<EntityType, IdType> {
 
@@ -24,6 +30,7 @@ public class JdbcIndexedCrudRepository<EntityType extends AbstractEntity<IdType>
     private final MutableRepository<EntityType, IdType> mutableRepository;
     private final Set<String> indexes = Collections.synchronizedSet(new HashSet<>());
 
+    @Autowired
     public JdbcIndexedCrudRepository(Connection connection, Class<? extends EntityType> clazz) {
         this.connection = connection;
         this.clazz = clazz;
