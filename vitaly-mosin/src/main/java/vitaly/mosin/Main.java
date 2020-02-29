@@ -2,6 +2,7 @@ package vitaly.mosin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import vitaly.mosin.ioc.AppConfig;
 import vitaly.mosin.repository.csv.CityCrudRepository;
@@ -53,6 +54,14 @@ public class Main {
 //        repo = (Class<?>) appContext.getBean(clazz)
 //        List<?> listEntity = repo.fin
 //    }
+
+    private static void tmp(CrudRepository repo, AnnotationConfigApplicationContext appContext) {
+        repo = appContext.getBean(CrudRepository.class);
+        List<?> listEntity = (List<?>) repo.findAll().get();
+        clazz = listEntity.get(0).getClass();
+        dbdRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
+        addDataToDb(listEntity);
+    }
 
     private static void addDataToDb(List<?> list) {
         list.stream().forEach(record -> dbdRepo.create((AbstractEntity) record));
