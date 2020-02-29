@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.dmytro.ostapenko.repository.entity.Region;
 
@@ -115,6 +116,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer> {
             regionsList.add(entity);
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_REGION_ID, HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Region region : regionsList) {
                     csvPrinter.printRecord(region.getRegionId(), region.getCountryId(), region.getCityId(), region.getRegionName());
@@ -134,6 +136,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer> {
             List<Region> regionsList = findAll().get();
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_REGION_ID, HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Region region : regionsList) {
                     if (Objects.equals(entity.getRegionId(), region.getRegionId())) {
@@ -160,6 +163,7 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer> {
             regionsList.get().removeIf(deletedCountry -> Objects.equals(deletedCountry.getRegionId(), id));
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_REGION_ID, HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Region region : regionsList.get()) {
                     csvPrinter.printRecord(region.getRegionId(), region.getCountryId(), region.getCityId(), region.getRegionName());

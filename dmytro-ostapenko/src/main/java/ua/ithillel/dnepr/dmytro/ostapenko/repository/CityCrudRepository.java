@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.dmytro.ostapenko.repository.entity.City;
 
@@ -115,6 +116,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer> {
             citiesList.add(entity);
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_CITY_ID, HEADER_COUNTRY_ID, HEADER_REGION_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (City city : citiesList) {
                     csvPrinter.printRecord(city.getCityId(), city.getCountryId(), city.getRegionId(), city.getCityName());
@@ -134,6 +136,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer> {
             List<City> citiesList = findAll().get();
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_CITY_ID, HEADER_COUNTRY_ID, HEADER_REGION_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (City city : citiesList) {
                     if (Objects.equals(entity.getCityId(), city.getCityId())) {
@@ -159,6 +162,7 @@ public class CityCrudRepository implements CrudRepository<City, Integer> {
             citiesList.get().removeIf(deletedCountry -> Objects.equals(deletedCountry.getCityId(), id));
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_CITY_ID, HEADER_COUNTRY_ID, HEADER_REGION_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (City city : citiesList.get()) {
                     csvPrinter.printRecord(city.getCityId(), city.getCountryId(), city.getRegionId(), city.getCityName());

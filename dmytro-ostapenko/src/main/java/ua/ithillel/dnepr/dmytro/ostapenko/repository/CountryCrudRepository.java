@@ -5,6 +5,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.QuoteMode;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.dmytro.ostapenko.repository.entity.Country;
 
@@ -109,6 +110,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer> {
             countriesList.add(entity);
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Country country : countriesList) {
                     csvPrinter.printRecord(country.getCountryId(), country.getCityId(), country.getCountryName());
@@ -128,6 +130,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer> {
             List<Country> countriesList = findAll().get();
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Country country : countriesList) {
                     if (Objects.equals(entity.getCountryId(), country.getCountryId())) {
@@ -152,6 +155,7 @@ public class CountryCrudRepository implements CrudRepository<Country, Integer> {
             countriesList.get().removeIf(deletedCountry -> Objects.equals(deletedCountry.getCountryId(), id));
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(HEADER_COUNTRY_ID, HEADER_CITY_ID, HEADER_NAME)
+                    .withQuoteMode(QuoteMode.ALL)
                     .withDelimiter(DELIMITER))) {
                 for (Country country : countriesList.get()) {
                     csvPrinter.printRecord(country.getCountryId(), country.getCityId(), country.getCountryName());
