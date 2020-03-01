@@ -21,4 +21,18 @@
             <property name="hibernate.connection.password" value=""/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="persistence-unit-spring-data-jpa">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.Country</class>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.City</class>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.Region</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:tcp://localhost:12345/./data"/>
+        </properties>
+    </persistence-unit>
 </persistence>
