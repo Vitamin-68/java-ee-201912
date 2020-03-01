@@ -2,7 +2,6 @@ package vitaly.mosin;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import vitaly.mosin.ioc.AppConfig;
 import vitaly.mosin.repository.csv.CityCrudRepository;
@@ -12,7 +11,6 @@ import vitaly.mosin.repository.jdbc.JdbcIndexedCrudRepository;
 
 import java.io.File;
 import java.util.List;
-
 
 @Slf4j
 public class Main {
@@ -27,6 +25,7 @@ public class Main {
         log.info("=== My application started ===");
 
         deleteDbFile(FILE_PATH_TMP + DB_FILE + ".mv.db");
+
         AnnotationConfigApplicationContext appContext = new AnnotationConfigApplicationContext(AppConfig.class);
 
         CountryCrudRepository cnRepo = (CountryCrudRepository) appContext.getBean("countryCSV");
@@ -48,19 +47,6 @@ public class Main {
         addDataToDb(regions);
 
         appContext.close();
-    }
-
-//    private static void tmp(Class<?> repo, AnnotationConfigApplicationContext appContext) {
-//        repo = (Class<?>) appContext.getBean(clazz)
-//        List<?> listEntity = repo.fin
-//    }
-
-    private static void tmp(CrudRepository repo, AnnotationConfigApplicationContext appContext) {
-        repo = appContext.getBean(CrudRepository.class);
-        List<?> listEntity = (List<?>) repo.findAll().get();
-        clazz = listEntity.get(0).getClass();
-        dbdRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
-        addDataToDb(listEntity);
     }
 
     private static void addDataToDb(List<?> list) {
