@@ -192,6 +192,18 @@
                 <version>3.9</version>
             </dependency>
             <dependency>
+                <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.14</version>
+            </dependency>
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4.7</version>
+            </dependency>
+            <dependency>
                 <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
