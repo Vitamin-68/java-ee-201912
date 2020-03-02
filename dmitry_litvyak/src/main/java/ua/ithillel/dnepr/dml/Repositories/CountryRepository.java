@@ -26,8 +26,8 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
     public static final String COUNTRY_ID = "country_id";
     public static final String CITY_ID = "city_id";
     public static final String NAME = "name";
-    private final String filePath;
-    private final char delimiter;
+    private String filePath;
+    private char delimiter;
 
     public CountryRepository(String filePath) {
         this.delimiter = ';';
@@ -37,6 +37,16 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
     public CountryRepository(String filePath, char delim) {
         this.delimiter = delim;
         this.filePath = filePath;
+    }
+
+    public CountryRepository(){}
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -127,8 +137,11 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
                     .withHeader(COUNTRY_ID, CITY_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            for (Country locCountry : findAll().get()) {
-                csvPrinter.printRecord(locCountry.getId(), locCountry.getCity_id(), locCountry.getName());
+            Optional<List<Country>> allCountries = findAll();
+            if (allCountries.isPresent()) {
+                for (Country locCountry : allCountries.get()) {
+                    csvPrinter.printRecord(locCountry.getId(), locCountry.getCity_id(), locCountry.getName());
+                }
             }
             csvPrinter.printRecord(entity.getId(), entity.getCity_id(), entity.getName());
             csvPrinter.flush();
