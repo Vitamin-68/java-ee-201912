@@ -17,9 +17,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import static vitaly.mosin.Main.clazz;
-import static vitaly.mosin.repository.Constants.FILE_CITY;
-import static vitaly.mosin.repository.Constants.FILE_COUNTRY;
-import static vitaly.mosin.repository.Constants.FILE_REGION;
+import static vitaly.mosin.Main.filePathCsv;
 
 @Slf4j
 @Component
@@ -30,22 +28,24 @@ public class AppConfig {
     private static final String FILE_PATH_RESOURCE = "./vitaly-mosin/src/main/resources/";
     private static final String FILE_PATH_TMP = "./vitaly-mosin/target/classes/dev/db/";
     private static final String DB_FILE = "mainRepoVM";
+    private static final String FILE_CITY_TEST = "city_test.csv";
+    private static final String FILE_REGION_TEST = "region_test.csv";
+    private static final String FILE_COUNTRY_TEST = "country_test.csv";
     private Connection connection;
 
     @Bean(name = "cityCSV")
     public CityCrudRepository getCityCsvRepo() {
-        return new CityCrudRepository(FILE_PATH_RESOURCE + FILE_CITY);
+        return new CityCrudRepository(filePathCsv + FILE_CITY_TEST);
     }
 
     @Bean("regionCSV")
     public RegionCrudRepository getRegionCsvRepo() {
-        return new RegionCrudRepository(FILE_PATH_RESOURCE + FILE_REGION);
+        return new RegionCrudRepository(filePathCsv + FILE_REGION_TEST);
     }
 
     @Bean(name = "countryCSV")
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public CountryCrudRepository getCountryCsvRepo() {
-        return new CountryCrudRepository(FILE_PATH_RESOURCE + FILE_COUNTRY);
+        return new CountryCrudRepository(filePathCsv + FILE_COUNTRY_TEST);
     }
 
     @Bean(name = "connection")
@@ -69,5 +69,4 @@ public class AppConfig {
     public Class getClazz() {
         return clazz;
     }
-
 }
