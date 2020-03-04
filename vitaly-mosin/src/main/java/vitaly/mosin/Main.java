@@ -14,7 +14,9 @@ import vitaly.mosin.repository.entity.Region;
 import vitaly.mosin.repository.jdbc.JdbcIndexedCrudRepository;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -22,8 +24,8 @@ public class Main {
 
     public static Class clazz = null;
     public static String filePathCsv;
-    private static final String FILE_PATH_RESOURCE = "./vitaly-mosin/src/main/resources/";
-    private static final String FILE_PATH_TMP = "./vitaly-mosin/target/classes/dev/db/";
+    public static final String FILE_PATH_SOURCE = "./src/main/resources/dev/db/";
+    public static final String FILE_PATH_DEST = "./target/classes/dev/db/";
     private static final String DB_FILE = "mainRepoVM";
     private static final String FILE_CITY_TEST = "city_test.csv";
     private static final String FILE_REGION_TEST = "region_test.csv";
@@ -31,6 +33,18 @@ public class Main {
     private static final String CITY = "city";
     private static final String REGION = "region";
     private static final String COUNTRY = "country";
+    public static final String SOURCE_TYPE = "source type";
+    public static final String SOURCE_PATH = "source path";
+    public static final String DEST_TYPE = "dest type";
+    public static final String DEST_PATH = "dest path";
+    public static final String CSV_TYPE = "csv";
+    public static final String H2_TYPE = "h2";
+    private static final String[] INPUT_PARAMS = new String[]{
+            SOURCE_TYPE + "=" + CSV_TYPE,
+            SOURCE_PATH + "=" + FILE_PATH_SOURCE,
+            DEST_TYPE + "=" + H2_TYPE,
+            DEST_PATH + "=" + FILE_PATH_DEST
+    };
     private static JdbcIndexedCrudRepository dbRepo;
     private static AnnotationConfigApplicationContext appContext;
 
@@ -41,24 +55,33 @@ public class Main {
         log.info("=== My application started ===");
 
         Main mainPrg = new Main(args);
+        mainPrg.deleteDbFile(FILE_PATH_DEST + DB_FILE + "_test.mv.db");
+        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_CITY_TEST);
+        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_REGION_TEST);
+        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_COUNTRY_TEST);
 
-        mainPrg.deleteDbFile(FILE_PATH_TMP + DB_FILE + ".mv.db");
-        mainPrg.deleteDbFile(FILE_PATH_TMP + FILE_CITY_TEST);
-        mainPrg.deleteDbFile(FILE_PATH_TMP + FILE_REGION_TEST);
-        mainPrg.deleteDbFile(FILE_PATH_TMP + FILE_COUNTRY_TEST);
+        Map<String, String> mapParams = new HashMap<>();
+        if (args.length == 0) {
+            args = INPUT_PARAMS;
+        }
+        mainPrg.addParamToMap(args, mapParams);
+        switch (mapParams.get(SOURCE_TYPE)) {
+            case CSV_TYPE:
+                filePathCsv = mapParams.get(SOURCE_PATH);
+                appContext = new AnnotationConfigApplicationContext(AppConfig.class);
+                mainPrg.csvToDb(COUNTRY);
+                mainPrg.csvToDb(REGION);
+                mainPrg.csvToDb(CITY);
+                break;
+            case H2_TYPE:
+                filePathCsv = mapParams.get(DEST_PATH);
+                appContext = new AnnotationConfigApplicationContext(AppConfig.class);
+                mainPrg.dbToCsv(COUNTRY, filePathCsv);
+                mainPrg.dbToCsv(REGION, filePathCsv);
+                mainPrg.dbToCsv(CITY, filePathCsv);
 
-        filePathCsv = FILE_PATH_RESOURCE;
-
-        appContext = new AnnotationConfigApplicationContext(AppConfig.class);
-        mainPrg.scvToDb(COUNTRY);
-        mainPrg.scvToDb(REGION);
-        mainPrg.scvToDb(CITY);
-
-        mainPrg.dbToCsv(COUNTRY, FILE_PATH_TMP);
-        mainPrg.dbToCsv(REGION, FILE_PATH_TMP);
-        mainPrg.dbToCsv(CITY, FILE_PATH_TMP);
-
-//        ctRepo.setFilePath(FILE_PATH_TMP + FILE_CITY_TEST);
+        }
+//        ctRepo.setFilePath(FILE_PATH_DEST + FILE_CITY_TEST);
 //        clazz = cities.get(0).getClass();
 //        dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
 //        Optional<List<?>> result = dbRepo.findAll();
@@ -67,7 +90,15 @@ public class Main {
         appContext.close();
     }
 
-    private void scvToDb(String className) {
+    private Map addParamToMap(String[] param, Map<String, String> map) {
+        for (String arg : param) {
+            String[] keyValue = arg.split("=");
+            map.put(keyValue[0], keyValue[1]);
+        }
+        return map;
+    }
+
+    private void csvToDb(String className) {
         List<?> result = listEntities(className);
         clazz = result.get(0).getClass();
         dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
@@ -83,7 +114,7 @@ public class Main {
                 clazz = Country.class;
                 dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
                 resultList = dbRepo.findAll();
-                resultList.ifPresent(list -> list.forEach(record -> cnRepo.create((Country)record)));
+                resultList.ifPresent(list -> list.forEach(record -> cnRepo.create((Country) record)));
                 break;
             case REGION:
                 RegionCrudRepository rgRepo = appContext.getBean(RegionCrudRepository.class);
@@ -91,7 +122,7 @@ public class Main {
                 clazz = Region.class;
                 dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
                 resultList = dbRepo.findAll();
-                resultList.ifPresent(list -> list.forEach(record -> rgRepo.create((Region)record)));
+                resultList.ifPresent(list -> list.forEach(record -> rgRepo.create((Region) record)));
                 break;
             case CITY:
                 CityCrudRepository ctRepo = appContext.getBean(CityCrudRepository.class);
@@ -99,13 +130,14 @@ public class Main {
                 clazz = City.class;
                 dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
                 resultList = dbRepo.findAll();
-                resultList.ifPresent(list -> list.forEach(record -> ctRepo.create((City)record)));                break;
+                resultList.ifPresent(list -> list.forEach(record -> ctRepo.create((City) record)));
+                break;
         }
     }
 
     private List<?> listEntities(String className) {
         CrudRepository crudRepo = (CrudRepository) appContext.getBean(className.concat("CSV"));
-        return (List<?>) crudRepo.findAll().get();
+            return (List<?>) crudRepo.findAll().get();
     }
 
     private void addDataToDb(List<?> list) {

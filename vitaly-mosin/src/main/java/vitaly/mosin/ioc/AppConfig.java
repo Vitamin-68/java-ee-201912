@@ -25,8 +25,7 @@ import static vitaly.mosin.Main.filePathCsv;
 @ComponentScan({"vitaly.mosin.ioc",
         "vitaly.mosin.repository.jdbc"})
 public class AppConfig {
-    private static final String FILE_PATH_RESOURCE = "./vitaly-mosin/src/main/resources/";
-    private static final String FILE_PATH_TMP = "./vitaly-mosin/target/classes/dev/db/";
+    private static final String FILE_PATH_DEST = "./vitaly-mosin/target/classes/dev/db/";
     private static final String DB_FILE = "mainRepoVM";
     private static final String FILE_CITY_TEST = "city_test.csv";
     private static final String FILE_REGION_TEST = "region_test.csv";
@@ -51,7 +50,7 @@ public class AppConfig {
     @Bean(name = "connection")
     public Connection getConnection() {
         try {
-            connection = getServer().getConnection(FILE_PATH_TMP + DB_FILE, "sa", "");
+            connection = getServer().getConnection(FILE_PATH_DEST + DB_FILE, "sa", "");
         } catch (SQLException e) {
             log.error("Connection error.", e);
         }
