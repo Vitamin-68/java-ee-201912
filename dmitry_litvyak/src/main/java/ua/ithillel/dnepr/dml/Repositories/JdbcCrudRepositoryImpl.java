@@ -25,13 +25,34 @@ import java.util.stream.Stream;
 public class JdbcCrudRepositoryImpl<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements IndexedCrudRepository<EntityType, IdType> {
 
-    private final Connection connection;
-    private final Class<? extends EntityType> clazz;
+    private Connection connection;
+    private Class<? extends EntityType> clazz;
 
     public JdbcCrudRepositoryImpl(Connection connection, Class<? extends EntityType> clazz) {
-        Objects.requireNonNull(connection, "Connection is undefined");
         this.connection = connection;
         this.clazz = clazz;
+        init();
+    }
+
+    public JdbcCrudRepositoryImpl() {
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+        if(this.clazz != null){
+            init();
+        }
+    }
+
+    public void setClazz(Class<? extends EntityType> clazz) {
+        this.clazz = clazz;
+        if(this.connection != null){
+            init();
+        }
+    }
+
+    private void init(){
+        Objects.requireNonNull(connection, "Connection is undefined");
 
         StringBuilder query = new StringBuilder();
         query.append(" CREATE TABLE IF NOT EXISTS ");

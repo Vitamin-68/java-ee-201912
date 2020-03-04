@@ -21,7 +21,7 @@ class RegionCrudRepositoryTest {
 
     @BeforeAll
     static void setUp() {
-        dataFile = Utils.createTempFile("regionn.csv");
+        dataFile = Utils.createTempFile("region.csv");
         if (dataFile != null) {
             regionRepository = new CrudRepositoryImp<>(dataFile.getPath(),Region.class);
         }

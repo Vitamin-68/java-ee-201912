@@ -13,7 +13,7 @@
             </not>
         </preConditions>
         <createTable tableName="country">
-            <column name="id" type="INTEGER" autoIncrement="false">
+            <column name="country_id" type="INTEGER" autoIncrement="false">
                 <constraints primaryKey="true" nullable="false" unique="true"/>
             </column>
             <column name="city_id" type="INTEGER">
@@ -27,7 +27,7 @@
 
     <changeSet id="insert_data_into_country_table" author="Oleg Kovalenko">
         <loadData tableName="country" file="data/country.csv" separator=";">
-            <column name="id" header="country_id" type="NUMERIC"/>
+            <column name="country_id" header="country_id" type="NUMERIC"/>
             <column name="city_id" header="city_id" type="NUMERIC"/>
             <column name="name" header="name" type="STRING"/>
         </loadData>
