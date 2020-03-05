@@ -89,7 +89,6 @@ public class Main {
                 mainPrg.dbToCsv(COUNTRY, filePathCsv);
                 mainPrg.dbToCsv(REGION, filePathCsv);
                 mainPrg.dbToCsv(CITY, filePathCsv);
-
         }
         appContext.close();
     }
