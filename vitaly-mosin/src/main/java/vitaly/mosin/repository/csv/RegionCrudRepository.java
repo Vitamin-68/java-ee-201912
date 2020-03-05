@@ -1,5 +1,6 @@
 package vitaly.mosin.repository.csv;
 
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVParser;
@@ -29,9 +30,9 @@ import static vitaly.mosin.repository.Constants.HEAD_NAME;
 import static vitaly.mosin.repository.Constants.REGION_ID;
 
 @Slf4j
+@Setter
 public class RegionCrudRepository implements CrudRepository<Region, Integer>, MyUtils {
-
-    private final String filePath;
+    private String filePath;
     private final String[] regionCsvHeader = {REGION_ID, COUNTRY_ID, CITY_ID, HEAD_NAME};
 
     public RegionCrudRepository(String filePath) {
@@ -114,8 +115,12 @@ public class RegionCrudRepository implements CrudRepository<Region, Integer>, My
     @SneakyThrows
     @Override
     public Region create(Region entity) {
+        List<Region> regions = new ArrayList<>();
         if (findById(entity.getId()).isEmpty()) {
-            final List<Region> regions = findAll().get();
+            Optional<List<Region>> findResult = findAll();
+            if (findResult.isPresent()) {
+                regions = findResult.get();
+            }
             regions.add(entity);
             try (CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath, StandardCharsets.UTF_8), DEFAULT
                     .withHeader(regionCsvHeader)
