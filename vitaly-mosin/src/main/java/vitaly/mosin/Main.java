@@ -24,8 +24,8 @@ public class Main {
 
     public static Class clazz = null;
     public static String filePathCsv;
-    public static final String FILE_PATH_SOURCE = "./src/main/resources/dev/db/";
-    public static final String FILE_PATH_DEST = "./target/classes/dev/db/";
+    private static final String FILE_PATH_SOURCE = "./vitaly-mosin/src/main/resources/dev/db/";
+    private static final String FILE_PATH_DEST = "./vitaly-mosin/target/classes/dev/db/";
     private static final String DB_FILE = "mainRepoVM";
     private static final String FILE_CITY_TEST = "city_test.csv";
     private static final String FILE_REGION_TEST = "region_test.csv";
@@ -39,10 +39,19 @@ public class Main {
     public static final String DEST_PATH = "dest path";
     public static final String CSV_TYPE = "csv";
     public static final String H2_TYPE = "h2";
+    //args for copy records from CSV to DB
+//    private static final String[] INPUT_PARAMS = new String[]{
+//            SOURCE_TYPE + "=" + CSV_TYPE,
+//            SOURCE_PATH + "=" + FILE_PATH_SOURCE,
+//            DEST_TYPE + "=" + H2_TYPE,
+//            DEST_PATH + "=" + FILE_PATH_DEST
+//    };
+
+    //args for copy records from DB to CSV files
     private static final String[] INPUT_PARAMS = new String[]{
-            SOURCE_TYPE + "=" + CSV_TYPE,
+            SOURCE_TYPE + "=" + H2_TYPE,
             SOURCE_PATH + "=" + FILE_PATH_SOURCE,
-            DEST_TYPE + "=" + H2_TYPE,
+            DEST_TYPE + "=" + CSV_TYPE,
             DEST_PATH + "=" + FILE_PATH_DEST
     };
     private static JdbcIndexedCrudRepository dbRepo;
