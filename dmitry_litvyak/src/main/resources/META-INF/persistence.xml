@@ -19,4 +19,19 @@
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
         </properties>
     </persistence-unit>
+    <persistence-unit name="spring-jpa-unit-dml">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+                <class>ua.ithillel.dnepr.dml.domain.jpa.City</class>
+                <class>ua.ithillel.dnepr.dml.domain.jpa.Region</class>
+                <class>ua.ithillel.dnepr.dml.domain.jpa.Country</class>
+                <class>ua.ithillel.dnepr.dml.domain.jpa.User</class>
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+            <property name="javax.persistence.jdbc.user" value="sa" />
+            <property name="javax.persistence.jdbc.password" value="" />
+            <property name="hibernate.connection.url" value="jdbc:h2:file:./target/classes/dev/db/main"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+        </properties>
+    </persistence-unit>
 </persistence>
