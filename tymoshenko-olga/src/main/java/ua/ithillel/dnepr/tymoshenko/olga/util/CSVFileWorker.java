@@ -12,6 +12,7 @@ import ua.ithillel.dnepr.tymoshenko.olga.entity.Region;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Slf4j
@@ -34,7 +35,7 @@ public class CSVFileWorker {
         csvParser = CSVFormat.DEFAULT
                 .withFirstRecordAsHeader()
                 .withDelimiter(delimiter)
-                .parse(new FileReader(fileName));
+                .parse(new FileReader(fileName, StandardCharsets.UTF_8));
 
         listHeaders = csvParser.getHeaderNames();
     }
