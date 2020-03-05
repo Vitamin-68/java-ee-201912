@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @ToString
 @Entity
 @Table(name = "country")
-public class Country extends AbstractEntity<Integer> implements BaseEntity<Integer> {
+public class SpringCountry extends AbstractEntity<Integer> implements BaseEntity<Integer> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;

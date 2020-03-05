@@ -24,9 +24,9 @@
 
     <persistence-unit name="persistence-unit-spring-data-jpa">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.Country</class>
-        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.City</class>
-        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.Region</class>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.SpringCountry</class>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.SpringCity</class>
+        <class>ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.SpringRegion</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
             <property name="hibernate.show_sql" value="true"/>

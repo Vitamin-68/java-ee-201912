@@ -2,14 +2,14 @@ package ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.City;
+import ua.ithillel.dnepr.yuriy.shaynuk.spring.data.jpa.entity.SpringCity;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Component
-public class SpringCityRepositoryImp extends BaseSpringRepositoryImp<City,Integer> {
+public class SpringCityRepositoryImp extends BaseSpringRepositoryImp<SpringCity,Integer> {
     private CityCrudRepository cityCrudRepository;
 
     public SpringCityRepositoryImp(CityCrudRepository cityCrudRepository) {
@@ -18,8 +18,8 @@ public class SpringCityRepositoryImp extends BaseSpringRepositoryImp<City,Intege
     }
 
     @Override
-    public Optional<List<City>> findByField(String fieldName, Object value) {
-        Optional<List<City>> cityList = Optional.empty();
+    public Optional<List<SpringCity>> findByField(String fieldName, Object value) {
+        Optional<List<SpringCity>> cityList = Optional.empty();
 
         switch (fieldName){
             case "name": cityList = cityCrudRepository.findByName(value); break;
