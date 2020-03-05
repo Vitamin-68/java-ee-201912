@@ -16,8 +16,12 @@ import java.util.Optional;
 public class CitySpringJpaRepositoryImpl implements ua.ithillel.dnepr.common.repository.CrudRepository<City, Integer> {
 
     CrudRepository<City, Integer> crudRepository;
-    @Autowired
     EntityManagerFactory entityManagerFactory;
+
+    @Autowired
+    public CitySpringJpaRepositoryImpl(EntityManagerFactory entityManagerFactory){
+        this.entityManagerFactory = entityManagerFactory;
+    }
 
     @Override
     public Optional<List<City>> findAll() {
