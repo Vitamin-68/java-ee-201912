@@ -26,7 +26,10 @@ import static vitaly.mosin.Main.filePathCsv;
         "vitaly.mosin.repository.jdbc"})
 public class AppConfig {
     private static final String FILE_PATH_DEST = "./vitaly-mosin/target/classes/dev/db/";
-    private static final String DB_FILE = "mainRepoVM";
+    private static final String FILE_PATH_SOURCE = "./vitaly-mosin/src/main/resources/dev/db/";
+    private static final String FILE_PATH_SOURCE_TEST = "./src/main/resources/dev/db/";
+    private static final String FILE_PATH_DEST_TEST = "./target/classes/dev/db/";
+    private static final String DB_FILE = "mainRepoVM_test";
     private static final String FILE_CITY_TEST = "city_test.csv";
     private static final String FILE_REGION_TEST = "region_test.csv";
     private static final String FILE_COUNTRY_TEST = "country_test.csv";
@@ -49,8 +52,9 @@ public class AppConfig {
 
     @Bean(name = "connection")
     public Connection getConnection() {
+        String path = getConnectionPath(filePathCsv);
         try {
-            connection = getServer().getConnection(FILE_PATH_DEST + DB_FILE, "sa", "");
+            connection = getServer().getConnection(path + DB_FILE, "sa", "");
         } catch (SQLException e) {
             log.error("Connection error.", e);
         }
@@ -67,5 +71,24 @@ public class AppConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Class getClazz() {
         return clazz;
+    }
+
+    private String getConnectionPath(String str) {
+        String path = null;
+        switch (str) {
+            case FILE_PATH_SOURCE:
+                path = FILE_PATH_DEST;
+                break;
+            case FILE_PATH_DEST:
+                path = FILE_PATH_SOURCE;
+                break;
+            case FILE_PATH_SOURCE_TEST:
+                path = FILE_PATH_DEST_TEST;
+                break;
+            case FILE_PATH_DEST_TEST:
+                path = FILE_PATH_SOURCE_TEST;
+                break;
+        }
+        return path;
     }
 }

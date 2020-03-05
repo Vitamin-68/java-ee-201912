@@ -26,7 +26,7 @@ public class Main {
     public static String filePathCsv;
     private static final String FILE_PATH_SOURCE = "./vitaly-mosin/src/main/resources/dev/db/";
     private static final String FILE_PATH_DEST = "./vitaly-mosin/target/classes/dev/db/";
-    private static final String DB_FILE = "mainRepoVM";
+    private static final String DB_FILE = "mainRepoVM_test";
     private static final String FILE_CITY_TEST = "city_test.csv";
     private static final String FILE_REGION_TEST = "region_test.csv";
     private static final String FILE_COUNTRY_TEST = "country_test.csv";
@@ -40,20 +40,20 @@ public class Main {
     public static final String CSV_TYPE = "csv";
     public static final String H2_TYPE = "h2";
     //args for copy records from CSV to DB
-//    private static final String[] INPUT_PARAMS = new String[]{
-//            SOURCE_TYPE + "=" + CSV_TYPE,
-//            SOURCE_PATH + "=" + FILE_PATH_SOURCE,
-//            DEST_TYPE + "=" + H2_TYPE,
-//            DEST_PATH + "=" + FILE_PATH_DEST
-//    };
-
-    //args for copy records from DB to CSV files
     private static final String[] INPUT_PARAMS = new String[]{
-            SOURCE_TYPE + "=" + H2_TYPE,
+            SOURCE_TYPE + "=" + CSV_TYPE,
             SOURCE_PATH + "=" + FILE_PATH_SOURCE,
-            DEST_TYPE + "=" + CSV_TYPE,
+            DEST_TYPE + "=" + H2_TYPE,
             DEST_PATH + "=" + FILE_PATH_DEST
     };
+
+    //args for copy records from DB to CSV files
+//    private static final String[] INPUT_PARAMS = new String[]{
+//            SOURCE_TYPE + "=" + H2_TYPE,
+//            SOURCE_PATH + "=" + FILE_PATH_SOURCE,
+//            DEST_TYPE + "=" + CSV_TYPE,
+//            DEST_PATH + "=" + FILE_PATH_DEST
+//    };
     private static JdbcIndexedCrudRepository dbRepo;
     private static AnnotationConfigApplicationContext appContext;
 
@@ -64,16 +64,17 @@ public class Main {
         log.info("=== My application started ===");
 
         Main mainPrg = new Main(args);
-        mainPrg.deleteDbFile(FILE_PATH_DEST + DB_FILE + "_test.mv.db");
-        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_CITY_TEST);
-        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_REGION_TEST);
-        mainPrg.deleteDbFile(FILE_PATH_DEST + FILE_COUNTRY_TEST);
-
         Map<String, String> mapParams = new HashMap<>();
         if (args.length == 0) {
             args = INPUT_PARAMS;
         }
         mainPrg.addParamToMap(args, mapParams);
+
+        mainPrg.deleteDbFile(mapParams.get(DEST_PATH) + DB_FILE + ".mv.db");
+        mainPrg.deleteDbFile(mapParams.get(DEST_PATH) + FILE_CITY_TEST);
+        mainPrg.deleteDbFile(mapParams.get(DEST_PATH) + FILE_REGION_TEST);
+        mainPrg.deleteDbFile(mapParams.get(DEST_PATH) + FILE_COUNTRY_TEST);
+
         switch (mapParams.get(SOURCE_TYPE)) {
             case CSV_TYPE:
                 filePathCsv = mapParams.get(SOURCE_PATH);
@@ -90,12 +91,6 @@ public class Main {
                 mainPrg.dbToCsv(CITY, filePathCsv);
 
         }
-//        ctRepo.setFilePath(FILE_PATH_DEST + FILE_CITY_TEST);
-//        clazz = cities.get(0).getClass();
-//        dbRepo = appContext.getBean(JdbcIndexedCrudRepository.class);
-//        Optional<List<?>> result = dbRepo.findAll();
-//        result.ifPresent(list -> list.forEach(record -> ctRepo.create((City) record)));
-
         appContext.close();
     }
 
@@ -146,7 +141,7 @@ public class Main {
 
     private List<?> listEntities(String className) {
         CrudRepository crudRepo = (CrudRepository) appContext.getBean(className.concat("CSV"));
-            return (List<?>) crudRepo.findAll().get();
+        return (List<?>) crudRepo.findAll().get();
     }
 
     private void addDataToDb(List<?> list) {
