@@ -1,0 +1,30 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-22-03_create_table_company" author="Olga Tymoshenko" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="Company"/>
+            </not>
+        </preConditions>
+        <createTable tableName="Company">
+            <column name="IdCompany" type="INTEGER" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="Company" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Description" type="VARCHAR(100)" >
+                <constraints nullable="true"/>
+            </column>
+            <column name="City" type="VARCHAR(100)" >
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

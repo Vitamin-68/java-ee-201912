@@ -1,0 +1,46 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-22-07_insert_data_into_company" author="Olga Tymoshenko">
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="ITSfera"/>
+            <column name="Description" value="IT company"/>
+            <column name="City" value="Kiev"/>
+        </insert>
+
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="City Law Liceum"/>
+            <column name="Description" value="School"/>
+            <column name="City" value="Kiev"/>
+        </insert>
+<!--3-->
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="Avrora"/>
+            <column name="Description" value="Paint Factory"/>
+            <column name="City" value="Dnipro"/>
+        </insert>
+<!--4-->
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="Dniprianka"/>
+            <column name="Description" value="Garment factory"/>
+            <column name="City" value="Dnipro"/>
+        </insert>
+<!--5-->
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="Afina"/>
+            <column name="Description" value="Furniture factory"/>
+            <column name="City" value="Kharkov"/>
+        </insert>
+<!--6-->
+        <insert tableName="Company" schemaName="public">
+            <column name="Company" value="Lotos"/>
+            <column name="Description" value="Concrete-mix Factory"/>
+            <column name="City" value="Kharkov"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

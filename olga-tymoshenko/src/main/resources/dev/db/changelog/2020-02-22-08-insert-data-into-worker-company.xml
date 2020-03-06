@@ -1,0 +1,74 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-22-8_insert_data_into_worker_company" author="Olga Tymoshenko">
+        <insert tableName="CompanyWorker" schemaName="public">
+            <column name="WorkerID" value="2"/>
+            <column name="CompanyID" value="1"/>
+           </insert>
+
+        <insert tableName="CompanyWorker" schemaName="public">
+            <column name="WorkerID" value="2"/>
+            <column name="CompanyID" value="2"/>
+
+        </insert>
+
+          <insert tableName="CompanyWorker" schemaName="public">
+              <column name="WorkerID" value="1"/>
+              <column name="CompanyID" value="3"/>
+
+          </insert>
+
+           <insert tableName="CompanyWorker" schemaName="public">
+               <column name="WorkerID" value="1"/>
+               <column name="CompanyID" value="4"/>
+
+           </insert>
+
+
+           <insert tableName="CompanyWorker" schemaName="public">
+                <column name="WorkerID" value="4"/>
+                <column name="CompanyID" value="3"/>
+
+            </insert>
+
+            <insert tableName="CompanyWorker" schemaName="public">
+                <column name="WorkerID" value="4"/>
+                <column name="CompanyID" value="4"/>
+
+            </insert>
+
+
+
+          <insert tableName="CompanyWorker" schemaName="public">
+                <column name="WorkerID" value="3"/>
+                <column name="CompanyID" value="5"/>
+
+            </insert>
+
+            <insert tableName="CompanyWorker" schemaName="public">
+                <column name="WorkerID" value="3"/>
+                <column name="CompanyID" value="6"/>
+
+            </insert>
+
+
+              <insert tableName="CompanyWorker" schemaName="public">
+                  <column name="WorkerID" value="5"/>
+                  <column name="CompanyID" value="5"/>
+
+              </insert>
+
+              <insert tableName="CompanyWorker" schemaName="public">
+                  <column name="WorkerID" value="5"/>
+                  <column name="CompanyID" value="6"/>
+
+              </insert>
+
+    </changeSet>
+</databaseChangeLog>

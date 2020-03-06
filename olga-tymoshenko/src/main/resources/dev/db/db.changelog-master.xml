@@ -17,4 +17,14 @@
     <include file="changelog/2020-02-14-03-delete-city-column.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-14-04-change_type_city_column.xml" relativeToChangelogFile="true"/>
 
+    <include file="changelog/2020-02-22-01-create-table-worker.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-02-create-table-adress.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-03-create-table-company.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-04-create-table-worker-company.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-05-insert-data-into-adress.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-06-insert-data-into-worker.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-07-insert-data-into-company.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-02-22-08-insert-data-into-worker-company.xml" relativeToChangelogFile="true"/>
+
+
 </databaseChangeLog>
