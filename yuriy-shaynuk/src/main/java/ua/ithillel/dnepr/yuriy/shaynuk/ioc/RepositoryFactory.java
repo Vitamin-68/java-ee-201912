@@ -7,8 +7,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
-import ua.ithillel.dnepr.dml.Repositories.JdbcCrudRepositoryImpl;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.CrudRepositoryImp;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.jdbc.JdbcCrudRepositoryImpl;
 
 import static ua.ithillel.dnepr.yuriy.shaynuk.ioc.Program.TYPE_CSV;
 import static ua.ithillel.dnepr.yuriy.shaynuk.ioc.Program.TYPE_JDBC;

@@ -16,11 +16,11 @@ import javax.persistence.Table;
 @Setter
 @ToString
 @Entity
-@Table(name = "region")
-public class Region extends AbstractEntity<Integer> implements BaseEntity<Integer> {
+@Table(name = "city")
+public class SpringCity extends AbstractEntity<Integer> implements BaseEntity<Integer>{
     @Id
     private Integer id;
     private Integer countryId;
-    private Integer cityId;
+    private Integer regionId;
     private String name;
 }
