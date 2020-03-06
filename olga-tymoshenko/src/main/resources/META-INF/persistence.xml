@@ -6,10 +6,8 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-
             <property name="hibernate.show_sql" value="true"/>
-           <!-- <property name="hibernate.hbm2ddl.auto" value="validate"/>-->
-            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.connection.url" value="jdbc:h2:./target/classes/dev/db/main"/>
             <property name="hibernate.connection.user" value="sa"/>
