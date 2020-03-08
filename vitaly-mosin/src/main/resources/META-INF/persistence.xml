@@ -20,4 +20,19 @@
             <property name="hibernate.connection,user" value="sa"/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="persistence-spring-data-jpa">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>vitaly.mosin.spring.data.jpa.entity.CountryJdata</class>
+        <class>vitaly.mosin.spring.data.jpa.entity.RegionJdata</class>
+        <class>vitaly.mosin.spring.data.jpa.entity.CityJdata</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:file:./target/classes/dev/db/mainRepoVM"/>
+            <property name="hibernate.connection,user" value="sa"/>
+        </properties>
+    </persistence-unit>
 </persistence>
