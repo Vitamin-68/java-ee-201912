@@ -8,7 +8,8 @@ public enum ExceptionResponseCode {
     FAILED_DELETE_CONTACT_FROM_DB(412),
     FAILED_CREATE_CONTACT(413),
     FAILED_UPDATE_CONTACT(414),
-    WRONG_DATA_TYPE(415);
+    WRONG_DATA_TYPE(415),
+    ENTITY_ALREADY_EXIST(416);
 
     private int code;
 

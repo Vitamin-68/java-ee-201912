@@ -64,7 +64,10 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             final String columnName = resultSetMetaData.getColumnName(i);
             final Field field = getFieldByName(columnName);
-            Objects.requireNonNull(field, "Field is undefined");
+//            Objects.requireNonNull(field, "Field is undefined");
+            if (field == null) {
+                continue;
+            }
             Object fieldValue;
             if (field.getType().isPrimitive()) {
                 try {
@@ -150,7 +153,8 @@ public abstract class BaseJdbcRepository<EntityType extends AbstractEntity<IdTyp
     private Field getFieldByName(String fieldName) {
         Field result = null;
         for (Field field : getAllFields()) {
-            if (fieldName.equalsIgnoreCase(field.getName())) {
+            if (fieldName.replaceAll("_", "").
+                    equalsIgnoreCase(field.getName().replaceAll("_", ""))) {
                 result = field;
                 break;
             }

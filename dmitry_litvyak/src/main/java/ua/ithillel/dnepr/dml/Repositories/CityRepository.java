@@ -27,8 +27,8 @@ public class CityRepository implements CrudRepository<City, Integer> {
     public static final String CITY_ID = "city_id";
     public static final String COUNTRY_ID = "country_id";
     public static final String NAME = "name";
-    private final String filePath;
-    private final char delimiter;
+    private String filePath;
+    private char delimiter;
 
     public CityRepository(String filePath) {
         this.filePath = filePath;
@@ -38,6 +38,17 @@ public class CityRepository implements CrudRepository<City, Integer> {
     public CityRepository(String filePath, char delim) {
         this.filePath = filePath;
         delimiter = delim;
+    }
+
+    public CityRepository() {
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setDelimiter(char delimiter) {
+        this.delimiter = delimiter;
     }
 
     @Override
@@ -58,7 +69,7 @@ public class CityRepository implements CrudRepository<City, Integer> {
                 city.setName(csvLine.get(NAME));
                 regions.add(city);
             }
-            if(!regions.isEmpty()){
+            if (!regions.isEmpty()) {
                 cities = Optional.of(regions);
             }
         } catch (Exception e) {
@@ -125,8 +136,11 @@ public class CityRepository implements CrudRepository<City, Integer> {
                     .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            for (City locRegion : findAll().get()) {
-                csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getRegion_id(), locRegion.getName());
+            Optional<List<City>> allCities = findAll();
+            if (allCities.isPresent()) {
+                for (City locRegion : allCities.get()) {
+                    csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getRegion_id(), locRegion.getName());
+                }
             }
             csvPrinter.printRecord(entity.getId(), entity.getCountry_id(), entity.getRegion_id(), entity.getName());
             csvPrinter.flush();

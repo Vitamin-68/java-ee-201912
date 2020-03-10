@@ -22,6 +22,7 @@
         <junit.version>5.5.2</junit.version>
         <logback.version>1.2.3</logback.version>
         <liquibase.version>3.8.4</liquibase.version>
+        <hibernate.version>5.4.3.Final</hibernate.version>
     </properties>
 
     <modules>
@@ -33,10 +34,12 @@
         <module>eugene-kovalov</module>
         <module>dmitry_litvyak</module>
         <module>alex-tsiba</module>
-        <module>olga-tymoshenko</module>
         <module>yuriy-shaynuk</module>
         <module>oleg_kovalenko</module>
         <module>vitaly-mosin</module>
+        <module>yevhen-lepet</module>
+        <module>olga-tymoshenko</module>
+        <module>dmytro-ostapenko</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -116,6 +119,12 @@
                 <scope>test</scope>
             </dependency>
             <dependency>
+                <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>1.10.7</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>3.2.4</version>
@@ -183,6 +192,18 @@
                 <version>3.9</version>
             </dependency>
             <dependency>
+                <!-- https://mvnrepository.com/artifact/commons-codec/commons-codec -->
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.14</version>
+            </dependency>
+            <dependency>
+                <!-- https://mvnrepository.com/artifact/javax.mail/mail -->
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4.7</version>
+            </dependency>
+            <dependency>
                 <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
@@ -205,7 +226,33 @@
                 <artifactId>liquibase-core</artifactId>
                 <version>${liquibase.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-core</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate</groupId>
+                <artifactId>hibernate-entitymanager</artifactId>
+                <version>${hibernate.version}</version>
+            </dependency>
             <!-- data base -->
+            <!-- spring -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>5.2.3.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-jpa</artifactId>
+                <version>2.2.4.RELEASE</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>4.0.1</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -235,6 +282,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <optional>true</optional>
+        </dependency>
+        <dependency>
+            <!-- https://mvnrepository.com/artifact/net.bytebuddy/byte-buddy -->
+            <groupId>net.bytebuddy</groupId>
+            <artifactId>byte-buddy</artifactId>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -280,12 +332,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.12.0</version>
+                <version>3.13.0</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>2.3</version>
+                <version>3.0.0</version>
                 <reportSets>
                     <reportSet>
                         <id>aggregate</id>

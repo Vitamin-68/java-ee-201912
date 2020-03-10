@@ -60,7 +60,7 @@ class JdbcIndexedCrudRepositoryTest {
         } catch (IOException e) {
             log.error("Failed to copy files", e);
         }
-        connection = h2Server.getConnection(repoRootPath);
+        connection = h2Server.getConnection(repoRootPath, "", "");
     }
 
     @AfterEach

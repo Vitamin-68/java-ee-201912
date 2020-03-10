@@ -1,0 +1,25 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-14-02_rename_city_column" author="Olga TYmoshenko">
+        <renameColumn tableName="Cities"
+                      oldColumnName="id"
+                      newColumnName="CityId"
+                      schemaName="public"/>
+
+        <renameColumn tableName="Cities"
+                      oldColumnName="region_id"
+                      newColumnName="regionid"
+                      schemaName="public"/>
+
+        <renameColumn tableName="Cities"
+                      oldColumnName="country_id"
+                      newColumnName="countryid"
+                      schemaName="public"/>
+    </changeSet>
+</databaseChangeLog>

@@ -2,11 +2,7 @@ package ua.hillel.csvRepo;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
-import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.csv.*;
 import ua.hillel.entity.Country;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 
@@ -30,8 +26,9 @@ public class CrudRepositoryCountry implements CrudRepository<Country, Integer> {
 
     @Override
     public Optional<List<Country>> findAll() {
-        log.info("Count of records {} ", readCsv().size());
-        return Optional.of(readCsv());
+        List<Country> countries = readCsv();
+        log.info("Count of records {} ", countries.size());
+        return Optional.of(countries);
     }
 
     @Override
@@ -108,7 +105,7 @@ public class CrudRepositoryCountry implements CrudRepository<Country, Integer> {
             }
         }
         writeCsv(countries);
-        log.info("updated {}", countries);
+        log.info("updated {}", entity.getId());
         return entity;
     }
 
