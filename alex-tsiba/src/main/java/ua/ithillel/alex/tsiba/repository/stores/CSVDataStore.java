@@ -43,7 +43,7 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
         }
 
         storeFile = new File(this.getClass().getResource(
-                ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + table + ".csv"
+                ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + table + ".csv"
         ).getFile());
         bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(storeFile), encoding));
         loadFields();
