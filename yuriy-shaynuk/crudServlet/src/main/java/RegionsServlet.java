@@ -1,7 +1,7 @@
 import com.google.gson.Gson;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.CrudRepositoryImp;
-import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
+import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.Region;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -13,9 +13,9 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
-@WebServlet("/cities/*")
-public class CitiesServlet extends HttpServlet {
-    static private CrudRepository<City, Integer> crudRepository;
+@WebServlet("/regions/*")
+public class RegionsServlet extends HttpServlet {
+    static private CrudRepository<Region, Integer> crudRepository;
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -42,43 +42,43 @@ public class CitiesServlet extends HttpServlet {
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
         PrintWriter out = response.getWriter();
         Gson gson = new Gson();
-        String id = request.getRequestURI().replace("/cities/", "");
+        String id = request.getRequestURI().replace("/regions/", "");
         if (Utils.isInteger(id)) {
             int entityId = Integer.parseInt(id);
             String requestMethod = request.getMethod();
             if(requestMethod.equals(HttpMethod.GET) || requestMethod.equals(HttpMethod.DELETE)){
-                Optional<City> city = Optional.empty();
+                Optional<Region> region = Optional.empty();
                 switch (requestMethod) {
                     case HttpMethod.GET: {
-                        city = crudRepository.findById(entityId);
+                        region = crudRepository.findById(entityId);
                     }
                     break;
                     case HttpMethod.DELETE: {
-                        city = Optional.ofNullable(crudRepository.delete(entityId));
+                        region = Optional.ofNullable(crudRepository.delete(entityId));
                     }
                     break;
                 }
-                if (city.isPresent()) {
+                if (region.isPresent()) {
                     response.setStatus(HttpServletResponse.SC_OK);
-                    String json = gson.toJson(city.get());
+                    String json = gson.toJson(region.get());
                     out.println(json);
                 } else {
                     response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                 }
             }else if(requestMethod.equals(HttpMethod.POST) || requestMethod.equals(HttpMethod.PUT)){
                 String postBody = Utils.parseRequestBody(request.getInputStream());
-                City newCity = gson.fromJson(postBody, City.class);
-                newCity.setId(entityId);
+                Region newRegion = gson.fromJson(postBody, Region.class);
+                newRegion.setId(entityId);
                 if(crudRepository.findById(entityId).isPresent()){
                     if(requestMethod.equals(HttpMethod.POST)) {
                         response.setStatus(HttpServletResponse.SC_CONFLICT);
                     }else{
-                        crudRepository.update(newCity);
+                        crudRepository.update(newRegion);
                         response.setStatus(HttpServletResponse.SC_OK);
                     }
                 }else{
                     if(requestMethod.equals(HttpMethod.POST)) {
-                        crudRepository.create(newCity);
+                        crudRepository.create(newRegion);
                         response.setStatus(HttpServletResponse.SC_OK);
                     }else{
                         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
@@ -92,9 +92,9 @@ public class CitiesServlet extends HttpServlet {
 
     @Override
     public void init() {
-        File dataFile = Utils.createTempFile(getClass(),"city.csv");
+        File dataFile = Utils.createTempFile(getClass(),"region.csv");
         if (dataFile != null) {
-            crudRepository = new CrudRepositoryImp<>(dataFile.getPath(),City.class);
+            crudRepository = new CrudRepositoryImp<>(dataFile.getPath(),Region.class);
         }
     }
 }

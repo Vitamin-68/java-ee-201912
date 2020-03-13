@@ -3,7 +3,6 @@ package ua.ithillel.dnepr.yuriy.shaynuk.repository;
 import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
 
@@ -14,12 +13,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 @Slf4j
-public class NetWebTest {
-
-    @BeforeEach
-    void setupClient(){
-
-    }
+public class NetWebCityTest {
 
     @Test
     void doGet() throws IOException {
@@ -64,7 +58,7 @@ public class NetWebTest {
         Gson gson = new Gson();
         String json = gson.toJson(testCity);
 
-        URL url = new URL("http://localhost:8080/cities/4400");
+        URL url = new URL("http://localhost:8080/cities/4315");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("PUT");
         con.setDoOutput(true);
@@ -75,7 +69,7 @@ public class NetWebTest {
 
     @Test
     void doDelete() throws IOException {
-        URL url = new URL("http://localhost:8080/cities/4400");
+        URL url = new URL("http://localhost:8080/cities/4313");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("DELETE");
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, con.getResponseCode());

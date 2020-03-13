@@ -1,7 +1,9 @@
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class Utils {
     public static File createTempFile(Class clazz, String resourcePath) {
@@ -18,10 +20,8 @@ public class Utils {
                     }
                 }
             }
-            //log.debug("tmp file path: "+tempFile.getAbsolutePath());
             return tempFile;
         } catch (IOException e) {
-            //log.error("getResourceAsFile exception",e);
             return null;
         }
     }
@@ -33,5 +33,17 @@ public class Utils {
             return false;
         }
         return true;
+    }
+
+    public static synchronized String parseRequestBody(InputStream inputStream) throws IOException {
+        BufferedReader in = new BufferedReader(
+                new InputStreamReader(inputStream));
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        return content.toString();
     }
 }
