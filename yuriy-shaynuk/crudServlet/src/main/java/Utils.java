@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 public class Utils {
-    public static File createTempFile(Class clazz, String resourcePath) {
+    public static synchronized File createTempFile(Class clazz, String resourcePath) {
         try {
             File tempFile = File.createTempFile("tmp", resourcePath);
             InputStream in = clazz.getClassLoader().getResourceAsStream(resourcePath);
@@ -26,7 +26,7 @@ public class Utils {
         }
     }
 
-    public static boolean isInteger(String s) {
+    public static synchronized boolean isInteger(String s) {
         try {
             Integer.parseInt(s);
         } catch(NumberFormatException | NullPointerException e) {
