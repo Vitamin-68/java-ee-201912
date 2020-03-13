@@ -41,23 +41,19 @@ public class CitiesServlet extends HttpServlet {
         executeMethod(request,response);
     }
 
-    @Override
-    public void destroy() {
-        super.destroy();
-    }
-
     private void executeMethod(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/json");
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
         PrintWriter out = response.getWriter();
+        Gson gson = new Gson();
         String id = request.getRequestURI().replace("/cities/", "");
         if (Utils.isInteger(id)) {
+            int entityId = Integer.parseInt(id);
             switch (request.getMethod()){
                 case HttpMethod.GET:{
-                    Optional<City> city = cityRepository.findById(Integer.valueOf(id));
+                    Optional<City> city = cityRepository.findById(entityId);
                     if (city.isPresent()) {
                         response.setStatus(HttpServletResponse.SC_OK);
-                        Gson gson = new Gson();
                         String json = gson.toJson(city.get());
                         out.println(json);
                     } else {
@@ -65,19 +61,36 @@ public class CitiesServlet extends HttpServlet {
                     }
                 }break;
                 case HttpMethod.DELETE:{
-                    City city = cityRepository.delete(Integer.valueOf(id));
+                    City city = cityRepository.delete(entityId);
                     if (city != null) {
                         response.setStatus(HttpServletResponse.SC_OK);
-                        Gson gson = new Gson();
                         String json = gson.toJson(city);
                         out.println(json);
                     } else {
                         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
                     }
                 }break;
-                case HttpMethod.POST:{
-                    String postBody = parseRequest(request.getInputStream());
-                    out.println("123");
+                case (HttpMethod.POST):{
+                    String postBody = parseRequestBody(request.getInputStream());
+                    City newCity = gson.fromJson(postBody, City.class);
+                    newCity.setId(entityId);
+                    if(cityRepository.findById(entityId).isPresent()){
+                        response.setStatus(HttpServletResponse.SC_CONFLICT);
+                    }else{
+                        cityRepository.create(newCity);
+                        response.setStatus(HttpServletResponse.SC_OK);
+                    }
+                }break;
+                case HttpMethod.PUT:{
+                    String postBody = parseRequestBody(request.getInputStream());
+                    City newCity = gson.fromJson(postBody, City.class);
+                    newCity.setId(entityId);
+                    if(cityRepository.findById(entityId).isPresent()){
+                        cityRepository.update(newCity);
+                        response.setStatus(HttpServletResponse.SC_OK);
+                    }else{
+                        response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                    }
                 }break;
             }
         } else {
@@ -85,21 +98,23 @@ public class CitiesServlet extends HttpServlet {
         }
     }
 
-    @Override
-    public void init() throws ServletException {
-        File dataFile = Utils.createTempFile(getClass(),"city.csv");
+    private void getOrDelete(HttpServletRequest request, HttpServletResponse response){
 
+    }
+
+    @Override
+    public void init() {
+        File dataFile = Utils.createTempFile(getClass(),"city.csv");
         if (dataFile != null) {
             cityRepository = new CrudRepositoryImp<>(dataFile.getPath(),City.class);
         }
-        super.init();
     }
 
-    private String parseRequest(InputStream inputStream) throws IOException {
+    private String parseRequestBody(InputStream inputStream) throws IOException {
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(inputStream));
         String inputLine;
-        StringBuffer content = new StringBuffer();
+        StringBuilder content = new StringBuilder();
         while ((inputLine = in.readLine()) != null) {
             content.append(inputLine);
         }

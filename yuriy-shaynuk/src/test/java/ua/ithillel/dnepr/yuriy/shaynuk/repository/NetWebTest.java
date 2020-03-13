@@ -41,12 +41,11 @@ public class NetWebTest {
         testCity.setName("testName");
         testCity.setCountry_id(111);
         testCity.setRegion_id(222);
-        testCity.setId(999);
 
         Gson gson = new Gson();
         String json = gson.toJson(testCity);
 
-        URL url = new URL("http://localhost:8080/cities/4400");
+        URL url = new URL("http://localhost:8080/cities/999");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("POST");
         con.setDoOutput(true);
@@ -56,8 +55,22 @@ public class NetWebTest {
     }
 
     @Test
-    void doPut() {
+    void doPut() throws IOException {
+        City testCity = new City();
+        testCity.setName("testName");
+        testCity.setCountry_id(1111);
+        testCity.setRegion_id(2222);
 
+        Gson gson = new Gson();
+        String json = gson.toJson(testCity);
+
+        URL url = new URL("http://localhost:8080/cities/4400");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("PUT");
+        con.setDoOutput(true);
+        con.getOutputStream().write(json.getBytes());
+        Assertions.assertEquals(HttpURLConnection.HTTP_OK, con.getResponseCode());
+        con.disconnect();
     }
 
     @Test
