@@ -133,11 +133,11 @@ public class CountryRepository implements CrudRepository<Country, Integer> {
         Optional<Country> test = findById(entity.getId());
         if (!test.isEmpty()) return test.get();
         try {
+            Optional<List<Country>> allCountries = findAll();
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(COUNTRY_ID, CITY_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            Optional<List<Country>> allCountries = findAll();
             if (allCountries.isPresent()) {
                 for (Country locCountry : allCountries.get()) {
                     csvPrinter.printRecord(locCountry.getId(), locCountry.getCity_id(), locCountry.getName());
