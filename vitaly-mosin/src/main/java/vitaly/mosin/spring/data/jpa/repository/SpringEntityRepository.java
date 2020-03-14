@@ -1,39 +1,39 @@
 package vitaly.mosin.spring.data.jpa.repository;
 
 import ua.ithillel.dnepr.common.repository.CrudRepository;
-import vitaly.mosin.repository.entity.City;
+import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
 
 import java.util.List;
 import java.util.Optional;
 
-public class CitySpringDataRepositoryImpl implements CrudRepository<City, Integer> {
+public class SpringEntityRepository implements CrudRepository {
     @Override
-    public Optional<List<City>> findAll() {
+    public Optional<List> findAll() {
         return Optional.empty();
     }
 
     @Override
-    public Optional<City> findById(Integer id) {
+    public Optional findById(Object id) {
         return Optional.empty();
     }
 
     @Override
-    public Optional<List<City>> findByField(String fieldName, Object value) {
+    public Optional<List> findByField(String fieldName, Object value) {
         return Optional.empty();
     }
 
     @Override
-    public City create(City entity) {
+    public BaseEntity create(BaseEntity entity) {
         return null;
     }
 
     @Override
-    public City update(City entity) {
+    public BaseEntity update(BaseEntity entity) {
         return null;
     }
 
     @Override
-    public City delete(Integer id) {
+    public BaseEntity delete(Object id) {
         return null;
     }
 }

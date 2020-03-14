@@ -14,9 +14,7 @@ import javax.persistence.PersistenceContext;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = {
-                "vitaly.mosin.spring.data.jpa.repository"
-        }
+        basePackages = {"vitaly.mosin.spring.data.jpa.repository"}
 )
 @EnableTransactionManagement
 @ComponentScan(
@@ -25,8 +23,7 @@ import javax.persistence.PersistenceContext;
                 "vitaly.mosin.spring.data.jpa.entity"
         }
 )
-
-public class JpaDataConfig {
+public class SpringDataJpaConfig {
     @Bean("entityManagerFactory")
     @PersistenceContext(unitName = "persistence-spring-data-jpa")
     public EntityManagerFactory entityManager() {
@@ -39,4 +36,6 @@ public class JpaDataConfig {
         jpaTransactionManager.setEntityManagerFactory(entityManager());
         return jpaTransactionManager;
     }
+
 }
+

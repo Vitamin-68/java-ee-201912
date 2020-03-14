@@ -31,7 +31,7 @@
             <property name="hibernate.show_sql" value="true"/>
             <property name="hibernate.hbm2ddl.auto" value="validate"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
-            <property name="hibernate.connection.url" value="jdbc:h2:file:./target/classes/dev/db/mainRepoVM"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:file:./target/classes/dev/db/mainRepoVM_test"/>
             <property name="hibernate.connection,user" value="sa"/>
         </properties>
     </persistence-unit>
