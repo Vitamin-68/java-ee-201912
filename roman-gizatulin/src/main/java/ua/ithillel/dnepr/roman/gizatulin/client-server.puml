@@ -1,0 +1,23 @@
+@startuml
+@startuml
+
+"web client" -> "web server (nginx)": get static content USERS
+"web server (nginx)" --> "web client": return static content USER
+
+"web client" -> "web server (nginx)": get static content ORDERS
+"web server (nginx)" -> "web server 2 (nginx)": get static content ORDERS
+"web server 2 (nginx)" --> "web server (nginx)": return static content ORDERS
+"web server (nginx)" --> "web client": return static content ORDERS
+
+"web client" -> "web server (nginx)": get dynamic content USERS
+"web server (nginx)" -> "API server (tomcat)": get dynamic (USERS) content (proxy to API)
+"API server (tomcat)" --> "web server (nginx)": return USERS
+"web server (nginx)" --> "web client": return users
+
+"web client" -> "web server (nginx)": get dynamic content ORDERS
+"web server (nginx)" -> "API server (.NET)": get dynamic (ORDERS) content (proxy to API)
+"API server (.NET)" --> "web server (nginx)": return ORDERS
+"web server (nginx)" --> "web client": return users
+
+@enduml
+@enduml
