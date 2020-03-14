@@ -20,30 +20,5 @@ import java.util.Map;
 public class AppTransfer {
 
 
-    public List<String> getArgs(String[] args) {
-        List<String> list = new ArrayList<>();
-        Map<String, String> params = null;
-        for (String arg : args) {
-            if (params == null) {
-                params = new HashMap<>();
-            }
-            String[] keyValue = arg.split("=");
-            params.put(keyValue[0], keyValue[1]);
-        }
-        ArgValidatorDecorator argValidator =
-                new ArgDecoratorEmpty(
-                        new ArgValidatorDecoratorSource(
-                                new ArgValidatorDecoratorDest(new ArgValidator())
-                        )
-                );
-        try {
-            argValidator.validate(params);
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-        list.add(params.get("path-source"));
-        list.add(params.get("path-dest"));
 
-        return list;
-    }
 }
