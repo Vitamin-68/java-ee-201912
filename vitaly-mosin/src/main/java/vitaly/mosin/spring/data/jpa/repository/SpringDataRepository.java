@@ -57,12 +57,23 @@ public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdT
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<?> query = cb.createQuery(clazz);
-        Root<?> entity = query.from(clazz);
+        CriteriaQuery<? extends EntityType> query = cb.createQuery(clazz);
+        Root<? extends EntityType> entity = query.from(clazz);
         Path<String> path = entity.get(fieldName);
         query.select(entity).where(cb.equal(path, value));
         return Optional.of(entityManager.createQuery(query).getResultList());
-//        return Optional.of((List<EntityType>) crudRepository.findByFieldWhereNameEqualsAndMatches("as", "asas");
+
+        // тоже не работает
+//        EntityManager entityManager = entityManagerFactory.createEntityManager();
+//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+//        CriteriaQuery<?> query = cb.createQuery(clazz);
+//        Root<?> entity = query.from(clazz);
+//        Path<String> path = entity.get(fieldName);
+//        query.select(entity).where(cb.equal(path, value));
+//        return Optional.of(entityManager.createQuery(query).getResultList());
+
+        // неудачная попытка создать запрос с помощью имени метода
+//        return Optional.of((List<EntityType>) crudRepository.findByFieldWhereNameEqualsAndMatches(fieldName, value);
     }
 
     @Override
