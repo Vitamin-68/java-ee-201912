@@ -136,11 +136,11 @@ public class RegionRepository implements CrudRepository<Region, Integer> {
         Optional<Region> test = findById(entity.getId());
         if (!test.isEmpty()) return test.get();
         try {
+            Optional<List<Region>> allRegions = findAll();
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(REGION_ID, COUNTRY_ID, CITY_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            Optional<List<Region>> allRegions = findAll();
             if (allRegions.isPresent()) {
                 for (Region locRegion : allRegions.get()) {
                     csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getCity_id(), locRegion.getName());
