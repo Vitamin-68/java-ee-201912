@@ -26,15 +26,13 @@ import java.util.Optional;
 public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements ua.ithillel.dnepr.common.repository.CrudRepository<EntityType, IdType> {
 
-    private Class<? extends EntityType> clazz;
+    private Class<EntityType> clazz;
     private CrudRepository crudRepository;
 //    CrudRepository<EntityType, IdType> crudRepository2;
     EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public SpringDataRepository(CitySpringDataRepository citySpringDataRepository,
-                                CountrySpringDataRepository countrySpringDataRepository,
-                                RegionSpringDataRepository regionSpringDataRepository) {
+    public SpringDataRepository(CrudRepository<EntityType, IdType> citySpringDataRepository) {
         this.crudRepository = citySpringDataRepository;
     }
 //    @Autowired
@@ -52,12 +50,11 @@ public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdT
         return (Optional<EntityType>) crudRepository.findById(id);
     }
 
-    @Transactional
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        CriteriaQuery<? extends EntityType> query = cb.createQuery(clazz);
+        CriteriaQuery<EntityType> query = cb.createQuery(clazz);
         Root<? extends EntityType> entity = query.from(clazz);
         Path<String> path = entity.get(fieldName);
         query.select(entity).where(cb.equal(path, value));
