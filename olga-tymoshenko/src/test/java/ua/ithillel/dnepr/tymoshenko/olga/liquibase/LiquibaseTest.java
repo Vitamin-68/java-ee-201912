@@ -38,23 +38,6 @@ public class LiquibaseTest {
     }
 
     @Test
-    void checkCountTableInBase() {
-        String query = "SELECT COUNT(*)  FROM information_schema.tables WHERE TABLE_TYPE='TABLE'";
-        ResultSet resultSet;
-        final int COUNT_TABLE = 5;
-        int actualCountTable = 0;
-        try (Statement stat = connection.createStatement()) {
-            resultSet = stat.executeQuery(query);
-            while (resultSet.next()) {
-                actualCountTable = resultSet.getInt(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        assertEquals(actualCountTable, COUNT_TABLE);
-    }
-
-    @Test
     void checkCreatTablePerson() throws SQLException {
         assertTrue(test.isTableExist("Person"));
     }

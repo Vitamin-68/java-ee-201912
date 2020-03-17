@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ import java.util.Map;
 public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<EntityType> {
     @Getter
     private Class objClass;
-    private String encoding = "UTF-8";
+    private String encoding = StandardCharsets.UTF_8.name();
     private String separator = ";";
     private File storeFile;
     private List<String> columns = new ArrayList<>();
@@ -43,7 +44,7 @@ public class CSVDataStore<EntityType extends BaseEntity> implements DataStore<En
         }
 
         storeFile = new File(this.getClass().getResource(
-                ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + table + ".csv"
+                ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + ".." + File.separator + "data" + File.separator + table + ".csv"
         ).getFile());
         bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(storeFile), encoding));
         loadFields();

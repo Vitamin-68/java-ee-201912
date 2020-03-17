@@ -1,0 +1,45 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+                   http://www.liquibase.org/xml/ns/dbchangelog
+                   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+
+    <changeSet id="2020-02-22-02_create_table_adress" author="Olga Tymoshenko">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="Adress"/>
+            </not>
+        </preConditions>
+        <createTable tableName="Adress">
+            <column name="IDAdress" type="INTEGER" autoIncrement="true">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+
+            <column name="City" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Street" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="Apart" type="VARCHAR(100)">
+                <constraints nullable="true"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="add_foreign_key_into_worker" author="Olga Tymoshenko">
+        <addColumn tableName="Worker">
+            <column name="AdressID" type="INTEGER">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addForeignKeyConstraint baseTableName="Worker"
+                                 baseColumnNames="AdressID"
+                                 referencedTableName="Adress"
+                                 referencedColumnNames="IDAdress"
+                                 constraintName="AdressLink" deleteCascade="true" />
+     <addNotNullConstraint tableName="Worker" columnName="AdressID" />
+    </changeSet>
+</databaseChangeLog>

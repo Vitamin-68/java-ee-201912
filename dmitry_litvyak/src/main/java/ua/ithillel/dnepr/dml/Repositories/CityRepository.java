@@ -132,11 +132,11 @@ public class CityRepository implements CrudRepository<City, Integer> {
         Optional<City> test = findById(entity.getId());
         if (!test.isEmpty()) return test.get();
         try {
+            Optional<List<City>> allCities = findAll();
             CSVPrinter csvPrinter = new CSVPrinter(new FileWriter(filePath), CSVFormat.DEFAULT
                     .withHeader(CITY_ID, COUNTRY_ID, REGION_ID, NAME)
                     .withDelimiter(delimiter)
                     .withQuoteMode(QuoteMode.ALL));
-            Optional<List<City>> allCities = findAll();
             if (allCities.isPresent()) {
                 for (City locRegion : allCities.get()) {
                     csvPrinter.printRecord(locRegion.getId(), locRegion.getCountry_id(), locRegion.getRegion_id(), locRegion.getName());
