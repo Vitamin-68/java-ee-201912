@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 
+@SuppressWarnings("unchecked")
 @WebServlet({"/cities/*","/regions/*","/countries/*"})
 public class CityServlet extends HttpServlet {
 
@@ -41,7 +42,7 @@ public class CityServlet extends HttpServlet {
                 writer.println("<H2>ID:"+obj.get().getId().toString()+"</H2>");
                 try{
                 Method method = obj.get().getClass().getDeclaredMethod("getName");
-                writer.println("name:"+method.invoke(obj));
+                writer.println("name:"+method.invoke(obj.get()));
                 }catch (Exception e){
                     throw new ServletException(e);
                 }
