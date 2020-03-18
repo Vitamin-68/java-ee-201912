@@ -2,12 +2,15 @@ package vitaly.mosin.spring.data.jpa.repository;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
-import vitaly.mosin.repository.entity.City;
-import vitaly.mosin.repository.jpa.entity.CityJpa;
+import vitaly.mosin.repository.exceptions.ExceptionResponseCode;
+import vitaly.mosin.repository.exceptions.MyRepoException;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -15,30 +18,24 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Root;
-import javax.transaction.Transactional;
-import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Setter
 @Getter
 @Component
-public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
+public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdType>
         implements ua.ithillel.dnepr.common.repository.CrudRepository<EntityType, IdType> {
 
     private Class<EntityType> clazz;
     private CrudRepository crudRepository;
-//    CrudRepository<EntityType, IdType> crudRepository2;
     EntityManagerFactory entityManagerFactory;
 
     @Autowired
-    public SpringDataRepository(CrudRepository<EntityType, IdType> citySpringDataRepository) {
-        this.crudRepository = citySpringDataRepository;
+    public SpringDataRepository(@Qualifier("citySpringDataRepository") CrudRepository<EntityType, IdType> springDataRepository) {
+        this.crudRepository = springDataRepository;
     }
-//    @Autowired
-//    public SpringDataRepository(CrudRepository<EntityType, IdType> repo) {
-//        this.crudRepository2 = repo;
-//    }
 
     @Override
     public Optional<List<EntityType>> findAll() {
@@ -59,38 +56,36 @@ public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdT
         Path<String> path = entity.get(fieldName);
         query.select(entity).where(cb.equal(path, value));
         return Optional.of(entityManager.createQuery(query).getResultList());
-
-        // тоже не работает
-//        EntityManager entityManager = entityManagerFactory.createEntityManager();
-//        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-//        CriteriaQuery<?> query = cb.createQuery(clazz);
-//        Root<?> entity = query.from(clazz);
-//        Path<String> path = entity.get(fieldName);
-//        query.select(entity).where(cb.equal(path, value));
-//        return Optional.of(entityManager.createQuery(query).getResultList());
-
-        // неудачная попытка создать запрос с помощью имени метода
-//        return Optional.of((List<EntityType>) crudRepository.findByFieldWhereNameEqualsAndMatches(fieldName, value);
     }
 
     @Override
     public EntityType create(EntityType entity) {
         crudRepository.save(entity);
-        return null;
+        return entity;
     }
 
+    @SneakyThrows
     @Override
     public EntityType update(EntityType entity) {
-        crudRepository.save(entity);
-        return null;
+        if (findById(entity.getId()).isPresent()) {
+            crudRepository.save(entity);
+        } else {
+            log.error("Update error! City with ID = {} not found.", entity.getId());
+            throw new MyRepoException(ExceptionResponseCode.FAILED_UPDATE_CONTACT, "Update error, city not found.");
+        }
+        return entity;
     }
 
+    @SneakyThrows
     @Override
     public EntityType delete(IdType id) {
         Object result = null;
         if (crudRepository.findById(id).isPresent()) {
             result = crudRepository.findById(id).get();
             crudRepository.delete(result);
+        } else {
+            log.error("Update error! City with ID = {} not found.", id);
+            throw new MyRepoException(ExceptionResponseCode.FAILED_DELETE_CONTACT_FROM_DB, "Delete error, city not found.");
         }
         return (EntityType) result;
     }
