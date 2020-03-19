@@ -79,14 +79,14 @@ public class SpringDataRepository<EntityType extends AbstractEntity<IdType>, IdT
     @SneakyThrows
     @Override
     public EntityType delete(IdType id) {
-        Object result = null;
+        EntityType result;
         if (crudRepository.findById(id).isPresent()) {
-            result = crudRepository.findById(id).get();
+            result = (EntityType) crudRepository.findById(id).get();
             crudRepository.delete(result);
         } else {
             log.error("Update error! City with ID = {} not found.", id);
             throw new MyRepoException(ExceptionResponseCode.FAILED_DELETE_CONTACT_FROM_DB, "Delete error, city not found.");
         }
-        return (EntityType) result;
+        return result;
     }
 }
