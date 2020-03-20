@@ -5,7 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 public class RmiCalcImpl extends UnicastRemoteObject implements RmiCalc {
 
-    public RmiCalcImpl() throws RemoteException {
+    RmiCalcImpl() throws RemoteException {
     }
 
     @Override
