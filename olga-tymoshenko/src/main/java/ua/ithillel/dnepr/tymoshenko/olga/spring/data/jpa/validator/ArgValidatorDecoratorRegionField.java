@@ -1,9 +1,8 @@
 package ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.validator;
-
 import lombok.extern.slf4j.Slf4j;
 import ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.entity.Region;
-
 import java.lang.reflect.Field;
+
 @Slf4j
 public class ArgValidatorDecoratorRegionField extends ArgValidatorDecorator {
     public ArgValidatorDecoratorRegionField(ArgValidator validatorDecorator) {
@@ -18,7 +17,7 @@ public class ArgValidatorDecoratorRegionField extends ArgValidatorDecorator {
         Field[] listField = clazz.getDeclaredFields();
         for (Field f : listField) {
             if (f.getName().equals(field)) {
-                present=true;
+                present = true;
                 break;
             }
         }

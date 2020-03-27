@@ -1,5 +1,4 @@
 package ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.validator;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +7,6 @@ public class ArgDecoratorEmpty extends ArgValidatorDecorator {
     public ArgDecoratorEmpty(ArgValidator validatorDecorator) {
         super(validatorDecorator);
     }
-
     @Override
     public void validate(String field) throws Exception {
         super.validate(field);
@@ -16,6 +14,5 @@ public class ArgDecoratorEmpty extends ArgValidatorDecorator {
             log.error("Field is empty");
             throw new IllegalArgumentException("Field is empty");
         }
-
     }
 }

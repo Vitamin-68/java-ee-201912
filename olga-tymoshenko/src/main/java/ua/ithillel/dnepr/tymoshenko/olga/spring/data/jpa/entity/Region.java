@@ -5,7 +5,6 @@ import lombok.Setter;
 import lombok.ToString;
 import ua.ithillel.dnepr.common.repository.entity.AbstractEntity;
 import ua.ithillel.dnepr.common.repository.entity.BaseEntity;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +27,8 @@ public class Region extends AbstractEntity<Integer> implements BaseEntity<Intege
     private Integer cityId;
     private String name;
 
-    public  Region(){}
+    public Region() {
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -1,5 +1,4 @@
 package ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.validator;
-import java.util.Map;
 import java.util.Objects;
 
 public class ArgValidator {

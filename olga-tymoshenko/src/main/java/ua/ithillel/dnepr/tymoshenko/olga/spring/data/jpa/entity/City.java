@@ -19,14 +19,15 @@ import java.util.Objects;
 @Table
 public class City extends AbstractEntity<Integer> implements BaseEntity<Integer> {
     @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   @Column(nullable = false, unique = true)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, unique = true)
     private Integer id;
-     private Integer countryId;
-     private Integer regionId;
+    private Integer countryId;
+    private Integer regionId;
     private String name;
 
-   public  City(){}
+    public City() {
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -34,7 +35,7 @@ public class City extends AbstractEntity<Integer> implements BaseEntity<Integer>
         if (o == null || getClass() != o.getClass()) return false;
         City city = (City) o;
         return getCountryId().equals(city.getCountryId()) &&
-               getName().equals(city.getName());
+                getName().equals(city.getName());
     }
 
     @Override
