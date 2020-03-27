@@ -21,12 +21,12 @@ public class CityRepositoryImpl implements CrudRepository<City, Integer> {
         }
     }
 
+    @Cacheable(cacheNames = "cities")
     @Override
     public Optional<List<City>> findAll() {
         return crudRepository.findAll();
     }
 
-    @Cacheable(cacheNames = "cities")
     @Override
     public Optional<City> findById(Integer id) {
         return crudRepository.findById(id);
