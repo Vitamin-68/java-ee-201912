@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import ua.ithillel.dnepr.common.repository.CrudRepository;
+import service.CityService;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
 
 import java.util.List;
@@ -17,36 +17,40 @@ import java.util.List;
 @RestController
 @RequestMapping("/city")
 public class CityController {
-    CrudRepository<City, Integer> cityRepository;
+    CityService restService;
 
-    public CityController(CrudRepository<City, Integer> cityRepository) {
-        this.cityRepository = cityRepository;
+    public CityController(CityService restService) {
+        this.restService = restService;
     }
 
     @GetMapping("")
     @ResponseBody
     public List<City> doGet (){
-        return cityRepository.findAll().get();
+        return restService.findAll();
     }
 
     @GetMapping("/{entityId}")
     @ResponseBody
     public City doGet (@PathVariable int entityId){
-        return cityRepository.findById(entityId).get();
+        return restService.findById(entityId);
     }
 
     @PostMapping("/{entityId}")
+    @ResponseBody
     public City doPost(@PathVariable int entityId, @RequestBody City city){
-        return cityRepository.create(city);
+        System.out.println(entityId);
+        return restService.create(city);
     }
 
     @DeleteMapping("/{entityId}")
+    @ResponseBody
     public City doDelete(@PathVariable int entityId){
-        return cityRepository.delete(entityId);
+        return restService.delete(entityId);
     }
 
     @PutMapping("/{entityId}")
+    @ResponseBody
     public City doPut(@PathVariable int entityId, @RequestBody City city){
-        return cityRepository.update(city);
+        return restService.update(city);
     }
 }
