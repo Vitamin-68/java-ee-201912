@@ -58,7 +58,7 @@ class jpaRepositoryTest {
         entityManagerFactory.close();
     }
 
-    @T @Test
+    @Test
     void findAll() {
         Optional<List<Person>> list = repository.findAll();
         assertFalse(list.isEmpty());

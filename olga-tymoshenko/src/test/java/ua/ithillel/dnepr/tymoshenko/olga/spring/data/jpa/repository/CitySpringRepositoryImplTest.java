@@ -40,10 +40,17 @@ public class CitySpringRepositoryImplTest {
 
     @Test
     void findById() {
-        Integer id = 10;
-        Optional<City> actual = repository.findById(id);
-        assertTrue(actual.isPresent());
+        City city = new City();
+        city.setCountryId(11111);
+        city.setRegionId(11111);
+        city.setName("City");
+        City test = repository.create(city);
+        assertEquals(city, test);
 
+        Optional<City> actual = repository.findById(test.getId());
+        assertEquals(actual.get(),test);
+        test = repository.delete(actual.get().getId());
+        assertEquals(test, actual.get());
     }
 
     @Test

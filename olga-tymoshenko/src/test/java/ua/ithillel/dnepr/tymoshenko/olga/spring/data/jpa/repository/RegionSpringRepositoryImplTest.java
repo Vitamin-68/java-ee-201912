@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.AppConfig;
+import ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.entity.City;
 import ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.entity.Region;
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
@@ -40,9 +41,16 @@ class RegionSpringRepositoryImplTest {
 
     @Test
     void findById() {
-        Integer id = 4312;
-        Optional<Region> actual = repository.findById(id);
-        assertTrue(actual.isPresent());
+        Region region = new Region();
+        region.setCountryId(111111);
+        region.setCityId(0);
+        region.setName("Region");
+        Region test = repository.create(region);
+        assertEquals(region, test);
+        Optional<Region> actual = repository.findById(test.getId());
+        assertEquals(actual.get(),test);
+        test = repository.delete(actual.get().getId());
+        assertEquals(test, actual.get());
     }
 
     @Test
