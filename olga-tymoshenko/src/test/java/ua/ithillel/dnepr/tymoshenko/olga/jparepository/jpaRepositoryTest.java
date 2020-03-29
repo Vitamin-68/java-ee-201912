@@ -58,7 +58,7 @@ class jpaRepositoryTest {
         entityManagerFactory.close();
     }
 
-    @Test
+    @T @Test
     void findAll() {
         Optional<List<Person>> list = repository.findAll();
         assertFalse(list.isEmpty());
@@ -148,13 +148,21 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void create() {
+    void createNotExistEntity() {
         Person actual = saveEntity(person);
         assertEquals(person, actual);
-        Integer id = 6;
-        Person newPerson = entityManagerFactory.createEntityManager().find(Person.class, id);
-        assertEquals(person, newPerson);
+        actual = (Person) repository.delete(actual.getId());
+        assertEquals(person, actual);
     }
+
+    @Test
+    void createExistEntity() {
+        Integer id = 4;
+        Person test = entityManagerFactory.createEntityManager().find(Person.class, id);
+        Person actual = saveEntity(test);
+        assertEquals(test, actual);
+    }
+
 
     @Test
     void createNullEntity() {
@@ -167,7 +175,7 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void update() {
+    void updateExistEntity() {
         Integer id = 4;
         Person newPerson = entityManagerFactory.createEntityManager().find(Person.class, id);
         newPerson.setFirstName("Petia");
@@ -186,7 +194,7 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void delete() {
+    void deleteExistEntity() {
         person.setFirstName("Vovik");
         person.setLastName("Sidorov");
         Person person1 = saveEntity(person);
