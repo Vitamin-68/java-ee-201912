@@ -1,4 +1,5 @@
 package ua.ithillel.dnepr.tymoshenko.olga.jparepository;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,10 +8,9 @@ import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Adress;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Company;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Person;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jparepository.jpaRepository;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -148,13 +148,21 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void create() {
+    void createNotExistEntity() {
         Person actual = saveEntity(person);
         assertEquals(person, actual);
-        Integer id = 6;
-        Person newPerson = entityManagerFactory.createEntityManager().find(Person.class, id);
-        assertEquals(person, newPerson);
+        actual = (Person) repository.delete(actual.getId());
+        assertEquals(person, actual);
     }
+
+    @Test
+    void createExistEntity() {
+        Integer id = 4;
+        Person test = entityManagerFactory.createEntityManager().find(Person.class, id);
+        Person actual = saveEntity(test);
+        assertEquals(test, actual);
+    }
+
 
     @Test
     void createNullEntity() {
@@ -167,7 +175,7 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void update() {
+    void updateExistEntity() {
         Integer id = 4;
         Person newPerson = entityManagerFactory.createEntityManager().find(Person.class, id);
         newPerson.setFirstName("Petia");
@@ -186,7 +194,7 @@ class jpaRepositoryTest {
     }
 
     @Test
-    void delete() {
+    void deleteExistEntity() {
         person.setFirstName("Vovik");
         person.setLastName("Sidorov");
         Person person1 = saveEntity(person);
