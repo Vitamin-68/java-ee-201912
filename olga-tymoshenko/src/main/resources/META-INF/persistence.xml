@@ -4,17 +4,35 @@
              version="2.0">
     <persistence-unit name="persistence-unit">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
         <class>ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Person</class>
         <class>ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Company</class>
         <class>ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Adress</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
+
         <properties>
             <property name="hibernate.show_sql" value="true"/>
-            <property name="hibernate.hbm2ddl.auto" value="validate"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
             <property name="hibernate.connection.url" value="jdbc:h2:./target/classes/dev/db/main"/>
             <property name="hibernate.connection.user" value="sa"/>
             <property name="hibernate.connection.password" value=""/>
         </properties>
     </persistence-unit>
+
+    <persistence-unit name="persistence-unit-spring-data-jpa">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <class>ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.entity.City</class>
+        <class>ua.ithillel.dnepr.tymoshenko.olga.spring.data.jpa.entity.Region</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <properties>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.connection.url" value="jdbc:h2:./main"/>
+            <property name="hibernate.connection.user" value="sa"/>
+            <property name="hibernate.connection.password" value=""/>
+        </properties>
+    </persistence-unit>
+
 </persistence>
