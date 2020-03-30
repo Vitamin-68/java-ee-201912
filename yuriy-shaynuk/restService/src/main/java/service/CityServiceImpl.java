@@ -1,5 +1,6 @@
 package service;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.entity.City;
@@ -15,6 +16,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    @Cacheable(cacheNames = "cities")
     public List<City> findAll() {
         return cityRepository.findAll().get();
     }
@@ -25,12 +27,14 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City create(City entity) {
+    public City create(int entityId, City entity) {
+        entity.setId(entityId);
         return cityRepository.create(entity);
     }
 
     @Override
-    public City update(City entity) {
+    public City update(int entityId, City entity) {
+        entity.setId(entityId);
         return cityRepository.update(entity);
     }
 

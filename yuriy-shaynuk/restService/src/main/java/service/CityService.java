@@ -9,9 +9,9 @@ public interface CityService {
 
     City findById(Integer id);
 
-    City create(City entity);
+    City create(int id, City entity);
 
-    City update(City entity);
+    City update(int id, City entity);
 
     City delete(Integer id);
 }

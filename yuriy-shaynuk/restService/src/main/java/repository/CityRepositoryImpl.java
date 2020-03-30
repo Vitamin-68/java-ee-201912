@@ -1,6 +1,5 @@
 package repository;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 import ua.ithillel.dnepr.common.repository.CrudRepository;
 import ua.ithillel.dnepr.yuriy.shaynuk.repository.csv.CrudRepositoryImp;
@@ -21,7 +20,6 @@ public class CityRepositoryImpl implements CrudRepository<City, Integer> {
         }
     }
 
-    @Cacheable(cacheNames = "cities")
     @Override
     public Optional<List<City>> findAll() {
         return crudRepository.findAll();

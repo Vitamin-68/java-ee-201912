@@ -60,10 +60,9 @@ public class CityTest {
     @Test
     public void create() throws Exception {
         City testCity = new City();
-        testCity.setName("testName999");
+        testCity.setName("testName");
         testCity.setCountry_id(111);
         testCity.setRegion_id(222);
-        testCity.setId(999);
         Gson gson = new Gson();
         String json = gson.toJson(testCity);
 
@@ -76,13 +75,27 @@ public class CityTest {
   }
 
     @Test
-    public void update(){
+    public void update() throws Exception {
+        City testCity = new City();
+        testCity.setName("updatedName");
+        testCity.setCountry_id(111);
+        testCity.setRegion_id(222);
+        Gson gson = new Gson();
+        String json = gson.toJson(testCity);
 
+        this.mockMvc.perform(MockMvcRequestBuilders.put("/city/4400")
+                .content(json)
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty());
     }
 
     @Test
-    public void delete(){
-
+    public void delete() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/city/4315"))
+                .andDo(print()).andExpect(status().isOk())
+                .andExpect(jsonPath("$").isNotEmpty())
+                .andReturn();
     }
-
 }

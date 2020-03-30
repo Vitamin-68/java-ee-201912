@@ -30,27 +30,22 @@ public class CityController {
     }
 
     @GetMapping("/{entityId}")
-    @ResponseBody
     public City doGet (@PathVariable int entityId){
         return restService.findById(entityId);
     }
 
     @PostMapping("/{entityId}")
-    @ResponseBody
     public City doPost(@PathVariable int entityId, @RequestBody City city){
-        System.out.println(entityId);
-        return restService.create(city);
-    }
-
-    @DeleteMapping("/{entityId}")
-    @ResponseBody
-    public City doDelete(@PathVariable int entityId){
-        return restService.delete(entityId);
+        return restService.create(entityId, city);
     }
 
     @PutMapping("/{entityId}")
-    @ResponseBody
     public City doPut(@PathVariable int entityId, @RequestBody City city){
-        return restService.update(city);
+        return restService.update(entityId, city);
+    }
+
+    @DeleteMapping("/{entityId}")
+    public City doDelete(@PathVariable int entityId){
+        return restService.delete(entityId);
     }
 }
