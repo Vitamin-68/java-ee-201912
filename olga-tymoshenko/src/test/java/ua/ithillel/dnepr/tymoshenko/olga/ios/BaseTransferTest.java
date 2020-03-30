@@ -60,7 +60,7 @@ public class BaseTransferTest {
                     .append(") ")
                     .append(" AS SELECT * FROM CSVREAD ")
                     .append("( \'")
-                    .append(path).append("\'").append(", ").append("null").append(", ").append("\'fieldSeparator=;\'").append(" )");
+                    .append(path).append("\'").append(", ").append("null").append(", ").append("\'charset=UTF-8 fieldSeparator=;\'").append(" )");
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query.toString());
             } catch (SQLException e) {

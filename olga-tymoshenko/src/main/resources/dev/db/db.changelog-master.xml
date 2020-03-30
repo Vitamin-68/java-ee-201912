@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
             http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <include file="changelog/2020-02-13-01-create-table-person.xml" relativeToChangelogFile="true"/>
+   <include file="changelog/2020-02-13-01-create-table-person.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-13-02-create-table-postion.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-13-03-insert-post-into-position.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-13-04-add-column-salary-into-position.xml" relativeToChangelogFile="true"/>
@@ -26,5 +26,7 @@
     <include file="changelog/2020-02-22-07-insert-data-into-company.xml" relativeToChangelogFile="true"/>
     <include file="changelog/2020-02-22-08-insert-data-into-worker-company.xml" relativeToChangelogFile="true"/>
 
+    <include file="changelog/2020-03-24-01-create-table-city.xml" relativeToChangelogFile="true"/>
+    <include file="changelog/2020-03-24-02-create-table-region.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
