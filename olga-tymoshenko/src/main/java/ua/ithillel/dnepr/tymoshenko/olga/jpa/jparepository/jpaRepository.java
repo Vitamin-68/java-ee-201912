@@ -7,7 +7,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -15,7 +14,6 @@ import java.util.Optional;
 @Slf4j
 public class jpaRepository<EntityType extends AbstractEntity<IdType>, IdType extends Serializable>
         implements CrudRepository<EntityType, IdType> {
-
     private final EntityManager entityManager;
     private final EntityTransaction transaction;
     private final Class<? extends EntityType> clazz;
@@ -34,30 +32,16 @@ public class jpaRepository<EntityType extends AbstractEntity<IdType>, IdType ext
 
     @Override
     public Optional<EntityType> findById(IdType id) {
-        EntityType entity = findbyID(id);
+        EntityType entity = findByID(id);
         return entity == null ? Optional.empty() : Optional.of(entity);
     }
 
     @Override
     public Optional<List<EntityType>> findByField(String fieldName, Object value) {
         Objects.requireNonNull(fieldName, "Field name is undefined");
-        if (fieldName.isEmpty()) {
-            log.error("Field name is empty");
-            throw new IllegalArgumentException("Field name is empty");
+        if (!isFieldValid(fieldName)) {
+            throw new IllegalArgumentException("This field is not valid");
         }
-        boolean compare = false;
-        Field[] listField = clazz.getDeclaredFields();
-        for (Field field : listField) {
-            if (field.getName().equals(fieldName)) {
-                compare = true;
-                break;
-            }
-        }
-        if (!compare) {
-            log.error("There is not this field in thid entity");
-            throw new IllegalArgumentException("There is not this field in thid entity");
-        }
-        List<EntityType> list = new ArrayList<>();
         StringBuilder query = new StringBuilder();
         query.append("from ").append(clazz.getSimpleName())
                 .append(" as p where p.")
@@ -73,7 +57,6 @@ public class jpaRepository<EntityType extends AbstractEntity<IdType>, IdType ext
     @Override
     public EntityType create(EntityType entity) {
         Objects.requireNonNull(entity, "Entity is undefined");
-        EntityType entityType = null;
         if (!isEntityExist(entity)) {
             transaction.begin();
             entityManager.persist(entity);
@@ -95,7 +78,7 @@ public class jpaRepository<EntityType extends AbstractEntity<IdType>, IdType ext
 
     @Override
     public EntityType delete(IdType id) {
-        EntityType entity = findbyID(id);
+        EntityType entity = findByID(id);
         Objects.requireNonNull(entity, "Entity is not exist");
         transaction.begin();
         entityManager.remove(entity);
@@ -121,7 +104,26 @@ public class jpaRepository<EntityType extends AbstractEntity<IdType>, IdType ext
         return false;
     }
 
-    private EntityType findbyID(IdType id) {
+    private EntityType findByID(IdType id) {
         return entityManager.find(clazz, id);
+    }
+
+    private boolean isFieldValid(String fieldName) {
+        if (fieldName.isEmpty()) {
+            log.error("Field name is empty");
+            return false;
+        }
+        boolean valid = false;
+        Field[] listField = clazz.getDeclaredFields();
+        for (Field field : listField) {
+            if (field.getName().equals(fieldName)) {
+                valid = true;
+                break;
+            }
+        }
+        if (!valid) {
+            log.error("There is not this field in this entity");
+        }
+        return valid;
     }
 }

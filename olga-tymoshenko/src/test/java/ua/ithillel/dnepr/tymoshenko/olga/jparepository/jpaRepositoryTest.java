@@ -1,4 +1,5 @@
 package ua.ithillel.dnepr.tymoshenko.olga.jparepository;
+
 import org.junit.Assert;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -7,10 +8,9 @@ import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Adress;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Company;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jpaentity.Person;
 import ua.ithillel.dnepr.tymoshenko.olga.jpa.jparepository.jpaRepository;
+
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
