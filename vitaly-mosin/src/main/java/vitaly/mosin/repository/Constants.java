@@ -1,6 +1,9 @@
 package vitaly.mosin.repository;
 
-public final class Constants {
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
+public class Constants {
 
     public static final String FILE_PATH_TMP = "./target/temp_CSV/";
     public static final String FILE_PATH_RESOURCE = "./src/main/resources/";
