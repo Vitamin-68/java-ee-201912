@@ -50,7 +50,7 @@ public class TransferDataToH2Impl<EntityType extends AbstractEntity<IdType>, IdT
                     .append(") ")
                     .append(" AS SELECT * FROM CSVREAD ")
                     .append("( \'")
-                    .append(source).append("\'").append(", ").append("null").append(", ").append("\'fieldSeparator=;\'").append(" )");
+                    .append(source).append("\'").append(", ").append("null").append(", ").append("\'charset=UTF-8 fieldSeparator=;\'").append(" )");
             try (Statement statement = connection.createStatement()) {
                 statement.executeUpdate(query.toString());
             } catch (SQLException e) {
