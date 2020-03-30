@@ -38,7 +38,7 @@ public class RegionsServlet extends HttpServlet {
     }
 
     private void executeMethod(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/json");
+        response.setContentType("application/json");
         response.setCharacterEncoding(StandardCharsets.UTF_8.toString());
         PrintWriter out = response.getWriter();
         Gson gson = new Gson();
